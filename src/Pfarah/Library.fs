@@ -19,7 +19,7 @@ type PfData =
   | Pflist of PfData list
   | PfObj of Map<string, PfData>
 
-let isspace (c:int) = c = 10 || c = 13 || c = 11 || c = 32
+let isspace (c:int) = c = 10 || c = 13 || c = 9 || c = 32
 
 let skipWhitespace (stream:StreamReader) =
   while (isspace (stream.Peek())) do
