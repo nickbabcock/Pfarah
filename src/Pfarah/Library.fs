@@ -10,14 +10,15 @@ module Pfarah
 open System
 open System.IO
 open System.Text
+open System.Collections.Generic
 
 type PfData =
   | Pfbool of bool
   | Pfnumber of float
   | Pfdate of DateTime
   | Pfstring of string
-  | Pflist of PfData list
-  | PfObj of Map<string, PfData>
+  | Pflist of List<PfData>
+  | PfObj of Dictionary<string, PfData>
 
 
 let isspace (c:int) = c = 10 || c = 13 || c = 9 || c = 32
@@ -37,9 +38,9 @@ let isnum (c:char) =
 
 type ParaParser (stream:StreamReader) =
   let MaxTokenSize = 256
-  let (stringBuffer:char[]) = [||]
+  let (stringBuffer:char[]) = Array.zeroCreate MaxTokenSize
   let mutable stringBufferCount = 0
-  let obj = PfObj Map.empty
+  let mutable obj = new Dictionary<string, PfData>()
 
   member self.readString () =
     let mutable isDone = false
@@ -62,28 +63,61 @@ type ParaParser (stream:StreamReader) =
     stringBufferCount <- 0
     result
 
+  member self.ParseContainer () =
+    let first = self.readString()
+    skipWhitespace stream
+    
+
+    match (stream.Peek()) with
+    | 125 -> // List of one
+      let mutable li = new List<PfData>()
+      li.Add(Pfstring first)
+      Pflist li
+    | 61 -> // we're parsing an object
+      PfObj (new Dictionary<string, PfData>())
+    | _ -> // parse list
+      Pflist (new List<PfData>())
+
   member self.Parse () =
     skipWhitespace stream
     let key = self.readString ()
     skipWhitespace stream
 
-    // ASSERT (stream.Peek() = 61)
+    assert (stream.Peek() = 61)
     stream.Read() |> ignore
     skipWhitespace stream
     let value =
       match stream.Peek() with
       | 34 ->
+        // Read through the quote
+        stream.Read() |> ignore
+
         let q = self.quotedStringRead()
         match tryDate q with
         | Some(date) -> Pfdate date
         | None -> Pfstring q
-      | 123 -> PfObj Map.empty
-      | _ -> Pfnumber 1.0
+      | 123 ->
+        skipWhitespace stream
 
-    obj
+        match stream.Peek() with
+        | 125 -> // Empty object
+          stream.Read() |> ignore
+          PfObj (new Dictionary<string, PfData>(0))
+        | 34 -> // Quoted date/string list
+          Pfstring ""
+        | _ -> self.ParseContainer()
+      | _ ->
+        Pfstring (self.readString())
+    obj.Add(key, value)
 
-let parse file () =
-  use fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 0x8000)
-  use stream = new StreamReader(fs, Encoding.GetEncoding(1252), false, 0x8000)
+  member self.Obj () = PfObj obj
+
+let parse (stream:Stream) =
+  use stream = new StreamReader(stream, Encoding.GetEncoding(1252), false, 0x8000)
   let parser = ParaParser stream
   parser.Parse ()
+  parser.Obj ()  
+
+let parseFile file =
+  use fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 0x8000)
+  parse fs

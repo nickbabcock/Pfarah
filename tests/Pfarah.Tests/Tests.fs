@@ -3,6 +3,12 @@ module Pfarah.Tests
 open Pfarah
 open NUnit.Framework
 open System
+open System.IO
+open System.Text
+open System.Collections.Generic
+
+let string2stream (str:string) =
+  new MemoryStream(Encoding.GetEncoding(1252).GetBytes(str));
 
 [<Test>]
 let ``a space is whitespace`` () =
@@ -43,3 +49,12 @@ let ``parse the hour date`` () =
   match Pfarah.tryDate "1492.3.2.5" with
   | Some(date) -> Assert.AreEqual(date, new DateTime(1492,3,2,5,0,0))
   | None -> Assert.Fail "Expected a date for 1492.3.2.5"
+
+[<Test>]
+let ``parse basic object`` () =
+  let str = "foo=bar"
+  let mutable dict = new Dictionary<string, PfData>()
+  dict.Add("foo", Pfstring "bar")
+  match (Pfarah.parse (string2stream str)) with
+  | PfObj(x) -> CollectionAssert.AreEquivalent(x, dict)
+  | _ -> Assert.Fail "Expected an object"
