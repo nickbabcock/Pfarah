@@ -12,13 +12,14 @@ open System.IO
 open System.Text
 open System.Collections.Generic
 
-type PfData =
-  | Pfbool of bool
-  | Pfnumber of float
-  | Pfdate of DateTime
-  | Pfstring of string
-  | Pflist of List<PfData>
-  | PfObj of Dictionary<string, PfData>
+[<RequireQualifiedAccess>]
+type ParaValue =
+  | Bool of bool
+  | Number of float
+  | Date of DateTime
+  | String of string
+  | Array of elements:ParaValue[]
+  | Record of properties:(string * ParaValue)[]
 
 
 let isspace (c:int) = c = 10 || c = 13 || c = 9 || c = 32
@@ -40,7 +41,6 @@ type ParaParser (stream:StreamReader) =
   let MaxTokenSize = 256
   let (stringBuffer:char[]) = Array.zeroCreate MaxTokenSize
   let mutable stringBufferCount = 0
-  let mutable obj = new Dictionary<string, PfData>()
 
   member self.readString () =
     let mutable isDone = false
@@ -67,18 +67,48 @@ type ParaParser (stream:StreamReader) =
     let first = self.readString()
     skipWhitespace stream
     
-
     match (stream.Peek()) with
     | 125 -> // List of one
-      let mutable li = new List<PfData>()
-      li.Add(Pfstring first)
-      Pflist li
+      let vals = ResizeArray<_>()
+      vals.Add(ParaValue.String first)
+      ParaValue.Array (vals |> Seq.toArray)
     | 61 -> // we're parsing an object
-      PfObj (new Dictionary<string, PfData>())
+      ParaValue.Record ([| |])
     | _ -> // parse list
-      Pflist (new List<PfData>())
+      ParaValue.Array ([| |])
 
-  member self.Parse () =
+  member self.ParseQuotes () =
+    // Read through the quote
+    stream.Read() |> ignore
+
+    let q = self.quotedStringRead()
+    match tryDate q with
+    | Some(date) -> ParaValue.Date date
+    | None -> ParaValue.String q
+
+  member self.parseValue () =
+    match stream.Peek() with
+    | 34 -> self.ParseQuotes()
+    | 123 ->
+      skipWhitespace stream
+
+      match stream.Peek() with
+      | 125 -> // Empty object
+        stream.Read() |> ignore
+        ParaValue.Record ([| |])
+      | 34 -> // Quoted date/string list
+        ParaValue.String ""
+      | _ -> self.ParseContainer()
+    | _ -> ParaValue.String (self.readString())
+
+  member self.parsePair () =
+    let key = self.readString()
+    skipWhitespace stream
+    assert (stream.Peek() = 61)
+    skipWhitespace stream
+    key, self.parseValue()   
+
+  member self.ParseObject () =
     skipWhitespace stream
     let key = self.readString ()
     skipWhitespace stream
@@ -86,29 +116,9 @@ type ParaParser (stream:StreamReader) =
     assert (stream.Peek() = 61)
     stream.Read() |> ignore
     skipWhitespace stream
-    let value =
-      match stream.Peek() with
-      | 34 ->
-        // Read through the quote
-        stream.Read() |> ignore
-
-        let q = self.quotedStringRead()
-        match tryDate q with
-        | Some(date) -> Pfdate date
-        | None -> Pfstring q
-      | 123 ->
-        skipWhitespace stream
-
-        match stream.Peek() with
-        | 125 -> // Empty object
-          stream.Read() |> ignore
-          PfObj (new Dictionary<string, PfData>(0))
-        | 34 -> // Quoted date/string list
-          Pfstring ""
-        | _ -> self.ParseContainer()
-      | _ ->
-        Pfstring (self.readString())
     obj.Add(key, value)
+
+  member self.Parse = self.ParseObject 
 
   member self.Obj () = PfObj obj
 
