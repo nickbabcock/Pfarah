@@ -86,11 +86,25 @@ let ``parse object of none`` () =
   |> shouldEqual [| ("foo", ParaValue.Record ([||]))|]
 
 [<Test>]
+let ``parse object of two`` () =
+  parse "foo={bar=baz qux=zux}"
+  |> shouldEqual [| ("foo", ParaValue.Record 
+                      ([|("bar", ParaValue.String "baz");
+                         ("qux", ParaValue.String "zux")|]))|]
+
+[<Test>]
 let ``parse list of one spacing`` () =
   parse " foo = { bar } "
   |> shouldEqual [| ("foo", ParaValue.Array ([|ParaValue.String "bar"|]))|]
 
-//[<Test>]
-//let ``parse list of one quoted`` () =
-//  parse "foo={\"bar\"}"
-//  |> shouldEqual [| ("foo", ParaValue.Array ([|ParaValue.String "bar"|]))|]
+[<Test>]
+let ``parse list of one quoted`` () =
+  parse "foo={\"bar\"}"
+  |> shouldEqual [| ("foo", ParaValue.Array ([|ParaValue.String "bar"|]))|]
+
+[<Test>]
+let ``parse list of two quoted`` () =
+  parse "foo={\"bar\" \"biz baz\"}"
+  |> shouldEqual [| ("foo", ParaValue.Array 
+                      ([|ParaValue.String "bar";
+                         ParaValue.String "biz baz"|]))|]

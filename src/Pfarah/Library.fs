@@ -66,6 +66,12 @@ type ParaParser (stream:StreamReader) =
     stringBufferCount <- 0
     result
 
+  member self.parseArray (vals:ResizeArray<_>) =
+    while (stream.Peek() <> 125) do
+      skipWhitespace stream
+      vals.Add(self.parseValue())
+      skipWhitespace stream
+
   member self.ParseContainerContents() =
     let first = self.readString()
     skipWhitespace stream
@@ -80,16 +86,17 @@ type ParaParser (stream:StreamReader) =
       skipWhitespace stream
       let vals = ResizeArray<_>()
       vals.Add(ParaValue.String first)
-      while (stream.Peek() <> 125) do
-        skipWhitespace stream
-        vals.Add(self.parseValue())
-        skipWhitespace stream
-      ParaValue.Array (vals |> Seq.toArray)    
+      self.parseArray vals
+      ParaValue.Array (vals |> Seq.toArray)
 
   member self.ParseContainer () =
     skipWhitespace stream
     match (stream.Peek()) with
     | 125 -> ParaValue.Record ([||])
+    | 34 ->
+      let vals = ResizeArray<_>()
+      self.parseArray vals
+      ParaValue.Array (vals |> Seq.toArray)    
     | _ -> self.ParseContainerContents()
 
   member self.parseObject key =
