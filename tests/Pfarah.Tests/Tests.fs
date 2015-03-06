@@ -10,6 +10,10 @@ open System.Collections.Generic
 let string2stream (str:string) =
   new MemoryStream(Encoding.GetEncoding(1252).GetBytes(str));
 
+let shouldEqual (x : 'a) (y : 'a) = Assert.AreEqual(x, y, sprintf "Expected: %A\nActual: %A" x y)
+
+let parse str = Pfarah.parse (string2stream str)
+
 [<Test>]
 let ``a space is whitespace`` () =
   Assert.AreEqual(Pfarah.isspace (int ' '), true)
@@ -52,9 +56,41 @@ let ``parse the hour date`` () =
 
 [<Test>]
 let ``parse basic object`` () =
-  let str = "foo=bar"
-  let mutable dict = new Dictionary<string, PfData>()
-  dict.Add("foo", Pfstring "bar")
-  match (Pfarah.parse (string2stream str)) with
-  | PfObj(x) -> CollectionAssert.AreEquivalent(x, dict)
-  | _ -> Assert.Fail "Expected an object"
+  parse "foo=bar"
+  |> shouldEqual [| ("foo", ParaValue.String "bar")|]
+
+[<Test>]
+let ``parse quoted string`` () =
+  parse "foo=\"bar\""
+  |> shouldEqual [| ("foo", ParaValue.String "bar")|]
+
+[<Test>]
+let ``parse list of one`` () =
+  parse "foo={bar}"
+  |> shouldEqual [| ("foo", ParaValue.Array ([|ParaValue.String "bar"|]))|]
+
+[<Test>]
+let ``parse list of multiple`` () =
+  parse "foo={bar baz}"
+  |> shouldEqual [| ("foo", ParaValue.Array 
+                      ([|ParaValue.String "bar"; ParaValue.String "baz"|]))|]
+
+[<Test>]
+let ``parse object of one`` () =
+  parse "foo={bar=baz}"
+  |> shouldEqual [| ("foo", ParaValue.Record ([|("bar", ParaValue.String "baz")|]))|]
+
+[<Test>]
+let ``parse object of none`` () =
+  parse "foo={}"
+  |> shouldEqual [| ("foo", ParaValue.Record ([||]))|]
+
+[<Test>]
+let ``parse list of one spacing`` () =
+  parse " foo = { bar } "
+  |> shouldEqual [| ("foo", ParaValue.Array ([|ParaValue.String "bar"|]))|]
+
+//[<Test>]
+//let ``parse list of one quoted`` () =
+//  parse "foo={\"bar\"}"
+//  |> shouldEqual [| ("foo", ParaValue.Array ([|ParaValue.String "bar"|]))|]
