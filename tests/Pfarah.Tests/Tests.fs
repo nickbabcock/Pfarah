@@ -65,6 +65,21 @@ let ``parse quoted string`` () =
   |> shouldEqual [| ("foo", ParaValue.String "bar")|]
 
 [<Test>]
+let ``parse number`` () =
+  parse "foo=-2.314"
+  |> shouldEqual [| ("foo", ParaValue.Number 2.314)|]
+
+[<Test>]
+let ``parse yes`` () =
+  parse "foo=yes"
+  |> shouldEqual [| ("foo", ParaValue.Bool true)|]
+
+[<Test>]
+let ``parse no`` () =
+  parse "foo=no"
+  |> shouldEqual [| ("foo", ParaValue.Bool false)|]
+
+[<Test>]
 let ``parse list of one`` () =
   parse "foo={bar}"
   |> shouldEqual [| ("foo", ParaValue.Array ([|ParaValue.String "bar"|]))|]
