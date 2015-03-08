@@ -126,6 +126,7 @@ type private ParaParser (stream:StreamReader) =
   and parseObject key =
     // Read through the '='
     stream.Read() |> ignore
+    skipWhitespace stream
     let pairs = ResizeArray<_>()
     pairs.Add((key, parseValue()))
     skipWhitespace stream

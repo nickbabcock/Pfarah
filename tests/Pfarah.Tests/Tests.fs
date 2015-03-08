@@ -163,6 +163,19 @@ let ``parse obj as nested objects`` () =
   obj?bar.[1]?zoo |> asString |> shouldEqual "zob"
 
 [<Test>]
+let ``parse gameplay settings`` () =
+  let data = """gameplaysettings=
+{
+	setgameplayoptions=
+	{
+1 1 2 1 1 0 0 1 0 1 0 	}
+}"""
+  let obj = ParaValue.Parse data
+  let actual =
+    obj?gameplaysettings?setgameplayoptions |> asArray |> Array.map asInteger
+  actual |> shouldEqual [|1;1;2;1;1;0;0;1;0;1;0|]
+
+[<Test>]
 let ``parse obj be used in a seq`` () =
   let obj = ParaValue.Parse "ids = {1 2 3 4 5}"
   let nums = obj?ids |> asArray |> Array.map asInteger
