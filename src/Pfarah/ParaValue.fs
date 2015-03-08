@@ -146,6 +146,9 @@ type private ParaParser (stream:StreamReader) =
 
   and parsePair () =
     skipWhitespace stream
+
+    // Beware of empty objects "{}" that don't have a key. If we encounter
+    // them, just blow right by them.
     if (stream.Peek()) = 123 then
       while (stream.Read()) <> 125 do
         ()
@@ -162,9 +165,24 @@ type private ParaParser (stream:StreamReader) =
 
   member x.Parse () = 
     let pairs = ResizeArray<_>()
-    while (not stream.EndOfStream) do
-      pairs.Add(parsePair())
-    ParaValue.Record (pairs |> Seq.toArray)
+    skipWhitespace stream
+    let first = readString()
+    match (stream.Peek()) with
+    | 10 | 13 ->
+      while (not stream.EndOfStream) do
+        pairs.Add(parsePair())
+      ParaValue.Record (pairs |> Seq.toArray)
+    | _ ->
+      skipWhitespace stream
+      assert (stream.Peek() = 61)
+      stream.Read() |> ignore
+      skipWhitespace stream
+      let result = first, parseValue()
+      skipWhitespace stream
+      pairs.Add(result)
+      while (not stream.EndOfStream) do
+        pairs.Add(parsePair())
+      ParaValue.Record (pairs |> Seq.toArray)
 
 type ParaValue with
   /// Parses the given stream

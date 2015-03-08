@@ -176,6 +176,14 @@ let ``parse gameplay settings`` () =
   actual |> shouldEqual [|1;1;2;1;1;0;0;1;0;1;0|]
 
 [<Test>]
+let ``ignore header`` () =
+  let data = """EU4txt
+date="1763.4.1"
+player="RFR" """
+  parse data |> shouldEqual [| ("date", ParaValue.Date (new DateTime(1763, 4, 1)));
+                               ("player", ParaValue.String "RFR")|]
+
+[<Test>]
 let ``parse obj be used in a seq`` () =
   let obj = ParaValue.Parse "ids = {1 2 3 4 5}"
   let nums = obj?ids |> asArray |> Array.map asInteger
