@@ -51,6 +51,12 @@ module ParaExtensions =
     | ParaValue.Array elements -> elements
     | _ -> failwithf "Not an array: %s" (x.ToString())
 
+  /// Get the record value of the object
+  let asRecord x =
+    match x with
+    | ParaValue.Record properties -> properties
+    | _ -> failwithf "Not a record: %s" (x.ToString())
+
   /// Finds all the properties of the object with a given key and aggregates
   /// all the values under a single array.
   let collect prop obj =
