@@ -1,8 +1,4 @@
-// Learn more about F# at http://fsharp.org. See the 'F# Tutorial' project
-// for more guidance on F# programming.
-
-#load "Library.fs"
+#load "ParaValue.fs"
 open Pfarah
 
-let num = Library.hello 42
-printfn "%i" num
+let data = ParaValue.Parse "foo=bar"
