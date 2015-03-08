@@ -22,13 +22,14 @@ type ParaValue =
   | Record of properties:(string * ParaValue)[]
 
 type private ParaParser (stream:StreamReader) =
-  let MaxTokenSize = 256
-  let (stringBuffer:char[]) = Array.zeroCreate MaxTokenSize
+  /// The max token size of any string, as defined by paradox internal source code is 256
+  let (stringBuffer:char[]) = Array.zeroCreate 256
   let mutable stringBufferCount = 0
 
   // Helper functions
   let isspace (c:int) = c = 10 || c = 13 || c = 9 || c = 32
 
+  /// skippy
   let skipWhitespace (stream:StreamReader) =
     while (isspace (stream.Peek())) do
       stream.Read() |> ignore
@@ -53,11 +54,11 @@ type private ParaParser (stream:StreamReader) =
 
   let rec parseValue () =
     match stream.Peek() with
-    | 34 -> ParseQuotes()
+    | 34 -> parseQuotes()
     | 123 -> 
       // Read through '{'
       stream.Read() |> ignore
-      let result = ParseContainer()
+      let result = parseContainer()
 
       // Read through '}'
       assert (stream.Peek() = 125)
@@ -67,7 +68,7 @@ type private ParaParser (stream:StreamReader) =
 
   and readString () =
     let mutable isDone = false
-    while isDone <> true do
+    while not isDone do
       let next = stream.Peek()
       isDone <- isspace next || next = 61 || next = -1 || next = 125
       if not (isDone) then
@@ -95,7 +96,7 @@ type private ParaParser (stream:StreamReader) =
       vals.Add(parseValue())
       skipWhitespace stream
 
-  and ParseContainerContents() =
+  and parseContainerContents() =
     let first = readString()
     skipWhitespace stream
 
@@ -112,15 +113,15 @@ type private ParaParser (stream:StreamReader) =
       parseArray vals
       ParaValue.Array (vals |> Seq.toArray)
 
-  and ParseContainer () =
+  and parseContainer () =
     skipWhitespace stream
     match (stream.Peek()) with
     | 125 -> ParaValue.Record ([||])
     | 123 | 34 ->
       let vals = ResizeArray<_>()
       parseArray vals
-      ParaValue.Array (vals |> Seq.toArray)    
-    | _ -> ParseContainerContents()
+      ParaValue.Array (vals |> Seq.toArray)
+    | _ -> parseContainerContents()
 
   and parseObject key =
     // Read through the '='
@@ -133,7 +134,7 @@ type private ParaParser (stream:StreamReader) =
       skipWhitespace stream
     ParaValue.Record (pairs |> Seq.toArray)
 
-  and ParseQuotes () =
+  and parseQuotes () =
     // Read through the quote
     stream.Read() |> ignore
 
@@ -160,15 +161,18 @@ type private ParaParser (stream:StreamReader) =
     ParaValue.Record (pairs |> Seq.toArray)
 
 type ParaValue with
+  /// Parses the given stream
   static member Load (stream:Stream) =
     use stream = new StreamReader(stream, Encoding.GetEncoding(1252), false, 0x8000)
     let parser = ParaParser stream
     parser.Parse ()
 
+  /// Parses the given file path, allowing other processes to read and write at the same time
   static member Load file =
     use fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 0x8000)
     ParaValue.Load fs
 
+  /// Parses the given string
   static member Parse (text:string) =
     let str = new MemoryStream(Encoding.GetEncoding(1252).GetBytes(text))
     ParaValue.Load str

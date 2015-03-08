@@ -161,3 +161,78 @@ let ``parse obj be used in a seq`` () =
   let obj = ParaValue.Parse "ids = {1 2 3 4 5}"
   let nums = obj?ids |> asArray |> Array.map asInteger
   nums |> shouldEqual [| 1 .. 5 |]
+
+let army = """
+army=
+{
+    name="1st army"
+    unit={
+        name="1st unit"
+    }
+}
+army=
+{
+    name="2nd army"
+    unit={
+        name="1st unit"
+    }
+    unit={
+        name="2nd unit"
+    }
+}"""
+
+[<Test>]
+let ``parse army example`` () =
+  let obj = parse army
+  let expected =
+    [| ("army",
+        ParaValue.Record(
+          [| ("name", ParaValue.String "1st army");
+             ("unit", ParaValue.Record(
+                [|("name", ParaValue.String "1st unit")|])) 
+          |]));
+       ("army",
+        ParaValue.Record(
+          [| ("name", ParaValue.String "2nd army");
+             ("unit", ParaValue.Record(
+                [|("name", ParaValue.String "1st unit")|]));
+             ("unit", ParaValue.Record(
+                [|("name", ParaValue.String "2nd unit")|])) 
+          |]))
+    |]
+  obj |> shouldEqual expected
+
+[<Test>]
+let ``parse army and collect`` () =
+  let armyData =
+    ParaValue.Parse army
+    |> collect "army"
+    |> Array.map (fun x ->
+      let units = x |> collect "unit" |> Array.map (fun u -> u?name |> asString)
+      x?name |> asString, units)
+
+  Array.length armyData |> shouldEqual 2
+  armyData.[0] |> fst |> shouldEqual "1st army"
+  armyData.[0] |> snd |> shouldEqual [|"1st unit"|]
+  armyData.[1] |> fst |> shouldEqual "2nd army"
+  armyData.[1] |> snd |> shouldEqual [|"1st unit"; "2nd unit"|]
+
+[<Test>]
+let ``tryFind patrol`` () =
+  let ships = """
+  ship={
+      name="1st ship"
+      patrol=yes
+  }
+  ship={
+    name="2nd ship"
+  }"""
+
+  // Let's print the name of ships on patrol
+  let shipData =
+    ParaValue.Parse ships
+    |> collect "ship"
+    |> Array.filter (tryFind "patrol" >> Option.isSome)
+    |> Array.map (fun x -> x?name |> asString)
+  
+  shipData |> shouldEqual [| "1st ship" |]

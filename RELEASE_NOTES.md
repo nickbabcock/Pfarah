@@ -1,2 +1,2 @@
-### 1.0 - Unreleased
-* Awesome
+### 0.1 - Initial Release
+* Initial Release
