@@ -108,6 +108,12 @@ let ``parse list of two quoted`` () =
                          ParaValue.String "biz baz"|]))|]
 
 [<Test>]
+let ``ignore empty objects`` () =
+  parse "foo={1} {} church=yes"
+  |> shouldEqual [| ("foo", ParaValue.Array ([|ParaValue.Number 1.0|]));
+                    ("church", ParaValue.Bool true)|]
+
+[<Test>]
 let ``parse object with dynamic`` () =
   let obj = ParaValue.Parse "foo={bar=baz qux=zux}"
   obj?foo?bar |> shouldEqual (ParaValue.String "baz")

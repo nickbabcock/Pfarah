@@ -145,14 +145,19 @@ type private ParaParser (stream:StreamReader) =
 
   and parsePair () =
     skipWhitespace stream
-    let key = readString()
-    skipWhitespace stream
-    assert (stream.Peek() = 61)
-    stream.Read() |> ignore
-    skipWhitespace stream
-    let result = key, parseValue()
-    skipWhitespace stream
-    result
+    if (stream.Peek()) = 123 then
+      while (stream.Read()) <> 125 do
+        ()
+      parsePair()
+    else
+      let key = readString()
+      skipWhitespace stream
+      assert (stream.Peek() = 61)
+      stream.Read() |> ignore
+      skipWhitespace stream
+      let result = key, parseValue()
+      skipWhitespace stream
+      result
 
   member x.Parse () = 
     let pairs = ResizeArray<_>()
