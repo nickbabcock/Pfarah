@@ -29,8 +29,8 @@ This example demonstrates using a function defined in this sample library.
 #r "Pfarah.dll"
 open Pfarah
 
-printfn "hello = %i" <| Library.hello 0
-
+let obj = ParaValue.Parse "foo=bar"
+obj?foo |> asString
 (**
 Some more info
 
