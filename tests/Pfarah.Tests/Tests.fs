@@ -40,6 +40,11 @@ let ``parse date`` () =
   |> shouldEqual [| ("foo", ParaValue.Date (new DateTime(1492,3,2)))|]
 
 [<Test>]
+let ``parse invalid date is none`` () =
+  parse "foo=1.a.2"
+  |> shouldEqual [| ("foo", ParaValue.String "1.a.2")|]
+
+[<Test>]
 let ``parse no`` () =
   parse "foo=no"
   |> shouldEqual [| ("foo", ParaValue.Bool false)|]
@@ -141,6 +146,11 @@ let ``parse obj as bool`` () =
 let ``parse obj as float`` () =
   let obj = ParaValue.Parse "foo=-2.234"
   obj?foo |> asFloat |> shouldEqual -2.234
+
+[<Test>]
+let ``parse invalid quoted dates`` () =
+  let obj = ParaValue.Parse "foo=\"1.b.c\""
+  obj?foo |> asString |> shouldEqual "1.b.c"
 
 [<Test>]
 let ``parse obj as date`` () =

@@ -11,6 +11,7 @@ open System
 open System.IO
 open System.Text
 open System.Collections.Generic
+open System.Globalization
 
 [<RequireQualifiedAccess>]
 type ParaValue =
@@ -22,35 +23,48 @@ type ParaValue =
   | Record of properties:(string * ParaValue)[]
 
 type private ParaParser (stream:StreamReader) =
-  /// The max token size of any string, as defined by paradox internal source code is 256
+  /// The max token size of any string, as defined by paradox internal source
+  /// code is 256
   let (stringBuffer:char[]) = Array.zeroCreate 256
+   
+  /// Mutable variable to let us know how much of the string buffer is filled
   let mutable stringBufferCount = 0
 
-  // Helper functions
+  /// Returns whether a given int is considered whitespace
   let isspace (c:int) = c = 10 || c = 13 || c = 9 || c = 32
 
-  /// skippy
+  /// Advance the stream until a non-whitespace character is encountered
   let skipWhitespace (stream:StreamReader) =
     while (isspace (stream.Peek())) do
       stream.Read() |> ignore
 
+  let isNum (c:char) = (c >= '0' && c <= '9') || c = '.' || c = '-'
+
+  /// Attempts to convert the string to a date time. Returns some datetime if
+  /// successful
   let tryDate (str:string) =
     match str.Split('.') with
     | [|y;m;d|] -> Some(new DateTime(int y, int m, int d))
     | [|y;m;d;h|] -> Some(new DateTime(int y, int m, int d, int h, 0, 0))
     | _ -> None
 
+  let numStyle = Globalization.NumberStyles.AllowDecimalPoint ||| Globalization.NumberStyles.AllowLeadingSign
+
+  /// Narrows a given string to a better data representation. If no better
+  /// representation can be found then the string is returned.
   let narrow str =
     match str with
     | "yes" -> ParaValue.Bool true
     | "no" -> ParaValue.Bool false
-    | _ ->
-      match Double.TryParse str with
+    | x when str |> Seq.forall isNum ->
+      let res = Double.TryParse(str, numStyle, CultureInfo.InvariantCulture)
+      match res with
       | (true, x) -> ParaValue.Number x
       | (false, _) ->
         match tryDate str with
         | Some(date) -> ParaValue.Date date
         | None -> ParaValue.String str
+    | _ -> ParaValue.String str
 
   let rec parseValue () =
     match stream.Peek() with
@@ -70,6 +84,9 @@ type private ParaParser (stream:StreamReader) =
     let mutable isDone = false
     while not isDone do
       let next = stream.Peek()
+      
+      // We are done reading the current string if we hit whitespace an equal
+      // sign, the end of a buffer, or a left curly (end of an object/list)
       isDone <- isspace next || next = 61 || next = -1 || next = 125
       if not (isDone) then
         stringBuffer.[stringBufferCount] <- (char (stream.Read()))
@@ -80,6 +97,7 @@ type private ParaParser (stream:StreamReader) =
     result
 
   and quotedStringRead() =
+    // Read until the next quote
     while stream.Peek() <> 34 do
       stringBuffer.[stringBufferCount] <- (char (stream.Read()))
       stringBufferCount <- stringBufferCount + 1
@@ -97,6 +115,7 @@ type private ParaParser (stream:StreamReader) =
       skipWhitespace stream
 
   and parseContainerContents() =
+    // The first key or element depending on object or list
     let first = readString()
     skipWhitespace stream
 
@@ -105,6 +124,8 @@ type private ParaParser (stream:StreamReader) =
       let vals = ResizeArray<_>()
       vals.Add(narrow first)
       ParaValue.Array (vals |> Seq.toArray)
+
+    // An equals sign means we are parsing an object
     | 61 -> parseObject first
     | _ -> // parse list
       skipWhitespace stream
@@ -116,11 +137,18 @@ type private ParaParser (stream:StreamReader) =
   and parseContainer () =
     skipWhitespace stream
     match (stream.Peek()) with
+    
+    // Encountering a '}' means an empty object
     | 125 -> ParaValue.Record ([||])
+
+    // Encountering a '{' means we are dealing with a nested list and a quote
+    // means a quoted list
     | 123 | 34 ->
       let vals = ResizeArray<_>()
       parseArray vals
       ParaValue.Array (vals |> Seq.toArray)
+
+    // Else we are not quite sure what we are parsing, so we need more info
     | _ -> parseContainerContents()
 
   and parseObject key =
@@ -140,9 +168,12 @@ type private ParaParser (stream:StreamReader) =
     stream.Read() |> ignore
 
     let q = quotedStringRead()
-    match tryDate q with
-    | Some(date) -> ParaValue.Date date
-    | None -> ParaValue.String q
+    match q |> Seq.forall isNum with
+    | true ->
+      match tryDate q with
+      | Some(date) -> ParaValue.Date date
+      | None -> ParaValue.String q
+    | false -> ParaValue.String q
 
   and parsePair () =
     skipWhitespace stream
