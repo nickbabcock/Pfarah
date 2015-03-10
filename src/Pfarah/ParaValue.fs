@@ -38,7 +38,7 @@ type private ParaParser (stream:StreamReader) =
     while (isspace (stream.Peek())) do
       stream.Read() |> ignore
 
-  let isNum (c:char) = (c >= '0' && c <= '9') || c = '.' || c = '-'
+  let isNum (c:char) = (c >= '0' && c <= '9') || c = '.'
 
   /// Attempts to convert the string to a date time. Returns some datetime if
   /// successful
@@ -48,23 +48,20 @@ type private ParaParser (stream:StreamReader) =
     | [|y;m;d;h|] -> Some(new DateTime(int y, int m, int d, int h, 0, 0))
     | _ -> None
 
-  let numStyle = Globalization.NumberStyles.AllowDecimalPoint ||| Globalization.NumberStyles.AllowLeadingSign
-
   /// Narrows a given string to a better data representation. If no better
   /// representation can be found then the string is returned.
   let narrow str =
     match str with
     | "yes" -> ParaValue.Bool true
     | "no" -> ParaValue.Bool false
-    | x when str |> Seq.forall isNum ->
-      let res = Double.TryParse(str, numStyle, CultureInfo.InvariantCulture)
-      match res with
-      | (true, x) -> ParaValue.Number x
-      | (false, _) ->
+    | _ ->
+      match DoubleParse.tryParse str with
+      | Some(x) -> ParaValue.Number x
+      | None when str |> Seq.forall isNum ->
         match tryDate str with
         | Some(date) -> ParaValue.Date date
         | None -> ParaValue.String str
-    | _ -> ParaValue.String str
+      | None -> ParaValue.String str 
 
   let rec parseValue () =
     match stream.Peek() with

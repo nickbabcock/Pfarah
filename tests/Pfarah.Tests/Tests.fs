@@ -159,7 +159,7 @@ let ``parse obj as date`` () =
 
 [<Test>]
 let ``parse obj as tough array`` () =
-  let obj = ParaValue.Parse "foo={1 bar 2.0 {qux=baz}}"
+  let obj = ParaValue.Parse "foo={1 bar 2.000 {qux=baz}}"
   obj?foo.[0]|> asInteger |> shouldEqual 1
   obj?foo.[1]|> asString |> shouldEqual "bar"
   obj?foo.[2]|> asFloat |> shouldEqual 2.0
