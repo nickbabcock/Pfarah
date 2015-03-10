@@ -191,7 +191,9 @@ type private ParaParser (stream:StreamReader) =
       skipWhitespace stream
       result
 
-  member x.Parse () = 
+  member x.Parse () =
+    // Before we too far into parsing the stream we need to check if we have a
+    // header. If we do see a header, ignore it.
     let pairs = ResizeArray<_>()
     skipWhitespace stream
     let first = readString()
