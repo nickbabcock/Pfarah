@@ -6,6 +6,9 @@
 (**
 # Pfarah
 
+Pfarah is an extremely fast and easy to use solution for parsing files created
+by Clausewitz engine from Paradox Interactive
+
 <div class="row">
   <div class="span1"></div>
   <div class="span6">
