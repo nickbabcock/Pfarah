@@ -1,12 +1,12 @@
 type project
 owners
-    Nick Babcock <nbabcock19@hotmail.com>
+    Nick Babcock
 authors 
-    Nick Babcock <nbabcock19@hotmail.com>
+    Nick Babcock
 projectUrl
     http://github.com/nickbabcock/Pfarah
 iconUrl
-    https://raw.githubusercontent.com/fsprojects/ProjectScaffold/master/docs/files/img/logo.png
+    https://raw.githubusercontent.com/nickbabcock/Pfarah/master/docs/files/img/logo.png
 licenseUrl
     http://github.com/nickbabcock/Pfarah/blob/master/LICENSE.txt
 requireLicenseAcceptance
