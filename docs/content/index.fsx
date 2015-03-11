@@ -10,7 +10,7 @@
   <div class="span1"></div>
   <div class="span6">
     <div class="well well-small" id="nuget">
-      The F# ProjectTemplate library can be <a href="https://nuget.org/packages/Pfarah">installed from NuGet</a>:
+      Pfarah can be <a href="https://nuget.org/packages/Pfarah">installed from NuGet</a>:
       <pre>PM> Install-Package Pfarah</pre>
     </div>
   </div>
