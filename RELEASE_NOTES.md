@@ -1,3 +1,6 @@
+### 0.1.2
+* Fix the implementation of `tryFind` to follow documented API
+
 ### 0.1.1 - A Proper Release
 * Fix the image url link on Nuget to point to this project's logo
 * Fix author's name and email in metadata

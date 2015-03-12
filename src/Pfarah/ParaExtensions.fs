@@ -73,7 +73,7 @@ module ParaExtensions =
   let tryFind prop obj =
     match obj with
     | ParaValue.Record properties ->
-      properties |> Array.tryFind (fst >> (=) prop)
+      properties |> Array.tryFind (fst >> (=) prop) |> Option.map snd
     | _ -> None
 
   type ParaValue with

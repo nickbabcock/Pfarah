@@ -273,3 +273,9 @@ let ``tryFind patrol`` () =
     |> Array.map (fun x -> x?name |> asString)
   
   shipData |> shouldEqual [| "1st ship" |]
+
+[<Test>]
+let ``tryFind returns Some ParaValue`` () =
+  let data = ParaValue.Parse "foo=1.000"
+  data |> tryFind "foo" |> shouldEqual (Some (ParaValue.Number 1.0))
+  data |> tryFind "bar" |> shouldEqual None
