@@ -141,3 +141,38 @@ let shipData =
   |> Array.filter (tryFind "patrol" >> Option.isSome)
   |> Array.map (fun x -> x?name |> asString)
 printfn "%A" armyData
+
+(**
+
+## Exploring Data
+
+Knowing the data is the first step to any type of analysis. This is made
+difficult when there can be thousands of objects, each one having a subset of
+the properties available. `findOptional` fixes this problem by disecting a
+list of  supposedly similar objects and returning the properties that it knows
+are always present and the ones that are optional.
+
+*)
+
+let nodes = """
+node={
+  definition=foo
+  incoming={1 2 3}
+}
+node={
+  definition=bar
+}"""
+
+// Print all the properties of the "node" objects in alphabetical order.
+// Append a question mark after the property name to signify that the property
+// is optional.
+ParaValue.Parse nodes
+|> collect "node"
+|> findOptional
+|> Seq.sortBy fst
+|> Seq.iter(fun (property, isOptional) ->
+  printfn "%s%s" property (if isOptional then "?" else ""))
+
+// Will print:
+// definition
+// incoming?

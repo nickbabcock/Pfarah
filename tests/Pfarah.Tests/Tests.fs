@@ -279,3 +279,16 @@ let ``tryFind returns Some ParaValue`` () =
   let data = ParaValue.Parse "foo=1.000"
   data |> tryFind "foo" |> shouldEqual (Some (ParaValue.Number 1.0))
   data |> tryFind "bar" |> shouldEqual None
+
+[<Test>]
+let ``findOptional works`` () =
+  let data =
+    ParaValue.Record([| ("hello", ParaValue.String "foo");
+                        ("world", ParaValue.String "") |])
+
+  let data2 =
+      ParaValue.Record([| ("hello", ParaValue.String "foo"); |])
+
+  let actual = findOptional [data; data2]
+  let expected = [("hello", false); ("world", true)]
+  CollectionAssert.AreEquivalent(expected, actual)
