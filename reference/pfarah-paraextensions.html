@@ -225,9 +225,32 @@ all the values under a single array.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '11', 11)" onmouseover="showTip(event, '11', 11)">
-            tryFind prop obj
+            findOptional objs
           </code>
           <div class="tip" id="11">
+            <strong>Signature:</strong> objs:seq&lt;ParaValue&gt; -&gt; seq&lt;string * bool&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L84-84" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Given a sequence of similar objects, return sequence of tuples where it
+is the name of the property and a boolean value denoting whether the
+property did not occur in all given objects. Such that a return value of
+[("hello", true); ("world", false)], means that the "hello" property is
+optional and the "world" property is required in each object</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '12', 12)" onmouseover="showTip(event, '12', 12)">
+            tryFind prop obj
+          </code>
+          <div class="tip" id="12">
             <strong>Signature:</strong> prop:string -&gt; obj:ParaValue -&gt; ParaValue option<br />
                       </div>
         </td>
@@ -253,15 +276,15 @@ If a property is found then <code>Some ParaValue</code> will be returned else
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '12', 12)" onmouseover="showTip(event, '12', 12)">
+          <code onmouseout="hideTip(event, '13', 13)" onmouseover="showTip(event, '13', 13)">
             GetEnumerator()
           </code>
-          <div class="tip" id="12">
+          <div class="tip" id="13">
             <strong>Signature:</strong> unit -&gt; IEnumerator<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L82-82" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L97-97" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -273,15 +296,15 @@ array</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '13', 13)" onmouseover="showTip(event, '13', 13)">
+          <code onmouseout="hideTip(event, '14', 14)" onmouseover="showTip(event, '14', 14)">
             [index]
           </code>
-          <div class="tip" id="13">
+          <div class="tip" id="14">
             <strong>Signature:</strong> index:int -&gt; ParaValue<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L86-86" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L101-101" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>

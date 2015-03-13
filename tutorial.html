@@ -260,6 +260,67 @@ doesn't.</p>
 </tr>
 </table>
 
+<h2><a name="Exploring-Data" class="anchor" href="#Exploring-Data">Exploring Data</a></h2>
+
+<p>Knowing the data is the first step to any type of analysis. This is made
+difficult when there can be thousands of objects, each one having a subset of
+the properties available. <code>findOptional</code> fixes this problem by disecting a
+list of  supposedly similar objects and returning the properties that it knows
+are always present and the ones that are optional.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+<span class="l">19: </span>
+<span class="l">20: </span>
+<span class="l">21: </span>
+<span class="l">22: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs38', 91)" onmouseover="showTip(event, 'fs38', 91)" class="i">nodes</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">node={</span>
+<span class="s">  definition=foo</span>
+<span class="s">  incoming={1 2 3}</span>
+<span class="s">}</span>
+<span class="s">node={</span>
+<span class="s">  definition=bar</span>
+<span class="s">}&quot;&quot;&quot;</span>
+
+<span class="c">// Print all the properties of the &quot;node&quot; objects in alphabetical order.</span>
+<span class="c">// Append a question mark after the property name to signify that the property</span>
+<span class="c">// is optional.</span>
+<span onmouseout="hideTip(event, 'fs3', 92)" onmouseover="showTip(event, 'fs3', 92)" class="t">ParaValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 93)" onmouseover="showTip(event, 'fs4', 93)" class="f">Parse</span> <span onmouseout="hideTip(event, 'fs38', 94)" onmouseover="showTip(event, 'fs38', 94)" class="i">nodes</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs28', 95)" onmouseover="showTip(event, 'fs28', 95)" class="f">collect</span> <span class="s">&quot;node&quot;</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs39', 96)" onmouseover="showTip(event, 'fs39', 96)" class="f">findOptional</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 97)" onmouseover="showTip(event, 'fs8', 97)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs40', 98)" onmouseover="showTip(event, 'fs40', 98)" class="f">sortBy</span> <span onmouseout="hideTip(event, 'fs10', 99)" onmouseover="showTip(event, 'fs10', 99)" class="f">fst</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 100)" onmouseover="showTip(event, 'fs8', 100)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs41', 101)" onmouseover="showTip(event, 'fs41', 101)" class="f">iter</span>(<span class="k">fun</span> (<span onmouseout="hideTip(event, 'fs42', 102)" onmouseover="showTip(event, 'fs42', 102)" class="i">property</span>, <span onmouseout="hideTip(event, 'fs43', 103)" onmouseover="showTip(event, 'fs43', 103)" class="i">isOptional</span>) <span class="k">-&gt;</span>
+  <span onmouseout="hideTip(event, 'fs7', 104)" onmouseover="showTip(event, 'fs7', 104)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"></span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs42', 105)" onmouseover="showTip(event, 'fs42', 105)" class="i">property</span> (<span class="k">if</span> <span onmouseout="hideTip(event, 'fs43', 106)" onmouseover="showTip(event, 'fs43', 106)" class="i">isOptional</span> <span class="k">then</span> <span class="s">&quot;?&quot;</span> <span class="k">else</span> <span class="s">&quot;&quot;</span>))
+
+<span class="c">// Will print:</span>
+<span class="c">// definition</span>
+<span class="c">// incoming?</span>
+</pre>
+</td>
+</tr>
+</table>
+
 <div class="tip" id="fs1">namespace Pfarah</div>
 <div class="tip" id="fs2">Multiple items<br />val obj : ParaValue<br /><br />Full name: Tutorial.obj<br /><br />--------------------<br />type obj = System.Object<br /><br />Full name: Microsoft.FSharp.Core.obj</div>
 <div class="tip" id="fs3">type ParaValue =<br />&#160;&#160;| Bool of bool<br />&#160;&#160;| Number of float<br />&#160;&#160;| Date of DateTime<br />&#160;&#160;| String of string<br />&#160;&#160;| Array of elements: ParaValue []<br />&#160;&#160;| Record of properties: (string * ParaValue) []<br />&#160;&#160;static member Load : file:string -&gt; ParaValue<br />&#160;&#160;static member Load : stream:Stream -&gt; ParaValue<br />&#160;&#160;static member Parse : text:string -&gt; ParaValue<br /><br />Full name: Pfarah.ParaValue</div>
@@ -297,6 +358,12 @@ doesn't.</p>
 <div class="tip" id="fs35">val tryFind : prop:string -&gt; obj:ParaValue -&gt; ParaValue option<br /><br />Full name: Pfarah.ParaExtensions.tryFind</div>
 <div class="tip" id="fs36">module Option<br /><br />from Microsoft.FSharp.Core</div>
 <div class="tip" id="fs37">val isSome : option:&#39;T option -&gt; bool<br /><br />Full name: Microsoft.FSharp.Core.Option.isSome</div>
+<div class="tip" id="fs38">val nodes : string<br /><br />Full name: Tutorial.nodes</div>
+<div class="tip" id="fs39">val findOptional : objs:seq&lt;ParaValue&gt; -&gt; seq&lt;string * bool&gt;<br /><br />Full name: Pfarah.ParaExtensions.findOptional</div>
+<div class="tip" id="fs40">val sortBy : projection:(&#39;T -&gt; &#39;Key) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt; (requires comparison)<br /><br />Full name: Microsoft.FSharp.Collections.Seq.sortBy</div>
+<div class="tip" id="fs41">val iter : action:(&#39;T -&gt; unit) -&gt; source:seq&lt;&#39;T&gt; -&gt; unit<br /><br />Full name: Microsoft.FSharp.Collections.Seq.iter</div>
+<div class="tip" id="fs42">val property : string</div>
+<div class="tip" id="fs43">val isOptional : bool</div>
 
         </div>
         <div class="span3">
