@@ -1,3 +1,6 @@
+### 0.1.3
+* Add `findOptional` to API
+
 ### 0.1.2
 * Fix the implementation of `tryFind` to follow documented API
 
