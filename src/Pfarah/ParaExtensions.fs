@@ -78,9 +78,14 @@ module ParaExtensions =
 
   /// Given a sequence of similar objects, return sequence of tuples where it
   /// is the name of the property and a boolean value denoting whether the
-  /// property did not occur in all given objects. Such that a return value of
-  /// [("hello", true); ("world", false)], means that the "hello" property is
-  /// optional and the "world" property is required in each object
+  /// property did not occur in all given objects.
+  ///
+  /// ## Example Return Value
+  ///
+  ///     [("hello", true); ("world", false)]
+  ///
+  /// means that the "hello" property is optional and the "world" property is
+  /// required in each object
   let findOptional (objs:seq<ParaValue>) =
     // Boil the given objects down to top level property names
     let props = objs |> Seq.map (asRecord >> (Seq.map fst) >> Set.ofSeq)
