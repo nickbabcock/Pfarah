@@ -45,6 +45,18 @@ module ParaExtensions =
     | ParaValue.Date d -> d
     | _ -> failwithf "Not a date: %s" (x.ToString())
 
+  /// Returns the integer value if it exists else 0
+  let integerDefault = function Some(x) -> x |> asInteger | None -> 0
+
+  /// Returns the string value if it exists else the empty string
+  let stringDefault = function Some(x) -> x |> asString | None -> ""
+
+  /// Returns the float value if it exists else 0.0
+  let floatDefault = function Some(x) -> x |> asFloat | None -> 0.0
+
+  /// Returns the boolean value if it exists else false
+  let boolDefault = function Some(x) -> x |> asBool | None -> false
+
   /// Get the array value of an object
   let asArray x = 
     match x with
