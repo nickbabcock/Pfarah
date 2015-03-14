@@ -1,3 +1,6 @@
+### 0.1.4
+* Fix parsing empty objects at the end of another object
+
 ### 0.1.3
 * Add `findOptional` to API
 

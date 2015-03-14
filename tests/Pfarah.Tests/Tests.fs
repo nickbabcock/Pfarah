@@ -119,6 +119,23 @@ let ``ignore empty objects`` () =
                     ("church", ParaValue.Bool true)|]
 
 [<Test>]
+let ``ignore empty objects at end of other objects`` () =
+  let data = """
+history={
+  blah={foo=bar}
+  {
+  }
+}"""
+  
+  parse data
+  |> shouldEqual 
+    [| ("history", ParaValue.Record(
+         [| ("blah", ParaValue.Record(
+              [| ("foo", ParaValue.String "bar") |]
+          ))|]
+    ))|]
+
+[<Test>]
 let ``parse object with dynamic`` () =
   let obj = ParaValue.Parse "foo={bar=baz qux=zux}"
   obj?foo?bar |> shouldEqual (ParaValue.String "baz")
