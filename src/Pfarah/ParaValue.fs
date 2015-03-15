@@ -1,10 +1,3 @@
-/// Documentation for my library
-///
-/// ## Example
-///
-///     let h = Library.hello 1
-///     printfn "%d" h
-///
 namespace Pfarah
 
 open System
