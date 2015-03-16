@@ -1,3 +1,9 @@
+### 0.2.0
+* Rename `DoubleParse` file to `Utils`
+* Rename `DoubleParse.tryParse` to `Utils.tryDoubleParse`
+* Add `tryDateParse` to `Utils`
+* Add xDefault functions to easy handling of `None` cases
+
 ### 0.1.4
 * Fix parsing empty objects at the end of another object
 
