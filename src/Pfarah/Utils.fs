@@ -1,6 +1,8 @@
 namespace Pfarah
 
-module DoubleParse =
+open System
+
+module Utils =
   let inline private isNum (c:char) = c >= '0' && c <= '9'
   let inline private toNum (c:char) = int c - 48
   
@@ -9,7 +11,7 @@ module DoubleParse =
   /// <(\d+)\.(\d{3})?>. In profiling it was shown that Double.TryParse was a
   /// bottleneck at around 20-50% of the CPU time and after this function was
   /// written, the bottleneck completely disappeared.
-  let tryParse (str:string) =
+  let tryDoubleParse (str:string) =
     let mutable whole = 0
     let mutable i = 0
     let mutable isDone = str.Length = 0
@@ -48,3 +50,14 @@ module DoubleParse =
         isDone <- true
 
     result
+
+  /// Attempts to convert the string to a date time. Returns some datetime if
+  /// successful
+  let tryDateParse (str:string) =
+    if str |> Seq.forall (fun c -> isNum c || c = '.') then
+      match str.Split('.') with
+      | [|y;m;d|] -> Some(new DateTime(int y, int m, int d))
+      | [|y;m;d;h|] -> Some(new DateTime(int y, int m, int d, int h, 0, 0))
+      | _ -> None
+    else
+      None

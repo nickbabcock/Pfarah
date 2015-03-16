@@ -31,16 +31,6 @@ type private ParaParser (stream:StreamReader) =
     while (isspace (stream.Peek())) do
       stream.Read() |> ignore
 
-  let isNum (c:char) = (c >= '0' && c <= '9') || c = '.'
-
-  /// Attempts to convert the string to a date time. Returns some datetime if
-  /// successful
-  let tryDate (str:string) =
-    match str.Split('.') with
-    | [|y;m;d|] -> Some(new DateTime(int y, int m, int d))
-    | [|y;m;d;h|] -> Some(new DateTime(int y, int m, int d, int h, 0, 0))
-    | _ -> None
-
   /// Narrows a given string to a better data representation. If no better
   /// representation can be found then the string is returned.
   let narrow str =
@@ -48,13 +38,12 @@ type private ParaParser (stream:StreamReader) =
     | "yes" -> ParaValue.Bool true
     | "no" -> ParaValue.Bool false
     | _ ->
-      match DoubleParse.tryParse str with
+      match Utils.tryDoubleParse str with
       | Some(x) -> ParaValue.Number x
-      | None when str |> Seq.forall isNum ->
-        match tryDate str with
+      | None ->
+        match Utils.tryDateParse str with
         | Some(date) -> ParaValue.Date date
         | None -> ParaValue.String str
-      | None -> ParaValue.String str 
 
   let rec parseValue () =
     match stream.Peek() with
@@ -164,12 +153,9 @@ type private ParaParser (stream:StreamReader) =
     stream.Read() |> ignore
 
     let q = quotedStringRead()
-    match q |> Seq.forall isNum with
-    | true ->
-      match tryDate q with
-      | Some(date) -> ParaValue.Date date
-      | None -> ParaValue.String q
-    | false -> ParaValue.String q
+    match Utils.tryDateParse q with
+    | Some(date) -> ParaValue.Date date
+    | None -> ParaValue.String q
 
   and parsePair () =
     skipWhitespace stream

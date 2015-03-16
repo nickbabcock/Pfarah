@@ -43,7 +43,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DoubleParse.fs" />
+    <Compile Include="Utils.fs" />
     <Compile Include="ParaValue.fs" />
     <Compile Include="ParaExtensions.fs" />
     <None Include="Script.fsx" />
