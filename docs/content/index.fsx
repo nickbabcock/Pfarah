@@ -44,6 +44,18 @@ let obj2 = ParaValue.Load @"C:\somefilepath"
 
  * [API Reference](reference/index.html) contains automatically generated documentation for all types, modules
    and functions in the library.
+
+## Note on Memory Usage
+
+While Pfarah tries to be memory conscious (parsing based on streams and not
+whole strings), the resulting data structure may be considered a memory hug. A
+60MB file parsed by Pfarah will consume about 300MB of memory while the parsed
+document data structure hangs around. The data structure allows for easy
+quering on the data at the  cost of memory. Thus, it is recommended that as
+soon as the file is parsed to keep around only what is needed and cast the
+data to the expected formats (such as an integer), which will consume less
+space. This will allow the garbage collector to clean up the intermediary
+300MB data structure.
  
 ## Contributing and copyright
 
