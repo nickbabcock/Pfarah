@@ -24,3 +24,7 @@ GITHUB
   specs:
     modules/Octokit/Octokit.fsx (095c94dcce1fee5154e4afb5ab836a3b3af972a3)
       Octokit
+  remote: fsprojects/FSharp.TypeProviders.StarterPack
+  specs:
+    src/ProvidedTypes.fs (cf96cf990590da7082197452b1b544e26ebed472)
+    src/ProvidedTypes.fsi (cf96cf990590da7082197452b1b544e26ebed472)
