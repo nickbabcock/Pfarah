@@ -102,7 +102,7 @@ type private ParaParser (stream:StreamReader) =
     | 125 -> // List of one
       let vals = ResizeArray<_>()
       vals.Add(narrow first)
-      ParaValue.Array (vals |> Seq.toArray)
+      ParaValue.Array (vals.ToArray())
 
     // An equals sign means we are parsing an object
     | 61 -> parseObject first (fun (stream:StreamReader) -> stream.Peek() = 125)
@@ -111,7 +111,7 @@ type private ParaParser (stream:StreamReader) =
       let vals = ResizeArray<_>()
       vals.Add(narrow first)
       parseArray vals
-      ParaValue.Array (vals |> Seq.toArray)
+      ParaValue.Array (vals.ToArray())
 
   and parseContainer () =
     skipWhitespace stream
@@ -125,7 +125,7 @@ type private ParaParser (stream:StreamReader) =
     | 123 | 34 ->
       let vals = ResizeArray<_>()
       parseArray vals
-      ParaValue.Array (vals |> Seq.toArray)
+      ParaValue.Array (vals.ToArray())
 
     // Else we are not quite sure what we are parsing, so we need more info
     | _ -> parseContainerContents()
@@ -146,7 +146,7 @@ type private ParaParser (stream:StreamReader) =
       else
         pairs.Add(parsePair())
       skipWhitespace stream
-    ParaValue.Record (pairs |> Seq.toArray)
+    ParaValue.Record (pairs.ToArray())
 
   and parseQuotes () =
     // Read through the quote
@@ -178,7 +178,7 @@ type private ParaParser (stream:StreamReader) =
     | 10 | 13 ->
       while (not stream.EndOfStream) do
         pairs.Add(parsePair())
-      ParaValue.Record (pairs |> Seq.toArray)
+      ParaValue.Record (pairs.ToArray())
     | _ ->
       skipWhitespace stream
       assert (stream.Peek() = 61)
