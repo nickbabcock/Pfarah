@@ -15,35 +15,30 @@ module ParaExtensions =
     | _ -> failwithf "Not an object: %A" obj
 
   /// Get the integer value of an object
-  let asInteger x =
-    match x with
+  let asInteger = function
     | ParaValue.Number n -> int n
-    | _ -> failwithf "Not an integer: %s" (x.ToString())
+    | x -> failwithf "Not an integer: %s" (x.ToString())
 
   /// Get the string value of an object
-  let asString x =
-    match x with
+  let asString = function
     | ParaValue.String s -> s
-    | _ -> x.ToString()
+    | x -> x.ToString()
 
   /// Get the floating point precision value of an object
-  let asFloat x =
-    match x with
+  let asFloat = function
     | ParaValue.Number n -> n
-    | _ -> failwithf "Not a float: %s" (x.ToString())
+    | x -> failwithf "Not a float: %s" (x.ToString())
 
   /// Get the boolean value of an object
-  let asBool x =
-    match x with
+  let asBool = function
     | ParaValue.Bool b -> b
     | ParaValue.Number n -> (int n) <> 0
-    | _ -> failwithf "Not a bool: %s" (x.ToString())
+    | x -> failwithf "Not a bool: %s" (x.ToString())
 
   /// Get the date value of an object
-  let asDate x =
-    match x with
+  let asDate = function
     | ParaValue.Date d -> d
-    | _ -> failwithf "Not a date: %s" (x.ToString())
+    | x -> failwithf "Not a date: %s" (x.ToString())
 
   /// Returns the integer value if it exists else 0
   let integerDefault = function Some(x) -> x |> asInteger | None -> 0
@@ -58,16 +53,14 @@ module ParaExtensions =
   let boolDefault = function Some(x) -> x |> asBool | None -> false
 
   /// Get the array value of an object
-  let asArray x = 
-    match x with
+  let asArray = function
     | ParaValue.Array elements -> elements
-    | _ -> failwithf "Not an array: %s" (x.ToString())
+    | x -> failwithf "Not an array: %s" (x.ToString())
 
   /// Get the record value of the object
-  let asRecord x =
-    match x with
+  let asRecord = function
     | ParaValue.Record properties -> properties
-    | _ -> failwithf "Not a record: %s" (x.ToString())
+    | x -> failwithf "Not a record: %s" (x.ToString())
 
   /// Finds all the properties of the object with a given key and aggregates
   /// all the values under a single array.
