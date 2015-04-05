@@ -309,3 +309,12 @@ let ``findOptional works`` () =
   let actual = findOptional [data; data2]
   let expected = [("hello", false); ("world", true)]
   CollectionAssert.AreEquivalent(expected, actual)
+
+type Para = ParaProvider
+
+[<Test>]
+let ``type provider simple work`` () =
+  let inst = Para()
+  1
+  //inst |> shouldEqual ParaValue.Record([| ("infra", ParaValue.String "a") |])
+
