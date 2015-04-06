@@ -58,9 +58,6 @@
   -->
   <Import Project="..\..\.paket\paket.targets" />
   <ItemGroup>
-    <Compile Include="Utils.fs" />
-    <Compile Include="ParaValue.fs" />
-    <Compile Include="ParaExtensions.fs" />
     <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypes.fs">
       <Paket>True</Paket>
       <Link>ProvidedTypes.fs</Link>
@@ -69,6 +66,9 @@
       <Paket>True</Paket>
       <Link>ProvidedTypes.fsi</Link>
     </Content>
+    <Compile Include="Utils.fs" />
+    <Compile Include="ParaValue.fs" />
+    <Compile Include="ParaExtensions.fs" />
     <Compile Include="ParaProvider.fs" />
     <None Include="Script.fsx" />
     <None Include="paket.references" />
