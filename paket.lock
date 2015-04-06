@@ -28,3 +28,7 @@ GITHUB
   specs:
     src/ProvidedTypes.fs (cf96cf990590da7082197452b1b544e26ebed472)
     src/ProvidedTypes.fsi (cf96cf990590da7082197452b1b544e26ebed472)
+  remote: fsharp/FSharp.Data
+  specs:
+    src/CommonRuntime/NameUtils.fs (8e2ca08edc3ba74939cf23c18c18b212d9677a6f)
+    src/CommonRuntime/Pluralizer.fs (8e2ca08edc3ba74939cf23c18c18b212d9677a6f)
