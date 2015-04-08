@@ -315,5 +315,6 @@ type Para = ParaProvider<""" infra=a """>
 [<Test>]
 let ``type provider simple work`` () =
   let inst = Para()
+  inst.infra |> shouldEqual "a"
   inst.Sample |> shouldEqual (ParaValue.Record([| ("infra", ParaValue.String "a") |]))
 

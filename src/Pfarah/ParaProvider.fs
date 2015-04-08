@@ -36,6 +36,7 @@ type public ParaProvider (config : TypeProviderConfig) as this =
       yield m ] |> tpType.AddMembers 
 
     tpType.AddMember(ProvidedProperty("Sample", typeof<ParaValue>, GetterCode = (fun args -> <@@ ParaValue.Parse sample @@>)))
+    tpType.AddMember(ProvidedProperty("infra", typeof<string>, GetterCode = (fun args -> <@@ (ParaValue.Parse sample)?infra |> asString @@>)))
     tpType.AddMember(ProvidedConstructor([], InvokeCode = (fun args -> <@@ () @@>)))
     tpType
 
