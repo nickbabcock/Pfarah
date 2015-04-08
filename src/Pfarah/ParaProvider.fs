@@ -35,6 +35,8 @@ type public ParaProvider (config : TypeProviderConfig) as this =
       m.AddXmlDoc <| sprintf "Loads the Clausewitz data from the specified stream"
       yield m ] |> tpType.AddMembers 
 
+    tpType.AddMember(ProvidedProperty("Sample", typeof<ParaValue>, GetterCode = (fun args -> <@@ ParaValue.Parse sample @@>)))
+    tpType.AddMember(ProvidedConstructor([], InvokeCode = (fun args -> <@@ () @@>)))
     tpType
 
   let parameters = [ProvidedStaticParameter("Sample", typeof<string>)]
