@@ -309,3 +309,44 @@ let ``findOptional works`` () =
   let actual = findOptional [data; data2]
   let expected = [("hello", false); ("world", true)]
   CollectionAssert.AreEquivalent(expected, actual)
+
+[<Test>]
+let ``save data format example`` () =
+  let data = """
+foo=bar
+baz=" hello  ##
+      cheese"
+start=1841.2.3
+end="1300.10.1"
+type=49
+strength=10.435
+nums={1 2 3 4}
+core=YOU
+core=MEE
+army={
+    unit={
+        name="1st unit"
+    }
+    unit={
+        name="1st unit"
+
+        patrol=yes
+    }
+    { }
+    attachments={
+        {
+            id=34
+        }
+        {
+            id=55
+        }
+    }
+}"""
+
+  let parsed = ParaValue.Parse data
+  use mem = new MemoryStream()
+  ParaValue.Save(mem, parsed)
+  mem.Flush()
+  let saved = Encoding.GetEncoding(1252).GetString(mem.ToArray())
+  let parsed2 = ParaValue.Parse saved
+  parsed2 |> shouldEqual parsed

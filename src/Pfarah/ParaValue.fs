@@ -200,3 +200,30 @@ type ParaValue with
   static member Parse (text:string) =
     let str = new MemoryStream(Encoding.GetEncoding(1252).GetBytes(text))
     ParaValue.Load str
+
+  /// Writes the given data to a stream
+  static member Save (stream:Stream, data:ParaValue) =
+    use stream = new StreamWriter(stream, Encoding.GetEncoding(1252), 0x8000)
+
+    let rec recWrite props =
+      props |> Array.iter (fun ((prop:string), v) ->
+        stream.Write(prop)
+        stream.Write('=')
+        write v)
+    and write = function
+      | ParaValue.Bool b -> stream.WriteLine(if b = true then "yes" else "no")
+      | ParaValue.Date d -> stream.WriteLine(d.ToString("yyyy.M.d"))
+      | ParaValue.Number n -> stream.WriteLine(n.ToString("0.000"))
+      | ParaValue.String s -> stream.WriteLine("\"" + s + "\"")
+      | ParaValue.Array a ->
+        stream.Write('{')
+        Array.iter write a
+        stream.Write('}')
+      | ParaValue.Record r ->
+        stream.Write('{')
+        recWrite r
+        stream.Write('}')
+
+    match data with
+    | ParaValue.Record props -> recWrite props
+    | _ -> failwith "Can't save a non-record"
