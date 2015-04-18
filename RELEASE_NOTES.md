@@ -1,3 +1,7 @@
+### 0.2.1
+* Cleaned up some of the code
+* Add rudimentary saving
+
 ### 0.2.0
 * Rename `DoubleParse` file to `Utils`
 * Rename `DoubleParse.tryParse` to `Utils.tryDoubleParse`
