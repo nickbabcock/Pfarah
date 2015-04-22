@@ -1,5 +1,6 @@
 namespace Pfarah
 
+open Utils
 open System
 open System.IO
 open System.Text
@@ -37,13 +38,9 @@ type private ParaParser (stream:StreamReader) =
     match str with
     | "yes" -> ParaValue.Bool true
     | "no" -> ParaValue.Bool false
-    | _ ->
-      match Utils.tryDoubleParse str with
-      | Some(x) -> ParaValue.Number x
-      | None ->
-        match Utils.tryDateParse str with
-        | Some(date) -> ParaValue.Date date
-        | None -> ParaValue.String str
+    | ParaNumber x -> ParaValue.Number x
+    | ParaDate d -> ParaValue.Date d
+    | x -> ParaValue.String x
 
   let rec parseValue () =
     match stream.Peek() with

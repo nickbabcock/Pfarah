@@ -61,3 +61,9 @@ module Utils =
       | _ -> None
     else
       None
+
+  /// Partial active pattern that will return a date if matched
+  let (|ParaDate|_|) = tryDateParse
+
+  /// Partial active pattern that will return a float if matched
+  let (|ParaNumber|_|) = tryDoubleParse
