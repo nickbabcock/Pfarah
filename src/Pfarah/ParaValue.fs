@@ -181,12 +181,72 @@ type private ParaParser (stream:StreamReader) =
       assert (stream.Peek() = 61)
       parseObject first (fun stream -> stream.EndOfStream)
 
+type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, string>) =
+
+  /// Looks up the human friendly name for an id. If the name does not exist,
+  /// use the id's string value as a substitute. Don't error out because it is
+  /// unreasonable for the client to know all ids that exist and will ever
+  /// exist.
+  let lookupId id =
+      match lookup.TryGetValue(id) with
+      | (false, _) -> id.ToString()
+      | (true, x) -> x
+
+  let rec parseTopObject () =
+    let pairs = ResizeArray<_>()
+    while stream.BaseStream.Position <> stream.BaseStream.Length do
+      let key = lookupId (stream.ReadInt16())
+      let equals = stream.ReadInt16()
+      if equals <> 0x0001s then failwith "Expected equals token"
+      pairs.Add((key, parseValue()))
+    pairs.ToArray()
+
+  and parseValue () =
+    match stream.ReadInt16() with
+    | 0x000cs ->
+      let value = stream.ReadUInt32()
+      let (left, hours) = Math.DivRem(int(value), 24)
+      let (left, days) = Math.DivRem(left, 365)
+      let years = left - 5001
+      if years > 0 then
+        let date =
+          DateTime.MinValue
+            .AddYears(years)
+            .AddDays(float(days + 1))
+            .AddHours(float(hours))
+        ParaValue.Date(date)
+      else ParaValue.Number(float(value))
+    | 0x0014s -> ParaValue.Number(stream.ReadInt32() |> float)
+    | 0x000es -> ParaValue.Bool(stream.ReadByte() = 0x00uy)
+    | 0x000fs | 0x0017s ->
+      let length = stream.ReadUInt16() |> int
+      ParaValue.String(String(stream.ReadChars(length)))
+    | 0x000ds -> ParaValue.Number(stream.ReadSingle() |> float)
+    | 0x0003s -> ParaValue.Record(parseTopObject())
+    | x -> failwith "Unrecognized type"
+
+  member x.Parse (header:option<string>) =
+    match header with
+    | Some(txt) ->
+      let (headerBuffer:char[]) = Array.zeroCreate txt.Length
+      stream.Read(headerBuffer, 0, headerBuffer.Length) |> ignore
+      if new String(headerBuffer) <> txt then
+        failwith "Expected header not encountered"
+      ParaValue.Record(parseTopObject())
+    | None -> ParaValue.Record(parseTopObject())
+
 type ParaValue with
   /// Parses the given stream
   static member Load (stream:Stream) =
     use stream = new StreamReader(stream, Encoding.GetEncoding(1252), false, 0x8000)
     let parser = ParaParser stream
     parser.Parse ()
+
+  /// Parses the given stream
+  static member LoadBinary (stream:Stream, lookup:IDictionary<int16, string>, header:option<string>) =
+    use stream = new BinaryReader(stream, Encoding.GetEncoding(1252))
+    let parser = BinaryParaParser(stream, lookup)
+    parser.Parse (header)
 
   /// Parses the given file path, allowing other processes to read and write at the same time
   static member Load file =
