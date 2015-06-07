@@ -183,6 +183,9 @@ type private ParaParser (stream:StreamReader) =
 
 type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, string>) =
 
+  let mutable tok = 0s
+  let readString () = String(stream.ReadChars(stream.ReadUInt16() |> int))
+
   /// Looks up the human friendly name for an id. If the name does not exist,
   /// use the id's string value as a substitute. Don't error out because it is
   /// unreasonable for the client to know all ids that exist and will ever
@@ -199,6 +202,20 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       let equals = stream.ReadInt16()
       if equals <> 0x0001s then failwith "Expected equals token"
       pairs.Add((key, parseValue()))
+    pairs.ToArray()
+
+  and parseObject () =
+    let pairs = ResizeArray<_>()
+    tok <- stream.ReadInt16()
+    while tok <> 0x0004s do
+      let key =
+        match tok with
+        | 0x000fs | 0x0017s -> readString()
+        | x -> lookupId x
+      let equals = stream.ReadInt16()
+      if equals <> 0x0001s then failwith "Expected equals token"
+      pairs.Add((key, parseValue()))
+      tok <- stream.ReadInt16()
     pairs.ToArray()
 
   and parseValue () =
@@ -218,11 +235,9 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       else ParaValue.Number(float(value))
     | 0x0014s -> ParaValue.Number(stream.ReadInt32() |> float)
     | 0x000es -> ParaValue.Bool(stream.ReadByte() = 0x00uy)
-    | 0x000fs | 0x0017s ->
-      let length = stream.ReadUInt16() |> int
-      ParaValue.String(String(stream.ReadChars(length)))
+    | 0x000fs | 0x0017s -> ParaValue.String(readString())
     | 0x000ds -> ParaValue.Number(stream.ReadSingle() |> float)
-    | 0x0003s -> ParaValue.Record(parseTopObject())
+    | 0x0003s -> ParaValue.Record(parseObject())
     | x -> failwith "Unrecognized type"
 
   member x.Parse (header:option<string>) =
