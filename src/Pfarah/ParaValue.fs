@@ -195,18 +195,43 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       | (false, _) -> id.ToString()
       | (true, x) -> x
 
+  let (|HiddenDate|TrueNumber|) value =
+    let (left, hours) = Math.DivRem(int(value), 24)
+    let (left, days) = Math.DivRem(left, 365)
+    let years = left - 5001
+    if years > 0 then
+      let date =
+        DateTime.MinValue
+          .AddYears(years)
+          .AddDays(float(days + 1))
+          .AddHours(float(hours))
+      HiddenDate(date)
+    else TrueNumber(value)
+
+  let (|Id|Str|) byt =
+    match byt with
+    | 0x000fs | 0x0017s -> Str(readString())
+    | x -> Id(lookupId x)
+
   let rec parseTopObject () =
     let pairs = ResizeArray<_>()
     while stream.BaseStream.Position <> stream.BaseStream.Length do
       let key = lookupId (stream.ReadInt16())
-      let equals = stream.ReadInt16()
-      if equals <> 0x0001s then failwith "Expected equals token"
+      tok <- stream.ReadInt16()
+      if tok <> 0x0001s then failwith "Expected equals token"
+      tok <- stream.ReadInt16()
       pairs.Add((key, parseValue()))
     pairs.ToArray()
 
-  and parseObject () =
+  and parseObject firstKey =
     let pairs = ResizeArray<_>()
     tok <- stream.ReadInt16()
+    tok <- stream.ReadInt16()
+
+    // TODO: first token is a string date
+    pairs.Add((lookupId firstKey, parseValue()))
+    tok <- stream.ReadInt16()
+    
     while tok <> 0x0004s do
       let key =
         match tok with
@@ -214,30 +239,41 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
         | x -> lookupId x
       let equals = stream.ReadInt16()
       if equals <> 0x0001s then failwith "Expected equals token"
+      tok <- stream.ReadInt16()
       pairs.Add((key, parseValue()))
       tok <- stream.ReadInt16()
     pairs.ToArray()
 
+  and parseArray first =
+    let values = ResizeArray<_>()
+    values.Add(first)
+    while tok <> 0x0004s do
+      values.Add(parseValue())
+      tok <- stream.ReadInt16()
+    values.ToArray()
+
   and parseValue () =
-    match stream.ReadInt16() with
+    match tok with
     | 0x000cs ->
-      let value = stream.ReadUInt32()
-      let (left, hours) = Math.DivRem(int(value), 24)
-      let (left, days) = Math.DivRem(left, 365)
-      let years = left - 5001
-      if years > 0 then
-        let date =
-          DateTime.MinValue
-            .AddYears(years)
-            .AddDays(float(days + 1))
-            .AddHours(float(hours))
-        ParaValue.Date(date)
-      else ParaValue.Number(float(value))
+      match stream.ReadUInt32() with
+      | HiddenDate(date) -> ParaValue.Date(date)
+      | TrueNumber(num) -> ParaValue.Number(float(num))
     | 0x0014s -> ParaValue.Number(stream.ReadInt32() |> float)
     | 0x000es -> ParaValue.Bool(stream.ReadByte() = 0x00uy)
     | 0x000fs | 0x0017s -> ParaValue.String(readString())
     | 0x000ds -> ParaValue.Number(stream.ReadSingle() |> float)
-    | 0x0003s -> ParaValue.Record(parseObject())
+    | 0x0003s ->
+      tok <- stream.ReadInt16()
+      match tok with
+      | 0x000cs ->
+        let first = ParaValue.Number(stream.ReadInt32() |> float)
+        tok <- stream.ReadInt16()
+        ParaValue.Array(parseArray first)
+      | 0x000fs | 0x0017s -> 
+        let first = ParaValue.String(readString())
+        tok <- stream.ReadInt16()
+        ParaValue.Array(parseArray first)
+      | x -> ParaValue.Record(parseObject x)
     | x -> failwith "Unrecognized type"
 
   member x.Parse (header:option<string>) =
@@ -245,7 +281,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | Some(txt) ->
       let (headerBuffer:char[]) = Array.zeroCreate txt.Length
       stream.Read(headerBuffer, 0, headerBuffer.Length) |> ignore
-      if new String(headerBuffer) <> txt then
+      if String(headerBuffer) <> txt then
         failwith "Expected header not encountered"
       ParaValue.Record(parseTopObject())
     | None -> ParaValue.Record(parseTopObject())
