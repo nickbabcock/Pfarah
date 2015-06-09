@@ -119,3 +119,11 @@ let ``binary parse float`` () =
   let stream = strm(data)
   let actual = ParaValue.LoadBinary(stream, dict([]), None)
   Assert.AreEqual(actual?ENG |> asFloat,  16.991, 0.01)
+
+[<Test>]
+let ``binary parse signed int`` () =
+  let lookup = dict([(0x2dc6s, "multiplayer_random_seed")])
+  let data =
+      [| 0xc6; 0x2d; 0x01; 0x00; 0x14; 0x00; 0x96; 0x00; 0x00; 0x00; |]
+  parse (strm data) lookup None
+  |> shouldEqual [| ("multiplayer_random_seed", ParaValue.Number 150.0) |]
