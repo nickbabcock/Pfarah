@@ -218,15 +218,15 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | 0x0003s -> OpenGroup()
     | x -> failwith "Unrecognized type"
 
-  let (|Id|Str|) byt =
-    match byt with
-    | 0x000fs | 0x0017s -> Str(readString())
-    | x -> Id(lookupId x)
+  let parseKey token =
+    match token with
+    | 0x000fs | 0x0017s -> readString()
+    | x -> lookupId x
 
   let rec parseTopObject () =
     let pairs = ResizeArray<_>()
     while stream.BaseStream.Position <> stream.BaseStream.Length do
-      let key = lookupId (stream.ReadInt16())
+      let key = parseKey (stream.ReadInt16())
       tok <- stream.ReadInt16()
       if tok <> 0x0001s then failwith "Expected equals token"
       tok <- stream.ReadInt16()
@@ -243,10 +243,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     tok <- stream.ReadInt16()
     
     while tok <> 0x0004s do
-      let key =
-        match tok with
-        | 0x000fs | 0x0017s -> readString()
-        | x -> lookupId x
+      let key = parseKey tok
       let equals = stream.ReadInt16()
       if equals <> 0x0001s then failwith "Expected equals token"
       tok <- stream.ReadInt16()

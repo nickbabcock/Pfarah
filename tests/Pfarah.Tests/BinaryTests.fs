@@ -110,3 +110,12 @@ let ``binary parse int array`` () =
                            ParaValue.Number 0.0
                            ParaValue.Number 0.0
                            ParaValue.Number 0.0 |])) |]
+
+[<Test>]
+let ``binary parse float`` () =
+  let data =
+      [| 0x0f; 0x00; 0x03; 0x00; 0x45; 0x4e; 0x47; 0x01; 0x00; 0x0d; 0x00; 0x91;
+         0xed; 0x87; 0x41 |]
+  let stream = strm(data)
+  let actual = ParaValue.LoadBinary(stream, dict([]), None)
+  Assert.AreEqual(actual?ENG |> asFloat,  16.991, 0.01)
