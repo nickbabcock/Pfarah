@@ -212,7 +212,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     match inp with
     | 0x000cs -> Uint(stream.ReadUInt32())
     | 0x0014s -> Int(stream.ReadInt32())
-    | 0x000es -> Bool(stream.ReadByte() = 0uy)
+    | 0x000es -> Bool(stream.ReadByte() <> 0uy)
     | 0x000fs | 0x0017s -> String(readString())
     | 0x000ds -> Float(stream.ReadSingle())
     | 0x0003s -> OpenGroup()
@@ -235,7 +235,11 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
 
   and parseObject firstKey =
     let pairs = ResizeArray<_>()
+
+    // Advance reader to the equals token
     tok <- stream.ReadInt16()
+
+    // Advance reader to the next token
     tok <- stream.ReadInt16()
 
     // TODO: first token is a string date
@@ -278,6 +282,10 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
         ParaValue.Array(parseArray first)
       | 0x000fs | 0x0017s -> 
         let first = ParaValue.String(readString())
+        tok <- stream.ReadInt16()
+        ParaValue.Array(parseArray first)
+      | 0x0003s ->
+        let first = ParaValue.Record(parseObject (stream.ReadInt16()))
         tok <- stream.ReadInt16()
         ParaValue.Array(parseArray first)
       | x -> ParaValue.Record(parseObject x)
