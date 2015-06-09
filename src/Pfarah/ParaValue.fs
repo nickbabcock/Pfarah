@@ -208,6 +208,16 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       HiddenDate(date)
     else TrueNumber(value)
 
+  let (|OpenGroup|String|Uint|Int|Float|Bool|) inp =
+    match inp with
+    | 0x000cs -> Uint(stream.ReadUInt32())
+    | 0x0014s -> Int(stream.ReadInt32())
+    | 0x000es -> Bool(stream.ReadByte() = 0uy)
+    | 0x000fs | 0x0017s -> String(readString())
+    | 0x000ds -> Float(stream.ReadSingle())
+    | 0x0003s -> OpenGroup()
+    | x -> failwith "Unrecognized type"
+
   let (|Id|Str|) byt =
     match byt with
     | 0x000fs | 0x0017s -> Str(readString())
@@ -254,15 +264,15 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
 
   and parseValue () =
     match tok with
-    | 0x000cs ->
-      match stream.ReadUInt32() with
+    | Uint(x) ->
+      match x with
       | HiddenDate(date) -> ParaValue.Date(date)
       | TrueNumber(num) -> ParaValue.Number(float(num))
-    | 0x0014s -> ParaValue.Number(stream.ReadInt32() |> float)
-    | 0x000es -> ParaValue.Bool(stream.ReadByte() = 0x00uy)
-    | 0x000fs | 0x0017s -> ParaValue.String(readString())
-    | 0x000ds -> ParaValue.Number(stream.ReadSingle() |> float)
-    | 0x0003s ->
+    | Int(x) -> ParaValue.Number(float(x))
+    | Bool(b) -> ParaValue.Bool(b)
+    | String(s) -> ParaValue.String(s)
+    | Float(f) -> ParaValue.Number(float(f))
+    | OpenGroup ->
       tok <- stream.ReadInt16()
       match tok with
       | 0x000cs ->
@@ -274,7 +284,6 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
         tok <- stream.ReadInt16()
         ParaValue.Array(parseArray first)
       | x -> ParaValue.Record(parseObject x)
-    | x -> failwith "Unrecognized type"
 
   member x.Parse (header:option<string>) =
     match header with
