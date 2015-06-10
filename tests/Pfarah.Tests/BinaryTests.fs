@@ -121,6 +121,15 @@ let ``binary parse float`` () =
   Assert.AreEqual(actual?ENG |> asFloat,  16.991, 0.01)
 
 [<Test>]
+let ``binary parse deceptive object`` () =
+  let lookup = dict([(0xdddds, "blah")])
+  let data =
+      [| 0xdd; 0xdd; 0x01; 0x00; 0x03; 0x00; 0x0f; 0x00; 0x03; 0x00; 0x45; 0x4e; 0x47;
+         0x01; 0x00; 0x0c; 0x00; 0x01; 0x00; 0x00; 0x00; 0x04; 0x00; |]
+  parse (strm data) lookup None
+  |> shouldEqual [| ("blah", ParaValue.Record([| ("ENG", ParaValue.Number 1.0) |])) |]
+
+[<Test>]
 let ``binary parse signed int`` () =
   let lookup = dict([(0x2dc6s, "multiplayer_random_seed")])
   let data =

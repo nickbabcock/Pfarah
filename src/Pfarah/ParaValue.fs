@@ -236,14 +236,11 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
   and parseObject firstKey =
     let pairs = ResizeArray<_>()
 
-    // Advance reader to the equals token
-    tok <- stream.ReadInt16()
-
     // Advance reader to the next token
     tok <- stream.ReadInt16()
 
     // TODO: first token is a string date
-    pairs.Add((lookupId firstKey, parseValue()))
+    pairs.Add((firstKey, parseValue()))
     tok <- stream.ReadInt16()
     
     while tok <> 0x0004s do
@@ -281,14 +278,22 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
         tok <- stream.ReadInt16()
         ParaValue.Array(parseArray first)
       | 0x000fs | 0x0017s -> 
-        let first = ParaValue.String(readString())
+        let first = readString()
         tok <- stream.ReadInt16()
-        ParaValue.Array(parseArray first)
+        if tok = 0x0001s then
+          ParaValue.Record(parseObject first)
+        else
+          ParaValue.Array(parseArray (ParaValue.String first))
       | 0x0003s ->
-        let first = ParaValue.Record(parseObject (stream.ReadInt16()))
+        let firstKey = lookupId (stream.ReadInt16())
+        tok <- stream.ReadInt16()
+        let first = ParaValue.Record(parseObject firstKey)
         tok <- stream.ReadInt16()
         ParaValue.Array(parseArray first)
-      | x -> ParaValue.Record(parseObject x)
+      | x ->
+        // Read through the equals token
+        tok <- stream.ReadInt16()
+        ParaValue.Record(parseObject (lookupId x))
 
   member x.Parse (header:option<string>) =
     match header with
