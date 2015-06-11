@@ -181,9 +181,36 @@ type private ParaParser (stream:StreamReader) =
       assert (stream.Peek() = 61)
       parseObject first (fun stream -> stream.EndOfStream)
 
+[<RequireQualifiedAccess>]
+type private BinaryToken =
+| String of string
+| Uint of uint32
+| Int of int32
+| Token of string
+| Float of float32
+| Bool of bool
+| OpenGroup
+| EndGroup
+| Equals
+with
+  override this.ToString() =
+    match this with
+    | String(x) -> sprintf "String: %s" x
+    | Uint(x) -> sprintf "Uint: %d" x
+    | Int(x) -> sprintf "Int: %d" x
+    | Token(x) -> sprintf "Token: %s" x
+    | Float(x) -> sprintf "Float: %f" x
+    | Bool(x) -> sprintf "Bool: %b" x
+    | OpenGroup -> sprintf "Open Group"
+    | EndGroup -> sprintf "End Group"
+    | Equals -> sprintf "Equals"
+
 type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, string>) =
 
-  let mutable tok = 0s
+  let mutable tok = BinaryToken.Token("")
+
+  /// Reads a string from the stream, which is two octets of length followed
+  /// by windows 1252 encoded characters.
   let readString () = String(stream.ReadChars(stream.ReadUInt16() |> int))
 
   /// Looks up the human friendly name for an id. If the name does not exist,
@@ -211,28 +238,38 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       Some(date)
     else None
 
-  let (|OpenGroup|String|Uint|Int|Float|Bool|) inp =
-    match inp with
-    | 0x000cs -> Uint(stream.ReadUInt32())
-    | 0x0014s -> Int(stream.ReadInt32())
-    | 0x000es -> Bool(stream.ReadByte() <> 0uy)
-    | 0x000fs | 0x0017s -> String(readString())
-    | 0x000ds -> Float(stream.ReadSingle())
-    | 0x0003s -> OpenGroup()
-    | x -> failwith "Unrecognized type"
-
-  let parseKey token =
+  let parseToken token =
     match token with
-    | 0x000fs | 0x0017s -> readString()
-    | x -> lookupId x
+    | 0x000cs -> BinaryToken.Uint(stream.ReadUInt32())
+    | 0x0014s -> BinaryToken.Int(stream.ReadInt32())
+    | 0x000es -> BinaryToken.Bool(stream.ReadByte() <> 0uy)
+    | 0x000fs | 0x0017s -> BinaryToken.String(readString())
+    | 0x000ds -> BinaryToken.Float(stream.ReadSingle())
+    | 0x0003s -> BinaryToken.OpenGroup
+    | 0x0004s -> BinaryToken.EndGroup
+    | 0x0001s -> BinaryToken.Equals
+    | x -> BinaryToken.Token(lookupId x)
+
+  let endGroup = function | BinaryToken.EndGroup -> true | _ -> false
+  let ensureEquals =
+    function
+    | BinaryToken.Equals -> ()
+    | x -> failwithf "Expected equals, but got: %s" (x.ToString())
+
+  let ensureIdentifier =
+    function
+    | BinaryToken.String(x) -> x
+    | BinaryToken.Token(x) -> x
+    | x -> failwithf "Expected identifier, but got %s" (x.ToString())
+
+  let nextToken () = tok <- parseToken (stream.ReadInt16()); tok
 
   let rec parseTopObject () =
     let pairs = ResizeArray<_>()
     while stream.BaseStream.Position <> stream.BaseStream.Length do
-      let key = parseKey (stream.ReadInt16())
-      tok <- stream.ReadInt16()
-      if tok <> 0x0001s then failwith "Expected equals token"
-      tok <- stream.ReadInt16()
+      let key = nextToken() |> ensureIdentifier
+      nextToken() |> ensureEquals 
+      nextToken() |> ignore
       pairs.Add((key, parseValue()))
     pairs.ToArray()
 
@@ -240,62 +277,74 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     let pairs = ResizeArray<_>()
 
     // Advance reader to the next token
-    tok <- stream.ReadInt16()
+    nextToken() |> ignore
 
     pairs.Add((firstKey, parseValue()))
-    tok <- stream.ReadInt16()
+    nextToken() |> ignore
     
-    while tok <> 0x0004s do
-      let key = parseKey tok
-      let equals = stream.ReadInt16()
-      if equals <> 0x0001s then failwith "Expected equals token"
-      tok <- stream.ReadInt16()
+    while not (endGroup tok) do
+      let key = tok |> ensureIdentifier
+      nextToken() |> ensureEquals
+      nextToken() |> ignore
       pairs.Add((key, parseValue()))
-      tok <- stream.ReadInt16()
+      nextToken() |> ignore
     pairs.ToArray()
 
-  and parseArray first =
+  and parseArrayFirst first =
     let values = ResizeArray<_>()
     values.Add(first)
-    while tok <> 0x0004s do
+    parseArray(values)
+
+  and parseArray (values:ResizeArray<_>) =
+    while not (endGroup tok) do
       values.Add(parseValue())
-      tok <- stream.ReadInt16()
+      nextToken() |> ignore
     values.ToArray()
 
   and parseValue () =
     match tok with
-    | Uint(x) ->
+    | BinaryToken.Uint(x) ->
       match x with
       | HiddenDate(date) -> ParaValue.Date(date)
       | num -> ParaValue.Number(float(num))
-    | Int(x) -> ParaValue.Number(float(x))
-    | Bool(b) -> ParaValue.Bool(b)
-    | String(s) -> ParaValue.String(s)
-    | Float(f) -> ParaValue.Number(float(f))
-    | OpenGroup ->
-      tok <- stream.ReadInt16()
-      match tok with
-      | 0x000cs ->
-        let first = ParaValue.Number(stream.ReadInt32() |> float)
-        tok <- stream.ReadInt16()
-        ParaValue.Array(parseArray first)
-      | 0x000fs | 0x0017s -> 
-        let first = readString()
-        tok <- stream.ReadInt16()
-        if tok = 0x0001s then
-          ParaValue.Record(parseObject first)
-        else
-          ParaValue.Array(parseArray (ParaValue.String first))
-      | 0x0003s ->
-        let firstKey = lookupId (stream.ReadInt16())
-        tok <- stream.ReadInt16()
-        let first = ParaValue.Record(parseObject firstKey)
-        tok <- stream.ReadInt16()
-        ParaValue.Array(parseArray first)
-      | x ->
-        // Read through the equals token
-        tok <- stream.ReadInt16()
-        ParaValue.Record(parseObject (lookupId x))
+    | BinaryToken.Int(x) -> ParaValue.Number(float(x))
+    | BinaryToken.Bool(b) -> ParaValue.Bool(b)
+    | BinaryToken.String(s) -> ParaValue.String(s)
+    | BinaryToken.Float(f) -> ParaValue.Number(float(f))
+    | BinaryToken.OpenGroup -> parseSubgroup()
+    | x -> failwithf "Unexpected token %s" (x.ToString())
+
+  and parseSubgroup () =
+    match (nextToken()) with
+    | BinaryToken.Int(x) ->
+      nextToken() |> ignore
+      ParaValue.Array(parseArrayFirst (ParaValue.Number(float(x))))
+    | BinaryToken.Uint(x) ->
+      nextToken() |> ignore
+      ParaValue.Array(parseArrayFirst (ParaValue.Number(float(x))))
+    | BinaryToken.String(x) -> stringSubgroup()
+    | BinaryToken.OpenGroup ->
+      let firstKey = nextToken() |> ensureIdentifier
+      nextToken() |> ensureEquals
+      let first = ParaValue.Record(parseObject firstKey)
+      nextToken() |> ignore
+      ParaValue.Array(parseArrayFirst first)
+    | BinaryToken.Token(x) ->
+      nextToken() |> ensureEquals
+      ParaValue.Record(parseObject x)
+    | x -> failwithf "Unexpected token %s" (x.ToString())    
+
+  and stringSubgroup () =
+    match (nextToken()) with
+    | BinaryToken.Equals -> ParaValue.Record(parseObject x)
+    | BinaryToken.String(s) ->
+      let values = ResizeArray<_>()
+      values.Add(ParaValue.String x)
+      values.Add(ParaValue.String s)
+      nextToken() |> ignore
+      ParaValue.Array(parseArray values)
+    | BinaryToken.EndGroup -> ParaValue.Array([| ParaValue.String(x) |])
+    | x -> failwithf "Unexpected token: %s" (x.ToString())
 
   member x.Parse (header:option<string>) =
     match header with
