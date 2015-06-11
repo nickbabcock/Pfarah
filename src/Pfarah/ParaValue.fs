@@ -195,7 +195,10 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       | (false, _) -> id.ToString()
       | (true, x) -> x
 
-  let (|HiddenDate|TrueNumber|) value =
+  /// An integer may be a date. This active pattern attempts to detect such
+  /// occurrences, though it doesn't gurantee 100% accuracy, as numbers larger
+  /// than 43,808,760 will be detected as dates.
+  let (|HiddenDate|_|) value =
     let (left, hours) = Math.DivRem(int(value), 24)
     let (left, days) = Math.DivRem(left, 365)
     let years = left - 5001
@@ -205,8 +208,8 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
           .AddYears(years)
           .AddDays(float(days + 1))
           .AddHours(float(hours))
-      HiddenDate(date)
-    else TrueNumber(value)
+      Some(date)
+    else None
 
   let (|OpenGroup|String|Uint|Int|Float|Bool|) inp =
     match inp with
@@ -239,7 +242,6 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     // Advance reader to the next token
     tok <- stream.ReadInt16()
 
-    // TODO: first token is a string date
     pairs.Add((firstKey, parseValue()))
     tok <- stream.ReadInt16()
     
@@ -265,7 +267,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | Uint(x) ->
       match x with
       | HiddenDate(date) -> ParaValue.Date(date)
-      | TrueNumber(num) -> ParaValue.Number(float(num))
+      | num -> ParaValue.Number(float(num))
     | Int(x) -> ParaValue.Number(float(x))
     | Bool(b) -> ParaValue.Bool(b)
     | String(s) -> ParaValue.String(s)
