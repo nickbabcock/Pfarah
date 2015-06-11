@@ -322,7 +322,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | BinaryToken.Uint(x) ->
       nextToken() |> ignore
       ParaValue.Array(parseArrayFirst (ParaValue.Number(float(x))))
-    | BinaryToken.String(x) -> stringSubgroup()
+    | BinaryToken.String(x) -> stringSubgroup x
     | BinaryToken.OpenGroup ->
       let firstKey = nextToken() |> ensureIdentifier
       nextToken() |> ensureEquals
@@ -334,16 +334,16 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       ParaValue.Record(parseObject x)
     | x -> failwithf "Unexpected token %s" (x.ToString())    
 
-  and stringSubgroup () =
+  and stringSubgroup first =
     match (nextToken()) with
-    | BinaryToken.Equals -> ParaValue.Record(parseObject x)
+    | BinaryToken.Equals -> ParaValue.Record(parseObject first)
     | BinaryToken.String(s) ->
       let values = ResizeArray<_>()
-      values.Add(ParaValue.String x)
+      values.Add(ParaValue.String first)
       values.Add(ParaValue.String s)
       nextToken() |> ignore
       ParaValue.Array(parseArray values)
-    | BinaryToken.EndGroup -> ParaValue.Array([| ParaValue.String(x) |])
+    | BinaryToken.EndGroup -> ParaValue.Array([| ParaValue.String(first) |])
     | x -> failwithf "Unexpected token: %s" (x.ToString())
 
   member x.Parse (header:option<string>) =

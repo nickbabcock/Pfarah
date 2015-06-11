@@ -88,6 +88,17 @@ let ``binary parse string array`` () =
                            ParaValue.String "Wealth of Nations" |]))|]
 
 [<Test>]
+let ``binary parse single string array`` () =
+  let lookup = dict([(0x2ee1s, "dlc_enabled")])
+  let data =
+    [| 0xe1; 0x2e; 0x01; 0x00; 0x03; 0x00; 0x0f; 0x00; 0x0a; 0x00; 0x41; 0x72; 0x74;
+      0x20; 0x6f; 0x66; 0x20; 0x57; 0x61; 0x72; 0x04; 0x00; |]
+  parse (strm data) lookup None
+  |> shouldEqual
+    [|("dlc_enabled", 
+        ParaValue.Array([| ParaValue.String "Art of War" |]))|]
+
+[<Test>]
 let ``binary parse int array`` () =
   let lookup = dict([(0x2c99s, "setgameplayoptions")])
   let data =
