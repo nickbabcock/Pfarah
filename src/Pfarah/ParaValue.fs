@@ -269,6 +269,11 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
   /// Advances the stream to the next token and returns the token
   let nextToken () = tok <- parseToken (stream.ReadInt16()); tok
 
+  let toPara value =
+    match value with
+    | HiddenDate(date) -> ParaValue.Date(date)
+    | num -> ParaValue.Number(float(num))
+
   let rec parseTopObject () =
     let pairs = ResizeArray<_>()
     while stream.BaseStream.Position <> stream.BaseStream.Length do
@@ -308,10 +313,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
   /// Transforms current token into a ParaValue
   and parseValue () =
     match tok with
-    | BinaryToken.Uint(x) ->
-      match x with
-      | HiddenDate(date) -> ParaValue.Date(date)
-      | num -> ParaValue.Number(float(num))
+    | BinaryToken.Uint(x) -> toPara x
     | BinaryToken.Int(x) -> ParaValue.Number(float(x))
     | BinaryToken.Bool(b) -> ParaValue.Bool(b)
     | BinaryToken.String(s) -> ParaValue.String(s)
@@ -328,7 +330,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       ParaValue.Array(parseArrayFirst (ParaValue.Number(float(x))))
     | BinaryToken.Uint(x) ->
       nextToken() |> ignore
-      ParaValue.Array(parseArrayFirst (ParaValue.Number(float(x))))
+      ParaValue.Array(parseArrayFirst (toPara x))
     | BinaryToken.String(x) -> stringSubgroup x
     | BinaryToken.OpenGroup ->
       let firstKey = nextToken() |> ensureIdentifier

@@ -133,6 +133,15 @@ let ``binary parse int array`` () =
                            ParaValue.Number 0.0 |])) |]
 
 [<Test>]
+let ``binary parse date array`` () =
+  let lookup = dict([(0xdddds, "blah")])
+  let data =
+    [| 0xdd; 0xdd; 0x01; 0x00; 0x03; 0x00; 0x0c; 0x00; 0x10; 0x77; 0x5d; 0x03;
+       0x04; 0x00|]
+  parse (strm data) lookup None
+  |> shouldEqual [| ("blah", ParaValue.Array([| ParaValue.Date(DateTime(1444, 11, 11)) |])) |]
+
+[<Test>]
 let ``binary parse float`` () =
   let data =
       [| 0x0f; 0x00; 0x03; 0x00; 0x45; 0x4e; 0x47; 0x01; 0x00; 0x0d; 0x00; 0x91;
