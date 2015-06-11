@@ -250,18 +250,23 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | 0x0001s -> BinaryToken.Equals
     | x -> BinaryToken.Token(lookupId x)
 
+  /// Returns whether a given token is an EndGroup
   let endGroup = function | BinaryToken.EndGroup -> true | _ -> false
+
+  /// If the given token is not an Equals throw an exception
   let ensureEquals =
     function
     | BinaryToken.Equals -> ()
     | x -> failwithf "Expected equals, but got: %s" (x.ToString())
 
+  /// If the given token can't be used as an identifier, throw an exception
   let ensureIdentifier =
     function
     | BinaryToken.String(x) -> x
     | BinaryToken.Token(x) -> x
     | x -> failwithf "Expected identifier, but got %s" (x.ToString())
 
+  /// Advances the stream to the next token and returns the token
   let nextToken () = tok <- parseToken (stream.ReadInt16()); tok
 
   let rec parseTopObject () =
@@ -278,7 +283,6 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
 
     // Advance reader to the next token
     nextToken() |> ignore
-
     pairs.Add((firstKey, parseValue()))
     nextToken() |> ignore
     
@@ -301,6 +305,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       nextToken() |> ignore
     values.ToArray()
 
+  /// Transforms current token into a ParaValue
   and parseValue () =
     match tok with
     | BinaryToken.Uint(x) ->
@@ -314,6 +319,8 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | BinaryToken.OpenGroup -> parseSubgroup()
     | x -> failwithf "Unexpected token %s" (x.ToString())
 
+  /// Determines what type of object follows an OpenGroup token -- an array or
+  /// object.
   and parseSubgroup () =
     match (nextToken()) with
     | BinaryToken.Int(x) ->
@@ -334,6 +341,9 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       ParaValue.Record(parseObject x)
     | x -> failwithf "Unexpected token %s" (x.ToString())    
 
+  /// If the first token at the start of an object is a string then we are
+  /// looking at an object or an array. This function will which of these
+  /// options it is and return it
   and stringSubgroup first =
     match (nextToken()) with
     | BinaryToken.Equals -> ParaValue.Record(parseObject first)
