@@ -331,6 +331,9 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | BinaryToken.Uint(x) ->
       nextToken() |> ignore
       ParaValue.Array(parseArrayFirst (toPara x))
+    | BinaryToken.Float(x) ->
+      nextToken() |> ignore
+      ParaValue.Array(parseArrayFirst (ParaValue.Number(float(x))))
     | BinaryToken.String(x) -> stringSubgroup x
     | BinaryToken.OpenGroup ->
       let firstKey = nextToken() |> ensureIdentifier

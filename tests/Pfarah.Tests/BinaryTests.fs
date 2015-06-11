@@ -160,6 +160,16 @@ let ``binary parse float`` () =
   Assert.AreEqual(actual?ENG |> asFloat,  16.991, 0.01)
 
 [<Test>]
+let ``binary parse float array`` () =
+  let data =
+      [| 0x0f; 0x00; 0x03; 0x00; 0x45; 0x4e; 0x47; 0x01; 0x00; 0x03; 0x00;
+         0x0d; 0x00; 0xb6; 0xb3; 0x9c; 0x42; 0x04; 0x00 |]
+  let actual = ParaValue.LoadBinary(strm(data), dict([]), None)
+  let arr = actual?ENG |> asArray
+  let value = arr.[0] |> asFloat
+  Assert.AreEqual(value, 78.351, 0.01)
+
+[<Test>]
 let ``binary parse deceptive object`` () =
   let lookup = dict([(0xdddds, "blah")])
   let data =
