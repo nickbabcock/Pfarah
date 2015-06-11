@@ -28,6 +28,16 @@ let ``binary parse basic string`` () =
   parse stream lookup None
   |> shouldEqual [| ("player", ParaValue.String "ENG") |]
 
+[<Test>]
+let ``binary top level multiple properties`` () =
+  let lookup = dict([(0x284ds, "date"); (0x2a38s, "player")])
+  let data =
+    [| 0x4d; 0x28; 0x01; 0x00; 0x0c; 0x00; 0x10; 0x77; 0x5d; 0x03;
+       0x38; 0x2a; 0x01; 0x00; 0x0f; 0x00; 0x03; 0x00; 0x45; 0x4e; 0x47|]
+  parse (strm data) lookup None
+  |> shouldEqual
+    [| ("date", ParaValue.Date(DateTime(1444, 11, 11)))
+       ("player", ParaValue.String "ENG") |]
 
 [<Test>]
 let ``binary parse basic date with header`` () =
