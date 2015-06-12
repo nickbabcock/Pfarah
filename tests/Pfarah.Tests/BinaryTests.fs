@@ -187,6 +187,14 @@ let ``binary parse signed int`` () =
   |> shouldEqual [| ("multiplayer_random_seed", ParaValue.Number 150.0) |]
 
 [<Test>]
+let ``binary parse empty array`` () =
+  let lookup = dict([(0x2dc6s, "multiplayer_random_seed")])
+  let data =
+      [| 0xc6; 0x2d; 0x01; 0x00; 0x03; 0x00; 0x04; 0x00 |]
+  parse (strm data) lookup None
+  |> shouldEqual [| ("multiplayer_random_seed", ParaValue.Array [| |]) |]
+
+[<Test>]
 let ``binary parse object array`` () =
   let lookup = dict([(0x3088s, "army_templates")
                      (0x001bs, "name")
