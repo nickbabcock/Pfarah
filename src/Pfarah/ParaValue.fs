@@ -319,7 +319,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | BinaryToken.String(s) -> ParaValue.String(s)
     | BinaryToken.Float(f) -> ParaValue.Number(float(f))
     | BinaryToken.OpenGroup -> parseSubgroup()
-    | x -> failwithf "Unexpected token %s" (x.ToString())
+    | x -> failwithf "Unexpected token: %s" (x.ToString())
 
   /// Determines what type of object follows an OpenGroup token -- an array or
   /// object.

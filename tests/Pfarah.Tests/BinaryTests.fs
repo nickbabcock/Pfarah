@@ -52,16 +52,21 @@ let ``binary parse header failure`` () =
   let lookup = dict([(0x284ds, "date")])
   let stream = strm([|0x44; 0x55; 0x34; 0x62; 0x69; 0x6e; 0x4d; 0x28;
                       0x01; 0x00; 0x0c; 0x00; 0x10; 0x77; 0x5d; 0x03|])
-  Assert.Throws((fun () ->
-    ParaValue.LoadBinary(stream, lookup, (Some("EU4bin"))) |> ignore),
-    "Expected header not encountered") |> ignore
+  let ex = Assert.Throws(fun () ->
+    ParaValue.LoadBinary(stream, lookup, (Some("EU4bin"))) |> ignore)
+  ex.Message |> shouldEqual "Expected header not encountered"
 
 [<Test>]
 let ``binary parse object without equals fail`` () =
   let data = [| 0xdd; 0xdd; 0x03; 0x00 |]
-  Assert.Throws((fun () ->
-    ParaValue.LoadBinary((strm data), dict([]), None) |> ignore),
-    "Expected equals, but got: Open Group") |> ignore
+  let ex = Assert.Throws(fun () -> ParaValue.LoadBinary((strm data), dict([]), None) |> ignore)
+  ex.Message |> shouldEqual "Expected equals, but got: Open Group"
+
+[<Test>]
+let ``binary parse object invalid equals token`` () =
+  let data = [| 0xdd; 0xdd; 0x01; 0x00; 0x01; 0x00 |]
+  let ex = Assert.Throws(fun () -> ParaValue.LoadBinary((strm data), dict([]), None) |> ignore)
+  ex.Message |> shouldEqual "Unexpected token: Equals"
 
 [<Test>]
 let ``binary parse nested object`` () =
