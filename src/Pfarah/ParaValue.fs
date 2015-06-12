@@ -20,7 +20,7 @@ type private ParaParser (stream:StreamReader) =
   /// The max token size of any string, as defined by paradox internal source
   /// code is 256
   let (stringBuffer:char[]) = Array.zeroCreate 256
-   
+
   /// Mutable variable to let us know how much of the string buffer is filled
   let mutable stringBufferCount = 0
 
@@ -45,7 +45,7 @@ type private ParaParser (stream:StreamReader) =
   let rec parseValue () =
     match stream.Peek() with
     | 34 -> parseQuotes()
-    | 123 -> 
+    | 123 ->
       // Read through '{'
       stream.Read() |> ignore
       let result = parseContainer()
@@ -60,7 +60,7 @@ type private ParaParser (stream:StreamReader) =
     let mutable isDone = false
     while not isDone do
       let next = stream.Peek()
-      
+
       // We are done reading the current string if we hit whitespace an equal
       // sign, the end of a buffer, or a left curly (end of an object/list)
       isDone <- isspace next || next = 61 || next = -1 || next = 125
@@ -113,7 +113,7 @@ type private ParaParser (stream:StreamReader) =
   and parseContainer () =
     skipWhitespace stream
     match (stream.Peek()) with
-    
+
     // Encountering a '}' means an empty object
     | 125 -> ParaValue.Record ([||])
 
@@ -278,7 +278,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     let pairs = ResizeArray<_>()
     while stream.BaseStream.Position <> stream.BaseStream.Length do
       let key = nextToken() |> ensureIdentifier
-      nextToken() |> ensureEquals 
+      nextToken() |> ensureEquals
       nextToken() |> ignore
       pairs.Add((key, parseValue()))
     pairs.ToArray()
@@ -290,7 +290,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     nextToken() |> ignore
     pairs.Add((firstKey, parseValue()))
     nextToken() |> ignore
-    
+
     while not (endGroup tok) do
       let key = tok |> ensureIdentifier
       nextToken() |> ensureEquals
@@ -345,7 +345,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       nextToken() |> ensureEquals
       ParaValue.Record(parseObject x)
     | BinaryToken.EndGroup -> ParaValue.Array [| |]
-    | x -> failwithf "Unexpected token %s" (x.ToString())    
+    | x -> failwithf "Unexpected token %s" (x.ToString())
 
   /// If the first token at the start of an object is a string then we are
   /// looking at an object or an array. This function will which of these

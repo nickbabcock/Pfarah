@@ -7,7 +7,7 @@ open NUnit.Framework
 
 let shouldEqual (x : 'a) (y : 'a) = Assert.AreEqual(x, y, sprintf "Expected: %A\nActual: %A" x y)
 
-let parse str lookup header = 
+let parse str lookup header =
   match (ParaValue.LoadBinary(str, lookup, header)) with
   | ParaValue.Record properties -> properties
   | _ -> failwith "Expected a record"
@@ -57,6 +57,13 @@ let ``binary parse header failure`` () =
     "Expected header not encountered") |> ignore
 
 [<Test>]
+let ``binary parse object without equals fail`` () =
+  let data = [| 0xdd; 0xdd; 0x03; 0x00 |]
+  Assert.Throws((fun () ->
+    ParaValue.LoadBinary((strm data), dict([]), None) |> ignore),
+    "Expected equals, but got: Open Group") |> ignore
+
+[<Test>]
 let ``binary parse nested object`` () =
   let lookup = dict([(0x2ec9s, "savegame_version")
                      (0x28e2s, "first")
@@ -90,7 +97,7 @@ let ``binary parse string array`` () =
       0x6e; 0x73; 0x04; 0x00; |]
   parse (strm data) lookup None
   |> shouldEqual
-    [|("dlc_enabled", 
+    [|("dlc_enabled",
         ParaValue.Array([| ParaValue.String "Art of War"
                            ParaValue.String "Conquest of Paradise"
                            ParaValue.String "Res Publica"
@@ -104,7 +111,7 @@ let ``binary parse single string array`` () =
       0x20; 0x6f; 0x66; 0x20; 0x57; 0x61; 0x72; 0x04; 0x00; |]
   parse (strm data) lookup None
   |> shouldEqual
-    [|("dlc_enabled", 
+    [|("dlc_enabled",
         ParaValue.Array([| ParaValue.String "Art of War" |]))|]
 
 [<Test>]
