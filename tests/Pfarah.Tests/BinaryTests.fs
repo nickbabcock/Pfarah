@@ -69,6 +69,12 @@ let ``binary parse object invalid equals token`` () =
   ex.Message |> shouldEqual "Unexpected token: Equals"
 
 [<Test>]
+let ``binary parse subgroup unexpected equals token`` () =
+  let data = [| 0xdd; 0xdd; 0x01; 0x00; 0x03; 0x00; 0x01; 0x00 |]
+  let ex = Assert.Throws(fun () -> ParaValue.LoadBinary((strm data), dict([]), None) |> ignore)
+  ex.Message |> shouldEqual "Unexpected token: Equals"
+
+[<Test>]
 let ``binary parse nested object`` () =
   let lookup = dict([(0x2ec9s, "savegame_version")
                      (0x28e2s, "first")

@@ -345,7 +345,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       nextToken() |> ensureEquals
       ParaValue.Record(parseObject x)
     | BinaryToken.EndGroup -> ParaValue.Array [| |]
-    | x -> failwithf "Unexpected token %s" (x.ToString())
+    | x -> failwithf "Unexpected token: %s" (x.ToString())
 
   /// If the first token at the start of an object is a string then we are
   /// looking at an object or an array. This function will which of these
