@@ -120,6 +120,12 @@ Target "Build" (fun _ ->
     |> ignore
 )
 
+Target "DebugBuild" (fun _ ->
+    !! solutionFile
+    |> MSBuildDebug "" "Rebuild"
+    |> ignore
+)
+
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner
 
@@ -354,16 +360,13 @@ Target "All" DoNothing
   ==> "AssemblyInfo"
   ==> "Build"
   ==> "RunTests"
-#if MONO
-#else
-  ==> "Coverage"
-#endif
   =?> ("GenerateReferenceDocs",isLocalBuild)
   =?> ("GenerateDocs",isLocalBuild)
   ==> "All"
   =?> ("ReleaseDocs",isLocalBuild)
 
-"Coverage"
+"DebugBuild"
+  ==> "Coverage"
   =?> ("CoverageReport",isLocalBuild)
 
 "All" 
