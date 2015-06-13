@@ -323,6 +323,26 @@ Target "Release" (fun _ ->
     |> Async.RunSynchronously
 )
 
+Target "Coverage" (fun _ ->
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- ("packages/OpenCover/OpenCover.Console.exe")
+            info.Arguments <- "-target:\"packages/NUnit.Runners/tools/nunit-console.exe\" " +
+                              "-targetargs:\"/nologo /noshadow tests/Pfarah.Tests/bin/Debug/Pfarah.Tests.dll\" " +
+                              "filter:\"+[Pfarah]Pfarah\" -register:user -output:coverage.xml"
+        ) (System.TimeSpan.FromMinutes 5.)
+    if result <> 0 then failwith "Coverage failed"
+)
+
+Target "CoverageReport" (fun _ ->
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- ("packages/ReportGenerator/ReportGenerator.exe")
+            info.Arguments <- "-reports:coverage.xml -reporttype:Html -targetdir:report"
+        ) (System.TimeSpan.FromMinutes 5.)
+    if result <> 0 then failwith "Coverage Report failed"
+)
+
 Target "BuildPackage" DoNothing
 
 // --------------------------------------------------------------------------------------
@@ -334,10 +354,17 @@ Target "All" DoNothing
   ==> "AssemblyInfo"
   ==> "Build"
   ==> "RunTests"
+#if MONO
+#else
+  ==> "Coverage"
+#endif
   =?> ("GenerateReferenceDocs",isLocalBuild)
   =?> ("GenerateDocs",isLocalBuild)
   ==> "All"
   =?> ("ReleaseDocs",isLocalBuild)
+
+"Coverage"
+  =?> ("CoverageReport",isLocalBuild)
 
 "All" 
 #if MONO
