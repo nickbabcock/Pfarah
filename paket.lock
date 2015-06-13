@@ -1,6 +1,7 @@
 NUGET
   remote: https://nuget.org/api/v2
   specs:
+    coveralls.net (0.5.0)
     FAKE (3.17.13)
     FSharp.Compiler.Service (0.0.82)
     FSharp.Formatting (2.7.4)

@@ -7,5 +7,6 @@ nuget FAKE
 nuget OpenCover
 nuget ReportGenerator
 nuget SourceLink.Fake
+nuget coveralls.net
 
 github fsharp/FAKE modules/Octokit/Octokit.fsx
