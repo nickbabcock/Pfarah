@@ -6,7 +6,8 @@ environment:
 build_script:
   - cmd: build.cmd
   - cmd: build.cmd Coverage
-  - cmd: packages\coveralls.net\csmacnz.Coveralls.exe --opencover -i coverage.xml --repoToken $env:COVERALLS_REPO_TOKEN
+  - cmd: set
+  - cmd: packages\coveralls.net\csmacnz.Coveralls.exe --opencover -i coverage.xml --repoToken %COVERALLS_REPO_TOKEN% --useRelativePaths --commitId %APPVEYOR_REPO_COMMIT% --commitBranch "%APPVEYOR_REPO_BRANCH%" --commitAuthor "%APPVEYOR_REPO_COMMIT_AUTHOR%" --commitEmail %APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL% --commitMessage "%APPVEYOR_REPO_COMMIT_MESSAGE%" --jobId %APPVEYOR_JOB_ID%
 test: off
 version: 0.0.1.{build}
 artifacts:
