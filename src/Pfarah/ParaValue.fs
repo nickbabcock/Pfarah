@@ -269,6 +269,16 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
   /// Advances the stream to the next token and returns the token
   let nextToken () = tok <- parseToken (stream.ReadInt16()); tok
 
+  /// Occasionally there are isolated "{}" without identifiers. I believe these
+  /// to be useless, so this function will skip instances.
+  let skipEmptyObjects () =
+    match tok with
+    | BinaryToken.OpenGroup ->
+      match (nextToken()) with
+      | BinaryToken.EndGroup -> nextToken() |> ignore
+      | x -> failwithf "Nested empty object, expected: %s" (x.ToString())
+    | _ -> ()
+
   let toPara value =
     match value with
     | HiddenDate(date) -> ParaValue.Date(date)
@@ -281,6 +291,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       nextToken() |> ensureEquals
       nextToken() |> ignore
       pairs.Add((key, parseValue()))
+      skipEmptyObjects()
     pairs.ToArray()
 
   and parseObject firstKey =
@@ -290,6 +301,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     nextToken() |> ignore
     pairs.Add((firstKey, parseValue()))
     nextToken() |> ignore
+    skipEmptyObjects()
 
     while not (endGroup tok) do
       let key = tok |> ensureIdentifier
@@ -297,6 +309,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       nextToken() |> ignore
       pairs.Add((key, parseValue()))
       nextToken() |> ignore
+      skipEmptyObjects()
     pairs.ToArray()
 
   and parseArrayFirst first =
