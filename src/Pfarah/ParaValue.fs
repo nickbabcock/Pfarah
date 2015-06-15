@@ -276,7 +276,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | BinaryToken.OpenGroup ->
       match (nextToken()) with
       | BinaryToken.EndGroup -> nextToken() |> ignore
-      | x -> failwithf "Nested empty object, expected: %s" (x.ToString())
+      | x -> failwithf "Expected empty object, but got: %s" (x.ToString())
     | _ -> ()
 
   let toPara value =
