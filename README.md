@@ -1,5 +1,6 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/a0qpxxhfs7uagk9x/branch/master?svg=true)](https://ci.appveyor.com/project/nickbabcock/pfarah/branch/master)
 [![Build status](https://travis-ci.org/nickbabcock/Pfarah.svg?branch=master)](https://travis-ci.org/nickbabcock/Pfarah)
+[![Coverage Status](https://coveralls.io/repos/nickbabcock/Pfarah/badge.svg)](https://coveralls.io/r/nickbabcock/Pfarah)
 
 # Pfarah
 

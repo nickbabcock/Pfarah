@@ -1,8 +1,12 @@
 init:
   - git config --global core.autocrlf input
+environment:
+  COVERALLS_REPO_TOKEN:
+    secure: 1dnzq+xYoQT5eCrmH7IE/npTL0kpQ3IyeMYSWK1NvVuAXX6NNbhvO5eP1SCr7q/X
 build_script:
   - cmd: build.cmd
   - cmd: build.cmd Coverage
+  - cmd: packages\coveralls.net\csmacnz.Coveralls.exe --opencover -i coverage.xml --repoToken $env:COVERALLS_REPO_TOKEN
 test: off
 version: 0.0.1.{build}
 artifacts:
