@@ -213,6 +213,9 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
   /// by windows 1252 encoded characters.
   let readString () = String(stream.ReadChars(stream.ReadUInt16() |> int))
 
+  /// throws an exception with stream byte position for easier debugging
+  let fail str = failwithf "%s, Position %d" str stream.BaseStream.Position
+
   /// Looks up the human friendly name for an id. If the name does not exist,
   /// use the id's string value as a substitute. Don't error out because it is
   /// unreasonable for the client to know all ids that exist and will ever
@@ -256,13 +259,13 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
   /// If the given token is not an Equals throw an exception
   let ensureEquals = function
     | BinaryToken.Equals -> ()
-    | x -> failwithf "Expected equals, but got: %s" (x.ToString())
+    | x -> sprintf "Expected equals, but got: %s" (x.ToString()) |> fail
 
   /// If the given token can't be used as an identifier, throw an exception
   let ensureIdentifier = function
     | BinaryToken.String(x) -> x
     | BinaryToken.Token(x) -> x
-    | x -> failwithf "Expected identifier, but got %s" (x.ToString())
+    | x -> sprintf "Expected identifier, but got %s" (x.ToString()) |> fail
 
   /// Advances the stream to the next token and returns the token
   let nextToken () = tok <- parseToken (stream.ReadInt16()); tok
@@ -274,7 +277,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | BinaryToken.OpenGroup ->
       match (nextToken()) with
       | BinaryToken.EndGroup -> nextToken() |> ignore
-      | x -> failwithf "Expected empty object, but got: %s" (x.ToString())
+      | x -> sprintf "Expected empty object, but got: %s" (x.ToString()) |> fail
     | _ -> ()
 
   let toPara value =
@@ -330,7 +333,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | BinaryToken.String(s) -> ParaValue.String(s)
     | BinaryToken.Float(f) -> ParaValue.Number(float(f))
     | BinaryToken.OpenGroup -> parseSubgroup()
-    | x -> failwithf "Unexpected token: %s" (x.ToString())
+    | x -> sprintf "Unexpected token: %s" (x.ToString()) |> fail
 
   /// Determines what type of object follows an OpenGroup token -- an array or
   /// object.
@@ -356,7 +359,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       nextToken() |> ensureEquals
       ParaValue.Record(parseObject x)
     | BinaryToken.EndGroup -> ParaValue.Array [| |]
-    | x -> failwithf "Unexpected token: %s" (x.ToString())
+    | x -> sprintf "Unexpected token: %s" (x.ToString()) |> fail
 
   /// If the first token at the start of an object is a string then we are
   /// looking at an object or an array. This function will which of these
@@ -371,7 +374,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       nextToken() |> ignore
       ParaValue.Array(parseArray values)
     | BinaryToken.EndGroup -> ParaValue.Array([| ParaValue.String(first) |])
-    | x -> failwithf "Unexpected token: %s" (x.ToString())
+    | x -> sprintf "Unexpected token: %s" (x.ToString()) |> fail
 
   member x.Parse (header:option<string>) =
     match header with

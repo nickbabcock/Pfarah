@@ -60,25 +60,25 @@ let ``binary parse header failure`` () =
 let ``binary parse object without equals fail`` () =
   let data = [| 0xdd; 0xdd; 0x03; 0x00 |]
   let ex = Assert.Throws(fun () -> ParaValue.LoadBinary((strm data), dict([]), None) |> ignore)
-  ex.Message |> shouldEqual "Expected equals, but got: Open Group"
+  ex.Message |> shouldEqual "Expected equals, but got: Open Group, Position 4"
 
 [<Test>]
 let ``binary parse object invalid equals token`` () =
   let data = [| 0xdd; 0xdd; 0x01; 0x00; 0x01; 0x00 |]
   let ex = Assert.Throws(fun () -> ParaValue.LoadBinary((strm data), dict([]), None) |> ignore)
-  ex.Message |> shouldEqual "Unexpected token: Equals"
+  ex.Message |> shouldEqual "Unexpected token: Equals, Position 6"
 
 [<Test>]
 let ``binary parse subgroup unexpected equals token`` () =
   let data = [| 0xdd; 0xdd; 0x01; 0x00; 0x03; 0x00; 0x01; 0x00 |]
   let ex = Assert.Throws(fun () -> ParaValue.LoadBinary((strm data), dict([]), None) |> ignore)
-  ex.Message |> shouldEqual "Unexpected token: Equals"
+  ex.Message |> shouldEqual "Unexpected token: Equals, Position 8"
 
 [<Test>]
 let ``binary parse must start with an identifier`` () =
   let data = [| 0x01; 0x00; |]
   let ex = Assert.Throws(fun () -> ParaValue.LoadBinary((strm data), dict([]), None) |> ignore)
-  ex.Message |> shouldEqual "Expected identifier, but got Equals"
+  ex.Message |> shouldEqual "Expected identifier, but got Equals, Position 2"
 
 [<Test>]
 let ``binary parse nested object`` () =
@@ -274,7 +274,7 @@ let ``binary parse ignore empty objects failure`` () =
        0x03; 0x00; 0x53; 0x57; 0x45; 0x03; 0x00; 0x01; 0x00; 0x04; 0x00 |]
 
   let ex = Assert.Throws(fun () -> ParaValue.LoadBinary((strm data), lookup, None) |> ignore)
-  ex.Message |> shouldEqual "Expected empty object, but got: Equals"
+  ex.Message |> shouldEqual "Expected empty object, but got: Equals, Position 21"
 
 [<Test>]
 let ``date impersonator`` () =
