@@ -9,7 +9,7 @@ module ParaExtensions =
   let (?) (obj:ParaValue) propertyName =
     match obj with
     | ParaValue.Record properties ->
-      match Array.tryFind (fst >> (=) propertyName) properties with 
+      match Array.tryFind (fst >> (=) propertyName) properties with
       | Some (_, value) -> value
       | None -> failwithf "Didn't find property '%s' in %A" propertyName obj
     | _ -> failwithf "Not an object: %A" obj

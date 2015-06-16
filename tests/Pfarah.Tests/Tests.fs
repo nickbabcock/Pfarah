@@ -383,3 +383,31 @@ let (``try parse date cases``:obj[][]) = [|
 [<TestCaseSource("try parse date cases")>]
 let ``try parse date`` str expected =
   str |> tryDateParse |> shouldEqual expected
+
+[<Test>]
+let ``arrays can be iterated`` () =
+  let arr = ParaValue.Array([| ParaValue.Number 1.0; ParaValue.Number 2.0 |])
+  for x in arr do
+    match x with
+    | ParaValue.Number(x) when x = 1.0 || x = 2.0 -> ()
+    | _ -> Assert.Fail("Unexpected number")
+
+[<Test>]
+let ``integer default tests`` () =
+  Some(ParaValue.Number 1.0) |> integerDefault |> shouldEqual 1
+  None |> integerDefault |> shouldEqual 0
+
+[<Test>]
+let ``string default tests`` () =
+  Some(ParaValue.String "ENG") |> stringDefault |> shouldEqual "ENG"
+  None |> stringDefault |> shouldEqual ""
+
+[<Test>]
+let ``float default tests`` () =
+  Some(ParaValue.Number 1.2) |> floatDefault |> shouldEqual 1.2
+  None |> floatDefault |> shouldEqual 0.0
+
+[<Test>]
+let ``bool default tests`` () =
+  Some(ParaValue.Bool true) |> boolDefault |> shouldEqual true
+  None |> boolDefault |> shouldEqual false
