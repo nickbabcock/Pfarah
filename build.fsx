@@ -335,7 +335,7 @@ Target "Coverage" (fun _ ->
             info.FileName <- ("packages/OpenCover/OpenCover.Console.exe")
             info.Arguments <- "-target:\"packages/NUnit.Runners/tools/nunit-console.exe\" " +
                               "-targetargs:\"/nologo /noshadow tests/Pfarah.Tests/bin/Debug/Pfarah.Tests.dll\" " +
-                              "filter:\"+[Pfarah]Pfarah\" -register:user -output:coverage.xml"
+                              "-filter:\"+[Pfarah]* -[Pfarah.Tests]*\" -register:user -output:coverage.xml"
         ) (System.TimeSpan.FromMinutes 5.)
     if result <> 0 then failwith "Coverage failed"
 )
