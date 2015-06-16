@@ -1,6 +1,7 @@
 module Pfarah.Tests
 
 open Pfarah
+open Utils
 open NUnit.Framework
 open System
 open System.IO
@@ -9,7 +10,7 @@ open System.Collections.Generic
 
 let shouldEqual (x : 'a) (y : 'a) = Assert.AreEqual(x, y, sprintf "Expected: %A\nActual: %A" x y)
 
-let parse str = 
+let parse str =
   match (ParaValue.Parse str) with
   | ParaValue.Record properties -> properties
   | _ -> failwith "Expected a record"
@@ -57,19 +58,19 @@ let ``parse list of one`` () =
 [<Test>]
 let ``parse list of multiple`` () =
   parse "foo={bar baz}"
-  |> shouldEqual [| ("foo", ParaValue.Array 
+  |> shouldEqual [| ("foo", ParaValue.Array
                       ([|ParaValue.String "bar"; ParaValue.String "baz"|]))|]
 
 [<Test>]
 let ``parse list of multiple single`` () =
   parse "foo={1}"
-  |> shouldEqual [| ("foo", ParaValue.Array 
+  |> shouldEqual [| ("foo", ParaValue.Array
                       ([|ParaValue.Number 1.0|]))|]
 
 [<Test>]
 let ``parse list of multiple number`` () =
   parse "foo={1 0}"
-  |> shouldEqual [| ("foo", ParaValue.Array 
+  |> shouldEqual [| ("foo", ParaValue.Array
                       ([|ParaValue.Number 1.0; ParaValue.Number 0.0|]))|]
 
 [<Test>]
@@ -85,7 +86,7 @@ let ``parse object of none`` () =
 [<Test>]
 let ``parse object of two`` () =
   parse "foo={bar=baz qux=zux}"
-  |> shouldEqual [| ("foo", ParaValue.Record 
+  |> shouldEqual [| ("foo", ParaValue.Record
                       ([|("bar", ParaValue.String "baz");
                          ("qux", ParaValue.String "zux")|]))|]
 
@@ -102,13 +103,13 @@ let ``parse list of one quoted`` () =
 [<Test>]
 let ``parse list of one quoted date`` () =
   parse "foo={\"1821.2.3\"}"
-  |> shouldEqual [| ("foo", ParaValue.Array 
+  |> shouldEqual [| ("foo", ParaValue.Array
                       ([|ParaValue.Date (new DateTime(1821, 2, 3))|]))|]
 
 [<Test>]
 let ``parse list of two quoted`` () =
   parse "foo={\"bar\" \"biz baz\"}"
-  |> shouldEqual [| ("foo", ParaValue.Array 
+  |> shouldEqual [| ("foo", ParaValue.Array
                       ([|ParaValue.String "bar";
                          ParaValue.String "biz baz"|]))|]
 
@@ -126,9 +127,9 @@ history={
   {
   }
 }"""
-  
+
   parse data
-  |> shouldEqual 
+  |> shouldEqual
     [| ("history", ParaValue.Record(
          [| ("blah", ParaValue.Record(
               [| ("foo", ParaValue.String "bar") |]
@@ -243,7 +244,7 @@ let ``parse army example`` () =
         ParaValue.Record(
           [| ("name", ParaValue.String "1st army");
              ("unit", ParaValue.Record(
-                [|("name", ParaValue.String "1st unit")|])) 
+                [|("name", ParaValue.String "1st unit")|]))
           |]));
        ("army",
         ParaValue.Record(
@@ -251,7 +252,7 @@ let ``parse army example`` () =
              ("unit", ParaValue.Record(
                 [|("name", ParaValue.String "1st unit")|]));
              ("unit", ParaValue.Record(
-                [|("name", ParaValue.String "2nd unit")|])) 
+                [|("name", ParaValue.String "2nd unit")|]))
           |]))
     |]
   obj |> shouldEqual expected
@@ -288,7 +289,7 @@ let ``tryFind patrol`` () =
     |> collect "ship"
     |> Array.filter (tryFind "patrol" >> Option.isSome)
     |> Array.map (fun x -> x?name |> asString)
-  
+
   shipData |> shouldEqual [| "1st ship" |]
 
 [<Test>]
@@ -350,3 +351,35 @@ army={
   let saved = Encoding.GetEncoding(1252).GetString(mem.ToArray())
   let parsed2 = ParaValue.Parse saved
   parsed2 |> shouldEqual parsed
+
+let (``try parse double cases``:obj[][]) = [|
+  [| "1.000"; Some(1.0) |]
+  [| "-1.000"; Some(-1.0) |]
+  [| "15"; Some(15.0) |]
+  [| "-15"; Some(-15.0) |]
+  [| ""; None |]
+  [| "1.0000"; None |]
+  [| "1.a00"; None |]
+  [| "1.0a0"; None |]
+  [| "1.00a"; None |]
+  [| "1e10"; None |]
+  [| "1.1.1"; None |]
+|]
+
+[<Test>]
+[<TestCaseSource("try parse double cases")>]
+let ``try parse double`` str expected =
+  str |> tryDoubleParse |> shouldEqual expected
+
+let (``try parse date cases``:obj[][]) = [|
+  [| "1.1.1"; Some(new DateTime(1, 1, 1)) |]
+  [| "1942.5.2.4"; Some(new DateTime(1942, 5, 2, 4, 0, 0)) |]
+  [| "1.a.1"; None |]
+  [| "1!1.1"; None |]
+  [| "1.1"; None |]
+|]
+
+[<Test>]
+[<TestCaseSource("try parse date cases")>]
+let ``try parse date`` str expected =
+  str |> tryDateParse |> shouldEqual expected
