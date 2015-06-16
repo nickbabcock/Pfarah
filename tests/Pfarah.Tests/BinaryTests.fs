@@ -275,3 +275,10 @@ let ``binary parse ignore empty objects failure`` () =
 
   let ex = Assert.Throws(fun () -> ParaValue.LoadBinary((strm data), lookup, None) |> ignore)
   ex.Message |> shouldEqual "Expected empty object, but got: Equals"
+
+[<Test>]
+let ``date impersonator`` () =
+  let lookup = dict([(0xdddds, "foo")]);
+  let data = [| 0xdd; 0xdd; 0x01; 0x00; 0x0c; 0x00; 0x31; 0x9c; 0x45; 0x0f; |]
+  parse (strm data) lookup None
+  |> shouldEqual [| ("foo", ParaValue.Number 256220209.0) |]

@@ -229,7 +229,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     let (left, hours) = Math.DivRem(int(value), 24)
     let (left, days) = Math.DivRem(left, 365)
     let years = left - 5001
-    if years > 0 then
+    if years > 0 && years < 10000 then
       let date =
         DateTime.MinValue
           .AddYears(years)
