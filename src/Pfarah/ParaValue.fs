@@ -251,6 +251,8 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | 0x0003s -> BinaryToken.OpenGroup
     | 0x0004s -> BinaryToken.EndGroup
     | 0x0001s -> BinaryToken.Equals
+    | 0x284bs -> BinaryToken.Bool(true)
+    | 0x284cs -> BinaryToken.Bool(false)
     | x -> BinaryToken.Token(lookupId x)
 
   /// Returns whether a given token is an EndGroup

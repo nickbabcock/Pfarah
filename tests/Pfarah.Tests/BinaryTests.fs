@@ -282,3 +282,17 @@ let ``date impersonator`` () =
   let data = [| 0xdd; 0xdd; 0x01; 0x00; 0x0c; 0x00; 0x31; 0x9c; 0x45; 0x0f; |]
   parse (strm data) lookup None
   |> shouldEqual [| ("foo", ParaValue.Number 256220209.0) |]
+
+[<Test>]
+let ``parse no token`` () =
+  let lookup = dict([(0x2d82s, "active")])
+  let data = [| 0x82; 0x2d; 0x01; 0x00; 0x4c; 0x28 |]
+  parse (strm data) lookup None
+  |> shouldEqual [| ("active", ParaValue.Bool false) |]
+
+[<Test>]
+let ``parse yes token`` () =
+  let lookup = dict([(0x2d82s, "active")])
+  let data = [| 0x82; 0x2d; 0x01; 0x00; 0x4b; 0x28 |]
+  parse (strm data) lookup None
+  |> shouldEqual [| ("active", ParaValue.Bool true) |]
