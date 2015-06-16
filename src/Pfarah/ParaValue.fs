@@ -254,14 +254,12 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
   let endGroup = function | BinaryToken.EndGroup -> true | _ -> false
 
   /// If the given token is not an Equals throw an exception
-  let ensureEquals =
-    function
+  let ensureEquals = function
     | BinaryToken.Equals -> ()
     | x -> failwithf "Expected equals, but got: %s" (x.ToString())
 
   /// If the given token can't be used as an identifier, throw an exception
-  let ensureIdentifier =
-    function
+  let ensureIdentifier = function
     | BinaryToken.String(x) -> x
     | BinaryToken.Token(x) -> x
     | x -> failwithf "Expected identifier, but got %s" (x.ToString())
