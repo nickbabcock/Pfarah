@@ -265,6 +265,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
 
   /// If the given token can't be used as an identifier, throw an exception
   let ensureIdentifier = function
+    | BinaryToken.Int(x) -> x.ToString()
     | BinaryToken.String(x) -> x
     | BinaryToken.Token(x) -> x
     | x -> sprintf "Expected identifier, but got %s" (x.ToString()) |> fail
@@ -346,8 +347,16 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       nextToken() |> ignore
       ParaValue.Array(parseArrayFirst (ParaValue.Number(float(x))))
     | BinaryToken.Uint(x) ->
-      nextToken() |> ignore
-      ParaValue.Array(parseArrayFirst (toPara x))
+      match (nextToken()) with
+      | BinaryToken.Uint(y) ->
+        let values = ResizeArray<_>()
+        values.Add(toPara x)
+        values.Add(toPara y)
+        nextToken() |> ignore
+        ParaValue.Array(parseArray values)
+      | BinaryToken.Equals -> ParaValue.Record(parseObject (x.ToString()))
+      | BinaryToken.EndGroup -> ParaValue.Array([| (toPara x) |])
+      | x -> sprintf "Unexpected token: %s" (x.ToString()) |> fail
     | BinaryToken.Float(x) ->
       nextToken() |> ignore
       ParaValue.Array(parseArrayFirst (ParaValue.Number(float(x))))

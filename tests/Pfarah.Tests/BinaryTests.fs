@@ -303,3 +303,12 @@ let ``binary parse other token`` () =
   let data = [| 0xe1; 0x00; 0x01; 0x00; 0xbe; 0x28;  |]
   parse (strm data) lookup None
   |> shouldEqual [| ("type", ParaValue.String "general") |]
+
+[<Test>]
+let ``binary numerical identifier`` () =
+  let lookup = dict([(0x2dc1s, "foo")])
+  let data =
+    [| 0xc1; 0x2d; 0x01; 0x00; 0x03; 0x00; 0x0c; 0x00; 0x59; 0x00; 0x00; 0x00; 0x01; 0x00;
+       0x0c; 0x00; 0x1e; 0x00; 0x00; 0x00; 0x04; 0x00; |]
+  parse (strm data) lookup None
+  |> shouldEqual [| ("foo", ParaValue.Record([| ("89", ParaValue.Number 30.0) |])) |]
