@@ -226,7 +226,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       | (true, x) -> x
 
   /// An integer may be a date. This active pattern attempts to detect such
-  /// occurrences, though it doesn't gurantee 100% accuracy, as numbers larger
+  /// occurrences, though it doesn't guarantee 100% accuracy, as numbers larger
   /// than 43,808,760 will be detected as dates.
   let (|HiddenDate|_|) value =
     let (left, hours) = Math.DivRem(int(value), 24)
@@ -282,8 +282,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       | BinaryToken.EndGroup -> nextToken() |> ignore
       | x -> sprintf "Expected empty object, but got: %s" (x.ToString()) |> fail
 
-  let toPara value =
-    match value with
+  let toPara = function
     | HiddenDate(date) -> ParaValue.Date(date)
     | num -> ParaValue.Number(float(num))
 
