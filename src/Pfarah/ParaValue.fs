@@ -277,12 +277,10 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
   /// Occasionally there are isolated "{}" without identifiers. I believe these
   /// to be useless, so this function will skip instances.
   let skipEmptyObjects () =
-    match tok with
-    | BinaryToken.OpenGroup ->
+    while (match tok with | BinaryToken.OpenGroup -> true | _ -> false) do
       match (nextToken()) with
       | BinaryToken.EndGroup -> nextToken() |> ignore
       | x -> sprintf "Expected empty object, but got: %s" (x.ToString()) |> fail
-    | _ -> ()
 
   let toPara value =
     match value with

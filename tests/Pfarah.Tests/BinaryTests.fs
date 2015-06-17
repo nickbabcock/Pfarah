@@ -267,6 +267,17 @@ let ``binary parse ignore empty objects`` () =
     [| ("foo", ParaValue.Record([| ("bar", ParaValue.String "SWE") |])) |]
 
 [<Test>]
+let ``binary parse ignore empty objects multiple`` () =
+  let lookup = dict([(0xdddds, "foo"); (0x2a05s, "bar")])
+  let data =
+    [| 0xdd; 0xdd; 0x01; 0x00; 0x03; 0x00; 0x05; 0x2a; 0x01; 0x00; 0x0f; 0x00;
+       0x03; 0x00; 0x53; 0x57; 0x45; 0x03; 0x00; 0x04; 0x00; 0x03; 0x00; 0x04;
+       0x00; 0x04; 0x00 |]
+  parse (strm data) lookup None
+  |> shouldEqual
+    [| ("foo", ParaValue.Record([| ("bar", ParaValue.String "SWE") |])) |]
+
+[<Test>]
 let ``binary parse ignore empty objects failure`` () =
   let lookup = dict([(0xdddds, "foo"); (0x2a05s, "bar")])
   let data =
