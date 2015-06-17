@@ -348,15 +348,14 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       ParaValue.Array(parseArrayFirst (ParaValue.Number(float(x))))
     | BinaryToken.Uint(x) ->
       match (nextToken()) with
-      | BinaryToken.Uint(y) ->
-        let values = ResizeArray<_>()
-        values.Add(toPara x)
-        values.Add(toPara y)
-        nextToken() |> ignore
-        ParaValue.Array(parseArray values)
       | BinaryToken.Equals -> ParaValue.Record(parseObject (x.ToString()))
       | BinaryToken.EndGroup -> ParaValue.Array([| (toPara x) |])
-      | x -> sprintf "Unexpected token: %s" (x.ToString()) |> fail
+      | _ ->
+        let values = ResizeArray<_>()
+        values.Add(toPara x)
+        values.Add(parseValue())
+        nextToken() |> ignore
+        ParaValue.Array(parseArray values)
     | BinaryToken.Float(x) ->
       nextToken() |> ignore
       ParaValue.Array(parseArrayFirst (ParaValue.Number(float(x))))

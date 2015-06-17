@@ -312,3 +312,14 @@ let ``binary numerical identifier`` () =
        0x0c; 0x00; 0x1e; 0x00; 0x00; 0x00; 0x04; 0x00; |]
   parse (strm data) lookup None
   |> shouldEqual [| ("foo", ParaValue.Record([| ("89", ParaValue.Number 30.0) |])) |]
+
+[<Test>]
+let ``binary parse heterogeneous array`` () =
+  let lookup = dict([0xdddds, "foo"])
+  let data =
+    [| 0xdd; 0xdd; 0x01; 0x00; 0x03; 0x00; 0x0c; 0x00; 0x00; 0x00; 0x00; 0x00;
+       0x0d; 0x00; 0xee; 0x7c; 0x4f; 0x40; 0x04; 0x00 |]
+  let res = ParaValue.LoadBinary((strm data), lookup, None)
+  let foo = res?foo |> asArray
+  Assert.AreEqual(ParaValue.Number 0.0, foo.[0])
+  Assert.AreEqual(3.242, foo.[1] |> asFloat, 0.001)
