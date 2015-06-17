@@ -296,3 +296,10 @@ let ``parse yes token`` () =
   let data = [| 0x82; 0x2d; 0x01; 0x00; 0x4b; 0x28 |]
   parse (strm data) lookup None
   |> shouldEqual [| ("active", ParaValue.Bool true) |]
+
+[<Test>]
+let ``binary parse other token`` () =
+  let lookup = dict([(0x00E1s, "type"); (0x28BEs, "general")])
+  let data = [| 0xe1; 0x00; 0x01; 0x00; 0xbe; 0x28;  |]
+  parse (strm data) lookup None
+  |> shouldEqual [| ("type", ParaValue.String "general") |]
