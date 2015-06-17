@@ -265,7 +265,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
 
   /// If the given token can't be used as an identifier, throw an exception
   let ensureIdentifier = function
-    | BinaryToken.Int(x) -> x.ToString()
+    | BinaryToken.Uint(x) -> x.ToString()
     | BinaryToken.String(x) -> x
     | BinaryToken.Token(x) -> x
     | x -> sprintf "Expected identifier, but got %s" (x.ToString()) |> fail
