@@ -344,30 +344,12 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
   /// object.
   and parseSubgroup () =
     match (nextToken()) with
-    | BinaryToken.Int(x) ->
-      match (nextToken()) with
-      | BinaryToken.Equals -> ParaValue.Record(parseObject (x.ToString()))
-      | BinaryToken.EndGroup -> ParaValue.Array([| (ParaValue.Number (float x)) |])
-      | _ ->
-        let values = ResizeArray<_>()
-        values.Add(ParaValue.Number (float x))
-        values.Add(parseValue())
-        nextToken() |> ignore
-        ParaValue.Array(parseArray values)
-    | BinaryToken.Uint(x) ->
-      match (nextToken()) with
-      | BinaryToken.Equals -> ParaValue.Record(parseObject (x.ToString()))
-      | BinaryToken.EndGroup -> ParaValue.Array([| (toPara x) |])
-      | _ ->
-        let values = ResizeArray<_>()
-        values.Add(toPara x)
-        values.Add(parseValue())
-        nextToken() |> ignore
-        ParaValue.Array(parseArray values)
+    | BinaryToken.Int(x) -> subber (x.ToString()) (fun () -> float x |> ParaValue.Number)
+    | BinaryToken.Uint(x) -> subber (x.ToString()) (fun () -> toPara x)
     | BinaryToken.Float(x) ->
       nextToken() |> ignore
       ParaValue.Array(parseArrayFirst (ParaValue.Number(float(x))))
-    | BinaryToken.String(x) -> stringSubgroup x
+    | BinaryToken.String(x) -> subber x (fun () -> ParaValue.String x)
     | BinaryToken.OpenGroup ->
       let firstKey = nextToken() |> ensureIdentifier
       nextToken() |> ensureEquals
@@ -380,20 +362,19 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | BinaryToken.EndGroup -> ParaValue.Array [| |]
     | x -> sprintf "Unexpected token: %s" (x.ToString()) |> fail
 
-  /// If the first token at the start of an object is a string then we are
-  /// looking at an object or an array. This function will which of these
-  /// options it is and return it
-  and stringSubgroup first =
+  /// It's impossible to know just by reading the first token if we are dealing
+  /// with an object or an array. The only way to know is to read the next
+  /// token. Only if it is an equals are we dealing with an object.
+  and subber (key: string) (paraFn:unit -> ParaValue) : ParaValue =
     match (nextToken()) with
-    | BinaryToken.Equals -> ParaValue.Record(parseObject first)
-    | BinaryToken.String(s) ->
+    | BinaryToken.Equals -> ParaValue.Record(parseObject key)
+    | BinaryToken.EndGroup -> ParaValue.Array([| paraFn() |])
+    | _ ->
       let values = ResizeArray<_>()
-      values.Add(ParaValue.String first)
-      values.Add(ParaValue.String s)
+      values.Add(paraFn())
+      values.Add(parseValue())
       nextToken() |> ignore
       ParaValue.Array(parseArray values)
-    | BinaryToken.EndGroup -> ParaValue.Array([| ParaValue.String(first) |])
-    | x -> sprintf "Unexpected token: %s" (x.ToString()) |> fail
 
   member x.Parse (header:option<string>) =
     match header with
