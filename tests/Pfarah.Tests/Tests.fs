@@ -439,7 +439,7 @@ let ``bool default tests`` () =
 let ``load with header textual`` () =
   let data = "EU4txt\rbar=foo\r"
   let strm = new MemoryStream(Encoding.GetEncoding(1252).GetBytes(data))
-  ParaValue.LoadWithHeader(strm, "EU4bin", "EU4txt", (lazy dict([])))
+  ParaValue.Load(strm, "EU4bin", "EU4txt", (lazy dict([])))
   |> shouldEqual (ParaValue.Record([| ("bar", ParaValue.String "foo") |]))
 
 [<Test>]
@@ -447,7 +447,7 @@ let ``load with mismatched headers`` () =
   let data = "EU4txt\rbar=foo\r"
   let strm = new MemoryStream(Encoding.GetEncoding(1252).GetBytes(data))
   let ex = Assert.Throws(fun () ->
-    ParaValue.LoadWithHeader(strm, "EU4bi", "EU4txt", (lazy dict([]))) |> ignore)
+    ParaValue.Load(strm, "EU4bi", "EU4txt", (lazy dict([]))) |> ignore)
   ex.Message |> shouldEqual "Headers should be the same length"
 
 [<Test>]
@@ -455,17 +455,17 @@ let ``load with unknown header`` () =
   let data = "hip"
   let strm = new MemoryStream(Encoding.GetEncoding(1252).GetBytes(data))
   let ex = Assert.Throws(fun () ->
-    ParaValue.LoadWithHeader(strm, "EU4bin", "EU4txt", (lazy dict([]))) |> ignore)
+    ParaValue.Load(strm, "EU4bin", "EU4txt", (lazy dict([]))) |> ignore)
   ex.Message |> shouldEqual "Unexpected header: hip"
 
 [<Test>]
 let ``load plain text file`` () =
   let path = Path.Combine("data", "eu4txt.eu4")
-  ParaValue.LoadFile(path, "EU4bin", "EU4txt", lazy(dict([])))
+  ParaValue.Load(path, "EU4bin", "EU4txt", lazy(dict([])))
   |> shouldEqual (ParaValue.Record([| ("date", ParaValue.Date (DateTime(1821, 1, 1)))|]))
 
 [<Test>]
 let ``load zip text file`` () =
   let path = Path.Combine("data", "eu4txt-zip.eu4")
-  ParaValue.LoadFile(path, "EU4bin", "EU4txt", lazy(dict([])))
+  ParaValue.Load(path, "EU4bin", "EU4txt", lazy(dict([])))
   |> shouldEqual (ParaValue.Record([| ("date", ParaValue.Date (DateTime(1821, 1, 1)))|]))

@@ -1,6 +1,8 @@
 ### 0.3.0
 * Add ability to parse ironman saves
 * Add ability to parse compressed saves
+* Rename static `ParaValue` functions to highlight between plain text and binary
+  parsing
 
 ### 0.2.1
 * Cleaned up some of the code

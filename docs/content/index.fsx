@@ -1,5 +1,5 @@
 (*** hide ***)
-// This block of code is omitted in the generated HTML documentation. Use 
+// This block of code is omitted in the generated HTML documentation. Use
 // it to define helpers that you do not want to show in the documentation.
 #I "../../bin"
 
@@ -33,7 +33,7 @@ let obj = ParaValue.Parse "foo=bar"
 obj?foo |> asString
 
 // Load files. Great for performance
-let obj2 = ParaValue.Load @"C:\somefilepath"
+let obj2 = ParaValue.LoadText @"C:\somefilepath"
 
 (**
 
@@ -56,15 +56,15 @@ soon as the file is parsed to keep around only what is needed and cast the
 data to the expected formats (such as an integer), which will consume less
 space. This will allow the garbage collector to clean up the intermediary
 300MB data structure.
- 
+
 ## Contributing and copyright
 
 The project is hosted on [GitHub][gh] where you can [report issues][issues],
 fork  the project and submit pull requests. You might also want to read the
 [library design notes][readme] to understand how it works.
 
-The library is available under the MIT license. For more information see the 
-[License file][license] in the GitHub repository. 
+The library is available under the MIT license. For more information see the
+[License file][license] in the GitHub repository.
 
   [content]: https://github.com/fsprojects/Pfarah/tree/master/docs/content
   [gh]: https://github.com/fsprojects/Pfarah

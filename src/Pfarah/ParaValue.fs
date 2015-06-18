@@ -400,8 +400,8 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | None -> ParaValue.Record(parseTopObject())
 
 type ParaValue with
-  /// Parses the given stream
-  static member Load (stream:Stream) =
+  /// Parses the given stream assuming that it contains strictly plain text.
+  static member LoadText (stream:Stream) =
     use stream = new StreamReader(stream, Encoding.GetEncoding(1252), false, 0x8000)
     let parser = ParaParser stream
     parser.Parse ()
@@ -415,7 +415,7 @@ type ParaValue with
 
   /// Parses zip files or uncompressed files that can be plain text or binary
   /// encoded
-  static member LoadFile (file:string, binHeader:string, txtHeader:string, lookup:Lazy<IDictionary<int16, string>>) =
+  static member Load (file:string, binHeader:string, txtHeader:string, lookup:Lazy<IDictionary<int16, string>>) =
     use fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 0x8000)
     if (fs.ReadByte()) = 0x50 && (fs.ReadByte()) = 0x4b then
       fs.Seek(0L, SeekOrigin.Begin) |> ignore
@@ -423,14 +423,14 @@ type ParaValue with
       seq { for x in zf -> x :?> ZipEntry }
       |> Seq.filter (fun x -> Path.GetExtension(x.Name) <> "")
       |> Seq.exactlyOne
-      |> fun x -> ParaValue.LoadWithHeader(zf.GetInputStream(x), binHeader, txtHeader, lookup)
+      |> fun x -> ParaValue.Load(zf.GetInputStream(x), binHeader, txtHeader, lookup)
     else
       fs.Seek(0L, SeekOrigin.Begin) |> ignore
-      ParaValue.LoadWithHeader(fs, binHeader, txtHeader, lookup)
+      ParaValue.Load(fs, binHeader, txtHeader, lookup)
 
   /// Given a stream that may be textually or binary encoded, the function
   /// parses it correctly when given the headers to look out for.
-  static member LoadWithHeader(stream:Stream, binHeader:string, txtHeader:string, lookup:Lazy<IDictionary<int16, string>>) =
+  static member Load (stream:Stream, binHeader:string, txtHeader:string, lookup:Lazy<IDictionary<int16, string>>) =
     if binHeader.Length <> txtHeader.Length then
       failwith "Headers should be the same length"
     let bt = Array.zeroCreate binHeader.Length
@@ -438,18 +438,18 @@ type ParaValue with
     let header = Encoding.GetEncoding(1252).GetString(bt, 0, length)
     match header with
     | x when x = binHeader -> ParaValue.LoadBinary(stream, (lookup.Force()), None)
-    | x when x = txtHeader -> ParaValue.Load(stream)
+    | x when x = txtHeader -> ParaValue.LoadText(stream)
     | x -> failwithf "Unexpected header: %s" x
 
-  /// Parses the given file path, allowing other processes to read and write at the same time
-  static member Load (file:string) =
+  /// Parses the given file path assuming that it contains strictly plain text.
+  static member LoadText (file:string) =
     use fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 0x8000)
-    ParaValue.Load fs
+    ParaValue.LoadText fs
 
   /// Parses the given string
   static member Parse (text:string) =
     let str = new MemoryStream(Encoding.GetEncoding(1252).GetBytes(text))
-    ParaValue.Load str
+    ParaValue.LoadText str
 
   /// Writes the given data to a stream
   static member Save (stream:Stream, data:ParaValue) =
