@@ -406,12 +406,15 @@ type ParaValue with
     let parser = ParaParser stream
     parser.Parse ()
 
-  /// Parses the given stream
+  /// Parses the given stream filled with binary data with a token lookup and
+  /// header
   static member LoadBinary (stream:Stream, lookup:IDictionary<int16, string>, header:option<string>) =
     use stream = new BinaryReader(stream, Encoding.GetEncoding(1252))
     let parser = BinaryParaParser(stream, lookup)
     parser.Parse (header)
 
+  /// Parses zip files or uncompressed files that can be plain text or binary
+  /// encoded
   static member LoadFile (file:string, binHeader:string, txtHeader:string, lookup:Lazy<IDictionary<int16, string>>) =
     use fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 0x8000)
     if (fs.ReadByte()) = 0x50 && (fs.ReadByte()) = 0x4b then
@@ -425,6 +428,8 @@ type ParaValue with
       fs.Seek(0L, SeekOrigin.Begin) |> ignore
       ParaValue.LoadWithHeader(fs, binHeader, txtHeader, lookup)
 
+  /// Given a stream that may be textually or binary encoded, the function
+  /// parses it correctly when given the headers to look out for.
   static member LoadWithHeader(stream:Stream, binHeader:string, txtHeader:string, lookup:Lazy<IDictionary<int16, string>>) =
     if binHeader.Length <> txtHeader.Length then
       failwith "Headers should be the same length"

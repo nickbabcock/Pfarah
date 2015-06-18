@@ -55,9 +55,9 @@ element as the nth nested element.
 Maybe the best question to answer is: why F#?
 
 - F# is fast: creating a DOM structure at 30MB/s
-- F# is terse: About 200 lines of code commpose almost all the functionality
+- F# is terse: About 200 lines of code compose almost all the functionality
 - F# is flexible: Pfarah uses a mix of functional and imperative code
 - F# has a good package manager (nuget, paket)
-- F# is readable: F# doesn't contain many exotic symbols 
+- F# is readable: F# doesn't contain many exotic symbols
 - F# is simple: Hardly any new concepts need to be learned to grok the code
 - F# is mature: This library should be able to take any use and abuse from here on out on any platform that F# runs on
