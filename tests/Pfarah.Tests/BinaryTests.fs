@@ -364,3 +364,15 @@ let ``binary parse heterogeneous array`` () =
   let foo = res?foo |> asArray
   Assert.AreEqual(ParaValue.Number 0.0, foo.[0])
   Assert.AreEqual(3.242, foo.[1] |> asFloat, 0.001)
+
+[<Test>]
+let ``load plain text file`` () =
+  let path = Path.Combine("data", "eu4bin.eu4")
+  ParaValue.LoadFile(path, "EU4bin", "EU4txt", lazy(dict([(0x284ds, "date")])))
+  |> shouldEqual (ParaValue.Record([| ("date", ParaValue.Date (DateTime(1757, 8, 12)))|]))
+
+[<Test>]
+let ``load zip text file`` () =
+  let path = Path.Combine("data", "eu4bin-zip.eu4")
+  ParaValue.LoadFile(path, "EU4bin", "EU4txt", lazy(dict([(0x284ds, "date")])))
+  |> shouldEqual (ParaValue.Record([| ("date", ParaValue.Date (DateTime(1757, 8, 12)))|]))

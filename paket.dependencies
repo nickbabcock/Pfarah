@@ -6,6 +6,7 @@ nuget NUnit.Runners
 nuget FAKE
 nuget OpenCover
 nuget ReportGenerator
+nuget SharpZipLib
 nuget SourceLink.Fake
 nuget coveralls.net
 

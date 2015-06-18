@@ -5,6 +5,7 @@ open System
 open System.IO
 open System.Text
 open System.Collections.Generic
+open ICSharpCode.SharpZipLib.Zip;
 open System.Globalization
 
 [<RequireQualifiedAccess>]
@@ -395,6 +396,19 @@ type ParaValue with
     use stream = new BinaryReader(stream, Encoding.GetEncoding(1252))
     let parser = BinaryParaParser(stream, lookup)
     parser.Parse (header)
+
+  static member LoadFile (file:string, binHeader:string, txtHeader:string, lookup:Lazy<IDictionary<int16, string>>) =
+    use fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 0x8000)
+    if (fs.ReadByte()) = 0x50 && (fs.ReadByte()) = 0x4b then
+      fs.Seek(0L, SeekOrigin.Begin) |> ignore
+      use zf = new ZipFile(fs)
+      seq { for x in zf -> x :?> ZipEntry }
+      |> Seq.filter (fun x -> Path.GetExtension(x.Name) <> "")
+      |> Seq.exactlyOne
+      |> fun x -> ParaValue.LoadWithHeader(zf.GetInputStream(x), binHeader, txtHeader, lookup)
+    else
+      fs.Seek(0L, SeekOrigin.Begin) |> ignore
+      ParaValue.LoadWithHeader(fs, binHeader, txtHeader, lookup)
 
   static member LoadWithHeader(stream:Stream, binHeader:string, txtHeader:string, lookup:Lazy<IDictionary<int16, string>>) =
     if binHeader.Length <> txtHeader.Length then

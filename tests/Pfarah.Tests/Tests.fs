@@ -434,3 +434,15 @@ let ``load with unknown header`` () =
   let ex = Assert.Throws(fun () ->
     ParaValue.LoadWithHeader(strm, "EU4bin", "EU4txt", (lazy dict([]))) |> ignore)
   ex.Message |> shouldEqual "Unexpected header: hip"
+
+[<Test>]
+let ``load plain text file`` () =
+  let path = Path.Combine("data", "eu4txt.eu4")
+  ParaValue.LoadFile(path, "EU4bin", "EU4txt", lazy(dict([])))
+  |> shouldEqual (ParaValue.Record([| ("date", ParaValue.Date (DateTime(1821, 1, 1)))|]))
+
+[<Test>]
+let ``load zip text file`` () =
+  let path = Path.Combine("data", "eu4txt-zip.eu4")
+  ParaValue.LoadFile(path, "EU4bin", "EU4txt", lazy(dict([])))
+  |> shouldEqual (ParaValue.Record([| ("date", ParaValue.Date (DateTime(1821, 1, 1)))|]))
