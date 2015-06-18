@@ -396,8 +396,19 @@ type ParaValue with
     let parser = BinaryParaParser(stream, lookup)
     parser.Parse (header)
 
+  static member LoadWithHeader(stream:Stream, binHeader:string, txtHeader:string, lookup:Lazy<IDictionary<int16, string>>) =
+    if binHeader.Length <> txtHeader.Length then
+      failwith "Headers should be the same length"
+    let bt = Array.zeroCreate binHeader.Length
+    let length = stream.Read(bt, 0, binHeader.Length)
+    let header = Encoding.GetEncoding(1252).GetString(bt, 0, length)
+    match header with
+    | x when x = binHeader -> ParaValue.LoadBinary(stream, (lookup.Force()), None)
+    | x when x = txtHeader -> ParaValue.Load(stream)
+    | x -> failwithf "Unexpected header: %s" x
+
   /// Parses the given file path, allowing other processes to read and write at the same time
-  static member Load file =
+  static member Load (file:string) =
     use fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 0x8000)
     ParaValue.Load fs
 

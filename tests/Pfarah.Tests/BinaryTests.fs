@@ -48,6 +48,14 @@ let ``binary parse basic date with header`` () =
   |> shouldEqual [| ("date", ParaValue.Date(DateTime(1444, 11, 11))) |]
 
 [<Test>]
+let ``load binary data`` () =
+  let lookup = dict([(0x284ds, "date")])
+  let stream = strm([|0x45; 0x55; 0x34; 0x62; 0x69; 0x6e; 0x4d; 0x28;
+                      0x01; 0x00; 0x0c; 0x00; 0x10; 0x77; 0x5d; 0x03|])
+  ParaValue.LoadWithHeader(stream, "EU4bin", "EU4txt", lazy lookup)
+  |> shouldEqual (ParaValue.Record([| ("date", ParaValue.Date(DateTime(1444, 11, 11))) |]))
+
+[<Test>]
 let ``binary parse header failure`` () =
   let lookup = dict([(0x284ds, "date")])
   let stream = strm([|0x44; 0x55; 0x34; 0x62; 0x69; 0x6e; 0x4d; 0x28;

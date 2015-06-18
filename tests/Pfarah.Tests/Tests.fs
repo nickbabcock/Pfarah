@@ -411,3 +411,26 @@ let ``float default tests`` () =
 let ``bool default tests`` () =
   Some(ParaValue.Bool true) |> boolDefault |> shouldEqual true
   None |> boolDefault |> shouldEqual false
+
+[<Test>]
+let ``load with header textual`` () =
+  let data = "EU4txt\rbar=foo\r"
+  let strm = new MemoryStream(Encoding.GetEncoding(1252).GetBytes(data))
+  ParaValue.LoadWithHeader(strm, "EU4bin", "EU4txt", (lazy dict([])))
+  |> shouldEqual (ParaValue.Record([| ("bar", ParaValue.String "foo") |]))
+
+[<Test>]
+let ``load with mismatched headers`` () =
+  let data = "EU4txt\rbar=foo\r"
+  let strm = new MemoryStream(Encoding.GetEncoding(1252).GetBytes(data))
+  let ex = Assert.Throws(fun () ->
+    ParaValue.LoadWithHeader(strm, "EU4bi", "EU4txt", (lazy dict([]))) |> ignore)
+  ex.Message |> shouldEqual "Headers should be the same length"
+
+[<Test>]
+let ``load with unknown header`` () =
+  let data = "hip"
+  let strm = new MemoryStream(Encoding.GetEncoding(1252).GetBytes(data))
+  let ex = Assert.Throws(fun () ->
+    ParaValue.LoadWithHeader(strm, "EU4bin", "EU4txt", (lazy dict([]))) |> ignore)
+  ex.Message |> shouldEqual "Unexpected header: hip"
