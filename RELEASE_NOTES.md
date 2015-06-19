@@ -1,4 +1,4 @@
-### 0.3.0
+### 0.3.0 - June 19th 2015
 * Add ability to parse ironman saves
 * Add ability to parse compressed saves
 * Rename static `ParaValue` functions to highlight between plain text and binary
