@@ -118,7 +118,7 @@ one interfaces with the data</p>
 
 <p>The methods shown are very boilerplate heavy and writing this kind of code can
 make a project become bloated very quickly. Hence why Pfarah provides a bit of
-syntatic sugar and helper methods to make dealing with the data easier.</p>
+syntactic sugar and helper methods to make dealing with the data easier.</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -265,7 +265,7 @@ doesn't.</p>
 
 <p>Knowing the data is the first step to any type of analysis. This is made
 difficult when there can be thousands of objects, each one having a subset of
-the properties available. <code>findOptional</code> fixes this problem by disecting a
+the properties available. <code>findOptional</code> fixes this problem by dissecting a
 list of  supposedly similar objects and returning the properties that it knows
 are always present and the ones that are optional.</p>
 
@@ -322,9 +322,57 @@ are always present and the ones that are optional.</p>
 </tr>
 </table>
 
+<h2><a name="Binary-Data" class="anchor" href="#Binary-Data">Binary Data</a></h2>
+
+<p>The examples that we have been working with have been plain text, but
+Clausewitz files can come compressed and in binary form. To parse these files,
+we'll need a few things:</p>
+
+<ul>
+<li>The file path.</li>
+<li>The header if it is binary file. For instance, for EU4, the header is
+"EU4bin".</li>
+<li>The header if it is plain text file. For EU4, the header is "EU4txt".</li>
+<li>Since binary files use two byte tokens instead of strings for identifiers,
+we'll need   a dictionary of two byte tokens to strings so that the binary
+file can be queried exactly   like a plain text file. There are many types of
+tokens that can be encountered, so as not to   impose a memory tax
+unnecessarily if it is a plain text file, the dictionary is <code>lazy</code></li>
+</ul>
+
+<p>The following code sample will work for a file that is in any format
+(plain text/binary and compressed/uncompressed)</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+<span class="l">8: </span>
+<span class="l">9: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs44', 107)" onmouseover="showTip(event, 'fs44', 107)" class="i">path</span> <span class="o">=</span> <span class="s">&quot;game.eu4&quot;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs45', 108)" onmouseover="showTip(event, 'fs45', 108)" class="i">``binary header``</span> <span class="o">=</span> <span class="s">&quot;EU4bin&quot;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs46', 109)" onmouseover="showTip(event, 'fs46', 109)" class="i">``text header``</span> <span class="o">=</span> <span class="s">&quot;EU4txt&quot;</span>
+
+<span class="c">// Only if the file is detected to be binary will</span>
+<span class="c">// this dictionary be created</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs47', 110)" onmouseover="showTip(event, 'fs47', 110)" class="i">tokens</span> <span class="o">=</span> <span class="k">lazy</span> <span onmouseout="hideTip(event, 'fs48', 111)" onmouseover="showTip(event, 'fs48', 111)" class="f">dict</span>([(<span class="n">0x284ds</span>, <span class="s">&quot;date&quot;</span>)])
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 112)" onmouseover="showTip(event, 'fs22', 112)" class="i">data</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 113)" onmouseover="showTip(event, 'fs3', 113)" class="t">ParaValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 114)" onmouseover="showTip(event, 'fs49', 114)" class="f">Load</span> <span onmouseout="hideTip(event, 'fs44', 115)" onmouseover="showTip(event, 'fs44', 115)" class="i">path</span> <span onmouseout="hideTip(event, 'fs45', 116)" onmouseover="showTip(event, 'fs45', 116)" class="i">``binary header``</span> <span onmouseout="hideTip(event, 'fs46', 117)" onmouseover="showTip(event, 'fs46', 117)" class="i">``text header``</span> <span onmouseout="hideTip(event, 'fs47', 118)" onmouseover="showTip(event, 'fs47', 118)" class="i">tokens</span>
+<span onmouseout="hideTip(event, 'fs22', 119)" onmouseover="showTip(event, 'fs22', 119)" class="i">data</span><span class="o">?</span><span class="i">date</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs50', 120)" onmouseover="showTip(event, 'fs50', 120)" class="f">asDate</span>
+</pre>
+</td>
+</tr>
+</table>
+
 <div class="tip" id="fs1">namespace Pfarah</div>
 <div class="tip" id="fs2">Multiple items<br />val obj : ParaValue<br /><br />Full name: Tutorial.obj<br /><br />--------------------<br />type obj = System.Object<br /><br />Full name: Microsoft.FSharp.Core.obj</div>
-<div class="tip" id="fs3">type ParaValue =<br />&#160;&#160;| Bool of bool<br />&#160;&#160;| Number of float<br />&#160;&#160;| Date of DateTime<br />&#160;&#160;| String of string<br />&#160;&#160;| Array of elements: ParaValue []<br />&#160;&#160;| Record of properties: (string * ParaValue) []<br />&#160;&#160;static member Load : file:string -&gt; ParaValue<br />&#160;&#160;static member Load : stream:Stream -&gt; ParaValue<br />&#160;&#160;static member Parse : text:string -&gt; ParaValue<br />&#160;&#160;static member Save : stream:Stream * data:ParaValue -&gt; unit<br /><br />Full name: Pfarah.ParaValue</div>
+<div class="tip" id="fs3">type ParaValue =<br />&#160;&#160;| Bool of bool<br />&#160;&#160;| Number of float<br />&#160;&#160;| Date of DateTime<br />&#160;&#160;| String of string<br />&#160;&#160;| Array of elements: ParaValue []<br />&#160;&#160;| Record of properties: (string * ParaValue) []<br />&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;static member Load : stream:Stream * binHeader:string * txtHeader:string * lookup:Lazy&lt;IDictionary&lt;int16,string&gt;&gt; -&gt; ParaValue<br />&#160;&#160;static member Load : file:string * binHeader:string * txtHeader:string * lookup:Lazy&lt;IDictionary&lt;int16,string&gt;&gt; -&gt; ParaValue<br />&#160;&#160;static member LoadBinary : stream:Stream * lookup:IDictionary&lt;int16,string&gt; * header:string option -&gt; ParaValue<br />&#160;&#160;static member LoadText : file:string -&gt; ParaValue<br />&#160;&#160;static member LoadText : stream:Stream -&gt; ParaValue<br />&#160;&#160;static member Parse : text:string -&gt; ParaValue<br />&#160;&#160;static member Save : stream:Stream * data:ParaValue -&gt; unit<br /><br />Full name: Pfarah.ParaValue</div>
 <div class="tip" id="fs4">static member ParaValue.Parse : text:string -&gt; ParaValue</div>
 <div class="tip" id="fs5">union case ParaValue.Record: properties: (string * ParaValue) [] -&gt; ParaValue</div>
 <div class="tip" id="fs6">val properties : (string * ParaValue) []</div>
@@ -365,6 +413,13 @@ are always present and the ones that are optional.</p>
 <div class="tip" id="fs41">val iter : action:(&#39;T -&gt; unit) -&gt; source:seq&lt;&#39;T&gt; -&gt; unit<br /><br />Full name: Microsoft.FSharp.Collections.Seq.iter</div>
 <div class="tip" id="fs42">val property : string</div>
 <div class="tip" id="fs43">val isOptional : bool</div>
+<div class="tip" id="fs44">val path : string<br /><br />Full name: Tutorial.path</div>
+<div class="tip" id="fs45">val ( binary header ) : string<br /><br />Full name: Tutorial.( binary header )</div>
+<div class="tip" id="fs46">val ( text header ) : string<br /><br />Full name: Tutorial.( text header )</div>
+<div class="tip" id="fs47">val tokens : Lazy&lt;System.Collections.Generic.IDictionary&lt;int16,string&gt;&gt;<br /><br />Full name: Tutorial.tokens</div>
+<div class="tip" id="fs48">val dict : keyValuePairs:seq&lt;&#39;Key * &#39;Value&gt; -&gt; System.Collections.Generic.IDictionary&lt;&#39;Key,&#39;Value&gt; (requires equality)<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.dict</div>
+<div class="tip" id="fs49">static member ParaValue.Load : stream:System.IO.Stream * binHeader:string * txtHeader:string * lookup:System.Lazy&lt;System.Collections.Generic.IDictionary&lt;int16,string&gt;&gt; -&gt; ParaValue<br />static member ParaValue.Load : file:string * binHeader:string * txtHeader:string * lookup:System.Lazy&lt;System.Collections.Generic.IDictionary&lt;int16,string&gt;&gt; -&gt; ParaValue</div>
+<div class="tip" id="fs50">val asDate : _arg1:ParaValue -&gt; System.DateTime<br /><br />Full name: Pfarah.ParaExtensions.asDate</div>
 
         </div>
         <div class="span3">
