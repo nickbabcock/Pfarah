@@ -16,6 +16,21 @@ type ParaValue =
   | String of string
   | Array of elements:ParaValue[]
   | Record of properties:(string * ParaValue)[]
+with
+  override this.ToString() =
+    match this with
+    | String(x) -> x
+    | Bool(x) -> sprintf "%b" x
+    | Number(x) -> sprintf "%.3f" x
+    | Date(x) -> (x.ToString("yyyy.M.d"))
+    | Array(arr) ->
+      let vals = arr |> Array.map (fun x -> (x.ToString()))
+      "[" + String.Join(", ", vals) + "]"
+    | Record(cord) ->
+      let fn (x,y) = "(" + x + ", " + (y.ToString()) + ")"
+      let vals = cord |> Array.map fn
+      "[" + String.Join(", ", vals) + "]"
+
 
 type private ParaParser (stream:StreamReader) =
   /// The max token size of any string, as defined by paradox internal source

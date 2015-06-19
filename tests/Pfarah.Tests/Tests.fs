@@ -384,6 +384,29 @@ let (``try parse date cases``:obj[][]) = [|
 let ``try parse date`` str expected =
   str |> tryDateParse |> shouldEqual expected
 
+let (``ParaValue toString cases``:obj[][]) = [|
+  [| ParaValue.String "a"; "a" |]
+  [| ParaValue.Number 1.500; "1.500" |]
+  [| ParaValue.Date (DateTime(1441, 10, 5)); "1441.10.5" |]
+  [| ParaValue.Bool true; "true" |]
+  [| ParaValue.Bool false; "false" |]
+  [| ParaValue.Array([||]); "[]" |]
+  [| ParaValue.Array([|ParaValue.String "a"|]); "[a]" |]
+  [| ParaValue.Array([|ParaValue.String "a"
+                       ParaValue.String "b"|]); "[a, b]" |]
+  [| ParaValue.Record([||]); "[]" |]
+  [| ParaValue.Record(
+      [| ("a", ParaValue.String "b") |]); "[(a, b)]" |]
+  [| ParaValue.Record(
+      [| ("a", ParaValue.String "b")
+         ("b", ParaValue.String "c") |]); "[(a, b), (b, c)]" |]
+|]
+
+[<Test>]
+[<TestCaseSource("ParaValue toString cases")>]
+let ``ParaValue toString`` x expected =
+  (x.ToString()) |> shouldEqual expected
+
 [<Test>]
 let ``arrays can be iterated`` () =
   let arr = ParaValue.Array([| ParaValue.Number 1.0; ParaValue.Number 2.0 |])
