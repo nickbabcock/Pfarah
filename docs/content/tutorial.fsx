@@ -63,7 +63,7 @@ match obj with
 
 The methods shown are very boilerplate heavy and writing this kind of code can
 make a project become bloated very quickly. Hence why Pfarah provides a bit of
-syntatic sugar and helper methods to make dealing with the data easier.
+syntactic sugar and helper methods to make dealing with the data easier.
 
 *)
 
@@ -148,7 +148,7 @@ printfn "%A" armyData
 
 Knowing the data is the first step to any type of analysis. This is made
 difficult when there can be thousands of objects, each one having a subset of
-the properties available. `findOptional` fixes this problem by disecting a
+the properties available. `findOptional` fixes this problem by dissecting a
 list of  supposedly similar objects and returning the properties that it knows
 are always present and the ones that are optional.
 
@@ -176,3 +176,36 @@ ParaValue.Parse nodes
 // Will print:
 // definition
 // incoming?
+
+(**
+
+## Binary Data
+
+The examples that we have been working with have been plain text, but
+Clausewitz files can come compressed and in binary form. To parse these files,
+we'll need a few things:
+
+- The file path.
+- The header if it is binary file. For instance, for EU4, the header is
+  "EU4bin".
+- The header if it is plain text file. For EU4, the header is "EU4txt".
+- Since binary files use two byte tokens instead of strings for identifiers,
+  we'll need   a dictionary of two byte tokens to strings so that the binary
+  file can be queried exactly   like a plain text file. There are many types of
+  tokens that can be encountered, so as not to   impose a memory tax
+  unnecessarily if it is a plain text file, the dictionary is `lazy`
+
+The following code sample will work for a file that is in any format
+(plain text/binary and compressed/uncompressed)
+
+*)
+
+let path = "game.eu4"
+let ``binary header`` = "EU4bin"
+let ``text header`` = "EU4txt"
+
+// Only if the file is detected to be binary will
+// this dictionary be created
+let tokens = lazy dict([(0x284ds, "date")])
+let data = ParaValue.Load path ``binary header`` ``text header`` tokens
+data?date |> asDate
