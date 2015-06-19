@@ -3,6 +3,7 @@
 * Add ability to parse compressed saves
 * Rename static `ParaValue` functions to highlight between plain text and binary
   parsing
+* Add basic `ToString` functionality to `ParaValue`
 
 ### 0.2.1
 * Cleaned up some of the code
