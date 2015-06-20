@@ -207,5 +207,5 @@ let ``text header`` = "EU4txt"
 // Only if the file is detected to be binary will
 // this dictionary be created
 let tokens = lazy dict([(0x284ds, "date")])
-let data = ParaValue.Load path ``binary header`` ``text header`` tokens
+let data = ParaValue.Load(path, ``binary header``, ``text header``, tokens)
 data?date |> asDate
