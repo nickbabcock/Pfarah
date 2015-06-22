@@ -1,3 +1,6 @@
+### 0.3.1 - June 21st 2015
+* Swap zip implementation for one that works
+
 ### 0.3.0 - June 19th 2015
 * Add ability to parse ironman saves
 * Add ability to parse compressed saves
