@@ -2,6 +2,7 @@ NUGET
   remote: https://nuget.org/api/v2
   specs:
     coveralls.net (0.5.0)
+    DotNetZip (1.9.3)
     FAKE (3.17.13)
     FSharp.Compiler.Service (0.0.82)
     FSharp.Formatting (2.7.4)
@@ -21,7 +22,6 @@ NUGET
       Microsoft.Net.Http
     OpenCover (4.5.3723)
     ReportGenerator (2.1.6.0)
-    SharpZipLib (0.86.0)
     SourceLink.Fake (0.4.2)
 GITHUB
   remote: fsharp/FAKE

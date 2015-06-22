@@ -1,12 +1,12 @@
 source https://nuget.org/api/v2
 
+nuget DotNetZip
 nuget FSharp.Formatting
 nuget NUnit 
 nuget NUnit.Runners
 nuget FAKE
 nuget OpenCover
 nuget ReportGenerator
-nuget SharpZipLib
 nuget SourceLink.Fake
 nuget coveralls.net
 

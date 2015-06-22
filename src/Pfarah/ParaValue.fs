@@ -5,7 +5,7 @@ open System
 open System.IO
 open System.Text
 open System.Collections.Generic
-open ICSharpCode.SharpZipLib.Zip;
+open Ionic.Zip
 open System.Globalization
 
 [<RequireQualifiedAccess>]
@@ -418,12 +418,11 @@ type ParaValue with
   static member Load (file:string, binHeader:string, txtHeader:string, lookup:Lazy<IDictionary<int16, string>>) =
     use fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 0x8000)
     if (fs.ReadByte()) = 0x50 && (fs.ReadByte()) = 0x4b then
-      fs.Seek(0L, SeekOrigin.Begin) |> ignore
-      use zf = new ZipFile(fs)
-      seq { for x in zf -> x :?> ZipEntry }
-      |> Seq.filter (fun x -> Path.GetExtension(x.Name) <> "")
+      use zf = new ZipFile(file)
+      zf
+      |> Seq.filter (fun x -> Path.GetExtension(x.FileName) <> "")
       |> Seq.exactlyOne
-      |> fun x -> ParaValue.Load(zf.GetInputStream(x), binHeader, txtHeader, lookup)
+      |> fun x -> ParaValue.Load(x.OpenReader(), binHeader, txtHeader, lookup)
     else
       fs.Seek(0L, SeekOrigin.Begin) |> ignore
       ParaValue.Load(fs, binHeader, txtHeader, lookup)
