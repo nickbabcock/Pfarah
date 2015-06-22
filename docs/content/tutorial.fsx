@@ -144,6 +144,31 @@ printfn "%A" armyData
 
 (**
 
+`tryFind` is also useful when dealing with nested data. If you have `A.B.C` and
+you aren't sure if `A`, `B`, or `C` exists, you can use `tryFind` in conjuntion
+with `Option.bind` to select `C`'s value or `None`
+
+*)
+
+let nested = "A={B={C=1.000}}"
+let cvalue =
+  ParaValue.Parse nested
+  |> tryFind "A"
+  |> Option.bind (tryFind "B")
+  |> Option.bind (tryFind "C")
+
+match cvalue with
+| Some(x) -> printfn "C's value: %f" (x |> asFloat)
+| None -> printfn "C didn't exist!"
+
+// Or a bit more concise if you're just dealing with values.
+printfn "C's value: %f" (cvalue |> floatDefault)
+
+// floatDefault will assume that if the value exists that it is
+// a float. If the value doesn't exist then it will return 0.0
+
+(**
+
 ## Exploring Data
 
 Knowing the data is the first step to any type of analysis. This is made
@@ -207,5 +232,5 @@ let ``text header`` = "EU4txt"
 // Only if the file is detected to be binary will
 // this dictionary be created
 let tokens = lazy dict([(0x284ds, "date")])
-let data = ParaValue.Load(path, ``binary header``, ``text header``, tokens)
-data?date |> asDate
+let game = ParaValue.Load(path, ``binary header``, ``text header``, tokens)
+game?date |> asDate
