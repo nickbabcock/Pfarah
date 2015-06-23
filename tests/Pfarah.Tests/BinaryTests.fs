@@ -22,6 +22,13 @@ let ``binary parse basic date`` () =
   |> shouldEqual [| ("date", ParaValue.Date(DateTime(1444, 11, 11))) |]
 
 [<Test>]
+let ``binary parse 1.1.1 date`` () =
+  let lookup = dict([(0x284ds, "date")])
+  let stream = strm([|0x4d; 0x28; 0x01; 0x00; 0x0c; 0x00; 0xf8; 0x77; 0x9c; 0x02|])
+  parse stream lookup None
+  |> shouldEqual [| ("date", ParaValue.Date(DateTime(1, 1, 1))) |]
+
+[<Test>]
 let ``binary parse basic string`` () =
   let lookup = dict([(0x2a38s, "player")])
   let stream = strm([|0x38; 0x2a; 0x01; 0x00; 0x0f; 0x00; 0x03; 0x00; 0x45; 0x4e; 0x47|])
