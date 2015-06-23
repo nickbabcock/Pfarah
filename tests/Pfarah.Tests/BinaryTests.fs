@@ -89,6 +89,13 @@ let ``binary parse must start with an identifier`` () =
   ex.Message |> shouldEqual "Expected identifier, but got Equals, Position 2"
 
 [<Test>]
+let ``0x000cs means int32 data`` () =
+  let lookup = dict([(0xdddds, "provinces")])
+  let data = [| 0xdd; 0xdd; 0x01; 0x00; 0x0c; 0x00; 0xff; 0xff; 0xff; 0xff |]
+  parse (strm data) lookup None
+  |> shouldEqual [| ("provinces", ParaValue.Number -1.0 ) |]
+
+[<Test>]
 let ``binary parse nested object`` () =
   let lookup = dict([(0x2ec9s, "savegame_version")
                      (0x28e2s, "first")

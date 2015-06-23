@@ -259,8 +259,8 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
 
   let parseToken token =
     match token with
-    | 0x000cs -> BinaryToken.Uint(stream.ReadUInt32())
-    | 0x0014s -> BinaryToken.Int(stream.ReadInt32())
+    | 0x0014s -> BinaryToken.Uint(stream.ReadUInt32())
+    | 0x000cs -> BinaryToken.Int(stream.ReadInt32())
     | 0x000es -> BinaryToken.Bool(stream.ReadByte() <> 0uy)
     | 0x000fs | 0x0017s -> BinaryToken.String(readString())
     | 0x000ds -> BinaryToken.Float(stream.ReadSingle())
@@ -344,8 +344,8 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
   /// Transforms current token into a ParaValue
   and parseValue () =
     match tok with
-    | BinaryToken.Uint(x) -> toPara x
-    | BinaryToken.Int(x) -> ParaValue.Number(float(x))
+    | BinaryToken.Int(x) -> toPara x
+    | BinaryToken.Uint(x) -> ParaValue.Number(float(x))
     | BinaryToken.Bool(b) -> ParaValue.Bool(b)
     | BinaryToken.String(s) -> ParaValue.String(s)
     | BinaryToken.Float(f) -> ParaValue.Number(float(f))
@@ -357,8 +357,8 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
   /// object.
   and parseSubgroup () =
     match (nextToken()) with
-    | BinaryToken.Int(x) -> subber (x.ToString()) (fun () -> float x |> ParaValue.Number)
-    | BinaryToken.Uint(x) -> subber (x.ToString()) (fun () -> toPara x)
+    | BinaryToken.Uint(x) -> subber (x.ToString()) (fun () -> float x |> ParaValue.Number)
+    | BinaryToken.Int(x) -> subber (x.ToString()) (fun () -> toPara x)
     | BinaryToken.Float(x) ->
       nextToken() |> ignore
       ParaValue.Array(parseArrayFirst (ParaValue.Number(float(x))))

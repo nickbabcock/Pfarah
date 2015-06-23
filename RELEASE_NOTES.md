@@ -1,5 +1,6 @@
 ### 0.3.2 - June 23rd 2015
 * Fix interpretation of empty '{}' in binary format from arrays to objects
+* Fix int vs. uint type detection
 
 ### 0.3.1 - June 21st 2015
 * Swap zip implementation for one that works
