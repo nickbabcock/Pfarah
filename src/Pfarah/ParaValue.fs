@@ -372,7 +372,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | BinaryToken.Token(x) ->
       nextToken() |> ensureEquals
       ParaValue.Record(parseObject x)
-    | BinaryToken.EndGroup -> ParaValue.Array [| |]
+    | BinaryToken.EndGroup -> ParaValue.Record [| |]
     | x -> sprintf "Unexpected token: %s" (x.ToString()) |> fail
 
   /// It's impossible to know just by reading the first token if we are dealing

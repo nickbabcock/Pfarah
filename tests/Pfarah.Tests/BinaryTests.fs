@@ -230,12 +230,12 @@ let ``binary parse signed int array`` () =
                                                       ParaValue.Number 150.0 |])) |]
 
 [<Test>]
-let ``binary parse empty array`` () =
-  let lookup = dict([(0x2dc6s, "multiplayer_random_seed")])
+let ``binary parse empty object`` () =
+  let lookup = dict([(0xdddds, "foo")])
   let data =
-      [| 0xc6; 0x2d; 0x01; 0x00; 0x03; 0x00; 0x04; 0x00 |]
+      [| 0xdd; 0xdd; 0x01; 0x00; 0x03; 0x00; 0x04; 0x00 |]
   parse (strm data) lookup None
-  |> shouldEqual [| ("multiplayer_random_seed", ParaValue.Array [| |]) |]
+  |> shouldEqual [| ("foo", ParaValue.Record [| |]) |]
 
 [<Test>]
 let ``binary parse object array`` () =
