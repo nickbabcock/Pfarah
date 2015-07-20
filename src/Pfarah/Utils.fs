@@ -5,7 +5,7 @@ open System
 module Utils =
   let inline private isNum (c:char) = c >= '0' && c <= '9'
   let inline private toNum (c:char) = int c - 48
-  
+
   /// A highly optimized version of Double.TryParse that takes advantage of
   /// the fact that we know that the number format is (in regex form):
   /// <(\d+)\.(\d{3})?>. In profiling it was shown that Double.TryParse was a
@@ -44,6 +44,16 @@ module Utils =
            float (toNum (str.Chars(i + 1)) * 100 +
                   toNum (str.Chars(i + 2)) * 10 +
                   toNum (str.Chars(i + 3))) / 1000.0
+          result <- Some((float whole + fraction) * sign)
+        else if (i + 5 = str.Length - 1) && isNum (str.Chars(i + 1))
+              && isNum(str.Chars(i + 2)) && isNum(str.Chars(i + 3))
+              && isNum(str.Chars(i + 4)) && isNum(str.Chars(i + 5)) then
+          let fraction =
+           float (toNum (str.Chars(i + 1)) * 10000 +
+                  toNum (str.Chars(i + 2)) * 1000 +
+                  toNum (str.Chars(i + 3)) * 100 +
+                  toNum (str.Chars(i + 4)) * 10 +
+                  toNum (str.Chars(i + 5))) / 100000.0
           result <- Some((float whole + fraction) * sign)
         isDone <- true
       else
