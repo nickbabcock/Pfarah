@@ -7,6 +7,7 @@ open System
 open System.IO
 open System.Text
 open System.Collections.Generic
+open System.Diagnostics
 
 let shouldEqual (x : 'a) (y : 'a) = Assert.AreEqual(x, y, sprintf "Expected: %A\nActual: %A" x y)
 
@@ -379,6 +380,15 @@ let (``try parse double cases``:obj[][]) = [|
 [<TestCaseSource("try parse double cases")>]
 let ``try parse double`` str expected =
   str |> tryDoubleParse |> shouldEqual expected
+
+[<Test>]
+let ``time parse double`` () =
+  let watch = Stopwatch.StartNew()
+  for i = 1 to 10000000 do
+    "15.455" |> tryDoubleParse |> ignore
+
+  watch.Stop()
+  printfn "Double parsing: %d millseconds" watch.ElapsedMilliseconds
 
 let (``try parse date cases``:obj[][]) = [|
   [| "1.1.1"; Some(new DateTime(1, 1, 1)) |]
