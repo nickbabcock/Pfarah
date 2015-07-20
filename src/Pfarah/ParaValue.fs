@@ -204,6 +204,7 @@ type private BinaryToken =
 | Int of int32
 | Token of string
 | Float of float32
+| Double of float
 | Bool of bool
 | OpenGroup
 | EndGroup
@@ -216,6 +217,7 @@ with
     | Int(x) -> sprintf "Int: %d" x
     | Token(x) -> sprintf "Token: %s" x
     | Float(x) -> sprintf "Float: %f" x
+    | Double(x) -> sprintf "Double: %f" x
     | Bool(x) -> sprintf "Bool: %b" x
     | OpenGroup -> sprintf "Open Group"
     | EndGroup -> sprintf "End Group"
@@ -264,6 +266,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | 0x000es -> BinaryToken.Bool(stream.ReadByte() <> 0uy)
     | 0x000fs | 0x0017s -> BinaryToken.String(readString())
     | 0x000ds -> BinaryToken.Float(stream.ReadSingle())
+    | 0x0167s -> BinaryToken.Double(stream.ReadDouble())
     | 0x0003s -> BinaryToken.OpenGroup
     | 0x0004s -> BinaryToken.EndGroup
     | 0x0001s -> BinaryToken.Equals
@@ -349,6 +352,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | BinaryToken.Bool(b) -> ParaValue.Bool(b)
     | BinaryToken.String(s) -> ParaValue.String(s)
     | BinaryToken.Float(f) -> ParaValue.Number(float(f))
+    | BinaryToken.Double(f) -> ParaValue.Number(f)
     | BinaryToken.OpenGroup -> parseSubgroup()
     | BinaryToken.Token(x) -> ParaValue.String(x)
     | x -> sprintf "Unexpected token: %s" (x.ToString()) |> fail
@@ -362,6 +366,9 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | BinaryToken.Float(x) ->
       nextToken() |> ignore
       ParaValue.Array(parseArrayFirst (ParaValue.Number(float(x))))
+    | BinaryToken.Double(x) ->
+      nextToken() |> ignore
+      ParaValue.Array(parseArrayFirst (ParaValue.Number(x)))
     | BinaryToken.String(x) -> subber x (fun () -> ParaValue.String x)
     | BinaryToken.OpenGroup ->
       let firstKey = nextToken() |> ensureIdentifier

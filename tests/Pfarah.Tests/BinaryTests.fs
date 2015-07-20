@@ -379,6 +379,15 @@ let ``binary parse heterogeneous array`` () =
   Assert.AreEqual(ParaValue.Number 0.0, foo.[0])
   Assert.AreEqual(3.242, foo.[1] |> asFloat, 0.001)
 
+//[<Test>]
+//let ``binary parse double data`` () =
+//  let lookup = dict([0x2c2fs, "military_strength"])
+//  let data = [| 0x2f; 0x2c; 0x01; 0x00; 0x67; 0x01;
+//                0xa5; 0xeb; 0x16; 0x00; 0x00; 0x00; 0x00; 0x00 |]
+//  parse (strm data) lookup None
+//  |> shouldEqual [| ("military_strength", ParaValue.Number(0.0)) |]
+
+
 [<Test>]
 let ``load plain binary file`` () =
   let path = Path.Combine("data", "eu4bin.eu4")
