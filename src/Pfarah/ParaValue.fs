@@ -247,10 +247,13 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
   /// occurrences, though it doesn't guarantee 100% accuracy, as numbers larger
   /// than 43,808,760 will be detected as dates.
   let (|HiddenDate|_|) value =
-    let (left, hours) = Math.DivRem(int(value), 24)
-    let (left, days) = Math.DivRem(left, 365)
-    let years = left - 5001
-    if years >= 0 && years < 10000 then
+    // Performance optimization: instead of checking after Math.DivRem that the
+    // years fall between [0, 10000), this branch ensures that `value` will lead
+    // to years between [0, 10000)
+    if value >= 43808760 && value < 131408760 then
+      let (left, hours) = Math.DivRem(int(value), 24)
+      let (left, days) = Math.DivRem(left, 365)
+      let years = left - 5001
       let date =
         DateTime.MinValue
           .AddYears(years)
