@@ -4,6 +4,7 @@ open Pfarah
 open System
 open System.IO
 open NUnit.Framework
+open Utils
 
 let shouldEqual (x : 'a) (y : 'a) = Assert.AreEqual(x, y, sprintf "Expected: %A\nActual: %A" x y)
 
@@ -379,14 +380,30 @@ let ``binary parse heterogeneous array`` () =
   Assert.AreEqual(ParaValue.Number 0.0, foo.[0])
   Assert.AreEqual(3.242, foo.[1] |> asFloat, 0.001)
 
-//[<Test>]
-//let ``binary parse double data`` () =
-//  let lookup = dict([0x2c2fs, "military_strength"])
-//  let data = [| 0x2f; 0x2c; 0x01; 0x00; 0x67; 0x01;
-//                0xa5; 0xeb; 0x16; 0x00; 0x00; 0x00; 0x00; 0x00 |]
-//  parse (strm data) lookup None
-//  |> shouldEqual [| ("military_strength", ParaValue.Number(0.0)) |]
 
+let (``try parse double cases``:obj[][]) = [|
+  [| [| 0x00; 0x40; 0x08; 0x00 |]; 16.50000 |]
+  [| [| 0x70; 0xca; 0x07; 0x00 |]; 15.58154 |]
+  [| [| 0x00; 0x00; 0x00; 0x00 |]; 0.00000 |]
+  [| [| 0xa5; 0xeb; 0x16; 0x00 |]; 45.84097 |]
+  [| [| 0xc7; 0xe4; 0x00; 0x00 |]; 1.78732 |]
+  [| [| 0xc2; 0xb5; 0x00; 0x00 |]; 1.41998 |]
+|]
+
+[<Test>]
+[<TestCaseSource("try parse double cases")>]
+let ``binary parse double data`` data expected =
+  let bytes = data |> Array.map byte
+  let value = BitConverter.ToInt32(bytes, 0)
+  cut value |> shouldEqual expected
+
+[<Test>]
+let ``binary parse double`` () =
+  let lookup = dict([0x2c2fs, "military_strength"])
+  let data = [| 0x2f; 0x2c; 0x01; 0x00; 0x67; 0x01;
+                0xc7; 0xe4; 0x00; 0x00; 0x00; 0x00; 0x00; 0x00 |]
+  parse (strm data) lookup None
+  |> shouldEqual [| ("military_strength", ParaValue.Number(1.78732)) |]
 
 [<Test>]
 let ``load plain binary file`` () =

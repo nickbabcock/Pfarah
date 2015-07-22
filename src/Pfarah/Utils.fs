@@ -6,6 +6,12 @@ module Utils =
   let inline private isNum (c:char) = c >= '0' && c <= '9'
   let inline private toNum (c:char) = int c - 48
 
+  /// Converts an integer that represents a Q16.16 fixed-point number into its
+  /// floating point representation. See:
+  /// https://en.wikipedia.org/wiki/Q_(number_format)
+  let inline cut (n:int) =
+    Math.Floor(((float(n) * 2.0) / 65536.0) * 100000.0) / 100000.0
+
   /// A highly optimized version of Double.TryParse that takes advantage of
   /// the fact that we know that the number format is (in regex form):
   /// <(\d+)\.(\d{3})?>. In profiling it was shown that Double.TryParse was a
