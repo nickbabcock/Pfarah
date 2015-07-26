@@ -47,6 +47,7 @@
     <Compile Include="ParaValue.fs" />
     <Compile Include="ParaExtensions.fs" />
     <None Include="Script.fsx" />
+    <None Include="Tokens.fsx" />
     <None Include="paket.references" />
     <None Include="paket.template" />
   </ItemGroup>
