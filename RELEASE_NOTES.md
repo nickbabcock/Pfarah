@@ -1,3 +1,8 @@
+### 0.3.3 July 26th 2015
+* Update parsing to support Common Sense data types
+* Performance optimizations in iron man parsing
+* Support higher precision numbers
+
 ### 0.3.2 - June 23rd 2015
 * Fix interpretation of empty '{}' in binary format from arrays to objects
 * Fix int vs. uint binary type detection
