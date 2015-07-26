@@ -286,7 +286,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | 0x000cs -> int32Token <- stream.ReadInt32(); BinaryToken.Int
     | 0x000es -> boolToken <- stream.ReadByte() <> 0uy; BinaryToken.Bool
     | 0x000fs | 0x0017s -> stringToken <- readString(); BinaryToken.String
-    | 0x000ds -> floatToken <- float (stream.ReadSingle()); BinaryToken.Float
+    | 0x000ds -> floatToken <- stream.ReadInt32() |> cut32; BinaryToken.Float
     | 0x0167s -> floatToken <- parseDouble(); BinaryToken.Float
     | 0x0003s -> BinaryToken.OpenGroup
     | 0x0004s -> BinaryToken.EndGroup

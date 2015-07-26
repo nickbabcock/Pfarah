@@ -197,24 +197,34 @@ let ``binary parse date array`` () =
   parse (strm data) lookup None
   |> shouldEqual [| ("blah", ParaValue.Array([| ParaValue.Date(DateTime(1444, 11, 11)) |])) |]
 
+
+let (``try parse float cases``:obj[][]) = [|
+  [| [| 0x17; 0x00; 0x00; 0x00 |]; 0.023 |]
+  [| [| 0x29; 0x00; 0x00; 0x00 |]; 0.041 |]
+  [| [| 0x12; 0x00; 0x00; 0x00 |]; 0.018 |]
+  [| [| 0x1e; 0x02; 0x00; 0x00 |]; 0.542 |]
+  [| [| 0xe8; 0x03; 0x00; 0x00 |]; 1.000 |]
+  [| [| 0xc0; 0xc6; 0x2d; 0x00 |]; 3000.000 |]
+|]
+
 [<Test>]
-let ``binary parse float`` () =
-  let data =
-      [| 0x0f; 0x00; 0x03; 0x00; 0x45; 0x4e; 0x47; 0x01; 0x00; 0x0d; 0x00; 0x91;
-         0xed; 0x87; 0x41 |]
+[<TestCaseSource("try parse float cases")>]
+let ``binary parse float`` data (expected:float) =
+  let header = [| 0x0f; 0x00; 0x03; 0x00; 0x45; 0x4e; 0x47; 0x01; 0x00; 0x0d; 0x00; |]
+  let data = Array.concat([header; data])
   let stream = strm(data)
   let actual = ParaValue.LoadBinary(stream, dict([]), None)
-  Assert.AreEqual(actual?ENG |> asFloat,  16.991, 0.01)
+  Assert.AreEqual(actual?ENG |> asFloat,  expected, 0.01)
 
 [<Test>]
 let ``binary parse float array`` () =
   let data =
       [| 0x0f; 0x00; 0x03; 0x00; 0x45; 0x4e; 0x47; 0x01; 0x00; 0x03; 0x00;
-         0x0d; 0x00; 0xb6; 0xb3; 0x9c; 0x42; 0x04; 0x00 |]
+         0x0d; 0x00; 0x17; 0x00; 0x00; 0x00; 0x04; 0x00 |]
   let actual = ParaValue.LoadBinary(strm(data), dict([]), None)
   let arr = actual?ENG |> asArray
   let value = arr.[0] |> asFloat
-  Assert.AreEqual(value, 78.351, 0.01)
+  Assert.AreEqual(value, 0.023, 0.01)
 
 [<Test>]
 let ``binary parse deceptive object`` () =
@@ -374,11 +384,11 @@ let ``binary parse heterogeneous array`` () =
   let lookup = dict([0xdddds, "foo"])
   let data =
     [| 0xdd; 0xdd; 0x01; 0x00; 0x03; 0x00; 0x0c; 0x00; 0x00; 0x00; 0x00; 0x00;
-       0x0d; 0x00; 0xee; 0x7c; 0x4f; 0x40; 0x04; 0x00 |]
+       0x0d; 0x00; 0x17; 0x00; 0x00; 0x00; 0x04; 0x00 |]
   let res = ParaValue.LoadBinary((strm data), lookup, None)
   let foo = res?foo |> asArray
   Assert.AreEqual(ParaValue.Number 0.0, foo.[0])
-  Assert.AreEqual(3.242, foo.[1] |> asFloat, 0.001)
+  Assert.AreEqual(0.023, foo.[1] |> asFloat, 0.001)
 
 
 let (``try parse double cases``:obj[][]) = [|

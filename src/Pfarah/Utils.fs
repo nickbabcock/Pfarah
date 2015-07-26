@@ -12,6 +12,11 @@ module Utils =
   let inline cut (n:int) =
     Math.Floor(((float(n) * 2.0) / 65536.0) * 100000.0) / 100000.0
 
+  /// Converts the smaller precision binary float from the integer it is stored
+  /// as to a float. It makes sense to be encoded this way as the numbers are
+  /// textually represented with three decimal points (#.000)
+  let inline cut32 (n:int) = float(n) / 1000.0
+
   /// A highly optimized version of Double.TryParse that takes advantage of
   /// the fact that we know that the number format is (in regex form):
   /// <(\d+)\.(\d{3})?>. In profiling it was shown that Double.TryParse was a
