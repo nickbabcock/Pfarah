@@ -94,7 +94,7 @@ let ``binary parse subgroup unexpected equals token`` () =
 let ``binary parse must start with an identifier`` () =
   let data = [| 0x01; 0x00; |]
   let ex = Assert.Throws(fun () -> ParaValue.LoadBinary((strm data), dict([]), None) |> ignore)
-  ex.Message |> shouldEqual "Expected identifier, but got Equals, Position 2"
+  ex.Message |> shouldEqual "Expected identifier, but got: Equals, Position 2"
 
 [<Test>]
 let ``0x000cs means int32 data`` () =
