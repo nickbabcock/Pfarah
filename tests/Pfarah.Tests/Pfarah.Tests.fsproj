@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="Tests.fs" />
     <Compile Include="BinaryTests.fs" />
+    <Compile Include="TokensTest.fs" />
     <None Include="data\eu4bin-zip.eu4">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

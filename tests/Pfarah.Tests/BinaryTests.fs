@@ -13,7 +13,7 @@ let parse str lookup header =
   | ParaValue.Record properties -> properties
   | _ -> failwith "Expected a record"
 
-let strm (arr:int[]) = new MemoryStream([| for i in arr -> byte(i) |])
+let strm (arr:int[]) = new MemoryStream(Array.map byte arr)
 
 [<Test>]
 let ``binary parse basic date`` () =
