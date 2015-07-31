@@ -20,6 +20,10 @@ let lo (x:float) =
   let data = BitConverter.GetBytes(int x * 1000)
   Array.concat([BitConverter.GetBytes(0x000ds); data])
 
+let inty (x:int32) =
+  let data = BitConverter.GetBytes(x)
+  Array.concat([BitConverter.GetBytes(0x000cs); data])
+
 let obje arr =
   Array.concat([BitConverter.GetBytes(0x0003s)
                 arr |> Array.collect id
@@ -102,6 +106,17 @@ let ``tokens single key literal object`` () =
   let txtdata = "ENG={node=bar}"
   let bindata =
     str "ENG" |> eq (obje
+      [| token "node" |> eq (str "bar") |])
+  let binary = loadBin bindata
+  let text = ParaValue.Parse txtdata
+  let found = Tokens.deduce text binary
+  found |> shouldEqual (dict([("node", "350")]))
+
+[<Test>]
+let ``tokens numbers aren't tokens`` () =
+  let txtdata = "-1={node=bar}"
+  let bindata =
+    inty -1 |> eq (obje
       [| token "node" |> eq (str "bar") |])
   let binary = loadBin bindata
   let text = ParaValue.Parse txtdata

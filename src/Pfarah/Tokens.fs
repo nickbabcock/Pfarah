@@ -1,9 +1,14 @@
 ﻿namespace Pfarah
 
+open System
+
 module Tokens =
+  let isTokenKey xkey ykey =
+    xkey <> ykey && Int32.TryParse(ykey) |> fst |> (=) true
+
   let extractKeys x y =
     Seq.zip (x |> asRecord) (y |> asRecord)
-    |> Seq.filter (fun ((xkey, xval), (ykey, yval)) -> xkey <> ykey)
+    |> Seq.filter (fun ((xkey, xval), (ykey, yval)) -> isTokenKey xkey ykey)
     |> Seq.map (fun ((xkey, xval), (ykey, yval)) -> xkey, ykey)
 
   let rec deduceInner txt bin =
