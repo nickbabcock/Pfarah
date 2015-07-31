@@ -44,7 +44,7 @@ let authors = [ "Nick Babcock" ]
 // Tags for your project (for NuGet package)
 let tags = "DOM, Parser, Paradox, fsharp, F#"
 
-// File system information 
+// File system information
 let solutionFile  = "Pfarah.sln"
 
 // Pattern specifying assemblies to be tested using NUnit
@@ -52,7 +52,7 @@ let testAssemblies = "tests/**/bin/Release/*Tests*.dll"
 
 // Git configuration (used for publishing documentation in gh-pages branch)
 // The profile where the project is posted
-let gitOwner = "nickbabcock" 
+let gitOwner = "nickbabcock"
 let gitHome = "https://github.com/" + gitOwner
 
 // The name of the project on GitHub
@@ -177,7 +177,7 @@ Target "SourceLink" (fun _ ->
 // Build a NuGet package
 
 Target "NuGet" (fun _ ->
-    Paket.Pack(fun p -> 
+    Paket.Pack(fun p ->
         { p with
             OutputPath = "bin"
             Version = release.NugetVersion
@@ -185,7 +185,7 @@ Target "NuGet" (fun _ ->
 )
 
 Target "PublishNuget" (fun _ ->
-    Paket.Push(fun p -> 
+    Paket.Push(fun p ->
         { p with
             WorkingDir = "./temp" })
 )
@@ -238,7 +238,7 @@ Target "GenerateHelpDebug" (fun _ ->
     generateHelp' true true
 )
 
-Target "KeepRunning" (fun _ ->    
+Target "KeepRunning" (fun _ ->
     use watcher = new FileSystemWatcher(DirectoryInfo("docs/content").FullName,"*.*")
     watcher.EnableRaisingEvents <- true
     watcher.Changed.Add(fun e -> generateHelp false)
@@ -258,7 +258,7 @@ Target "GenerateDocs" DoNothing
 
 let createIndexFsx lang =
     let content = """(*** hide ***)
-// This block of code is omitted in the generated HTML documentation. Use 
+// This block of code is omitted in the generated HTML documentation. Use
 // it to define helpers that you do not want to show in the documentation.
 #I "../../../bin"
 
@@ -320,11 +320,11 @@ Target "Release" (fun _ ->
 
     Branches.tag "" release.NugetVersion
     Branches.pushTag "" "origin" release.NugetVersion
-    
+
     // release on github
     createClient (getBuildParamOrDefault "github-user" "") (getBuildParamOrDefault "github-pw" "")
-    |> createDraft gitOwner gitName release.NugetVersion (release.SemVer.PreRelease <> None) release.Notes 
-    // TODO: |> uploadFile "PATH_TO_FILE"    
+    |> createDraft gitOwner gitName release.NugetVersion (release.SemVer.PreRelease <> None) release.Notes
+    // TODO: |> uploadFile "PATH_TO_FILE"
     |> releaseDraft
     |> Async.RunSynchronously
 )
@@ -332,7 +332,7 @@ Target "Release" (fun _ ->
 Target "Coverage" (fun _ ->
     let result =
         ExecProcess (fun info ->
-            info.FileName <- ("packages/OpenCover/OpenCover.Console.exe")
+            info.FileName <- ("packages/OpenCover/tools/OpenCover.Console.exe")
             info.Arguments <- "-target:\"packages/NUnit.Runners/tools/nunit-console.exe\" " +
                               "-targetargs:\"/nologo /noshadow tests/Pfarah.Tests/bin/Debug/Pfarah.Tests.dll\" " +
                               "-filter:\"+[Pfarah]* -[Pfarah.Tests]*\" -register:user -output:coverage.xml"
@@ -369,7 +369,7 @@ Target "All" DoNothing
   ==> "Coverage"
   =?> ("CoverageReport",isLocalBuild)
 
-"All" 
+"All"
 #if MONO
 #else
   =?> ("SourceLink", Pdbstr.tryFind().IsSome )
@@ -387,7 +387,7 @@ Target "All" DoNothing
 
 "GenerateHelp"
   ==> "KeepRunning"
-    
+
 "ReleaseDocs"
   ==> "Release"
 
