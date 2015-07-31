@@ -16,7 +16,7 @@ let str (x:string) =
   let data = encoding.GetBytes(x)
   Array.concat([BitConverter.GetBytes(0x000fs); length; data])
 
-let lo (x:float) = 
+let lo (x:float) =
   let data = BitConverter.GetBytes(int x * 1000)
   Array.concat([BitConverter.GetBytes(0x000ds); data])
 
@@ -85,3 +85,25 @@ let ``tokens double nested objects`` () =
   let text = ParaValue.Parse txtdata
   let found = Tokens.deduce text binary
   found |> shouldEqual (dict([("day", "124"); ("node", "350"); ("id", "11")]))
+
+[<Test>]
+let ``tokens single key literal`` () =
+  let txtdata = "ENG=1.000\nnode=bar"
+  let bindata =
+    [| str "ENG" |> eq (lo 1.0)
+       token "node" |> eq (str "bar") |] |> Array.collect id
+  let binary = loadBin bindata
+  let text = ParaValue.Parse txtdata
+  let found = Tokens.deduce text binary
+  found |> shouldEqual (dict([("node", "350")]))
+
+[<Test>]
+let ``tokens single key literal object`` () =
+  let txtdata = "ENG={node=bar}"
+  let bindata =
+    str "ENG" |> eq (obje
+      [| token "node" |> eq (str "bar") |])
+  let binary = loadBin bindata
+  let text = ParaValue.Parse txtdata
+  let found = Tokens.deduce text binary
+  found |> shouldEqual (dict([("node", "350")]))

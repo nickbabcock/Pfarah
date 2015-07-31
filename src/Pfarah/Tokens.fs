@@ -15,6 +15,6 @@ module Tokens =
         | _ -> None)
       |> Seq.collect (fun (x, y) -> deduceInner x y)
 
-    Seq.append subkeys (extractKeys txt bin)  
+    Seq.append subkeys (extractKeys txt bin)
 
   let deduce txt bin = deduceInner txt bin |> dict
