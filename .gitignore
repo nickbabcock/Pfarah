@@ -188,3 +188,5 @@ TestResult.xml
 coverage.xml
 results.xml
 report/
+.fake/
+*.svclog
