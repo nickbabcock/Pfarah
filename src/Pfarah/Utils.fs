@@ -72,13 +72,24 @@ module Utils =
 
     result
 
+  /// Returns some datetime if the parameters can be used to create
+  /// a valid date
+  let private tryDate year month day hour =
+    if year > 0 && year < 10000 &&
+      month > 0 && month < 13 &&
+      hour >= 0 && hour < 24 &&
+      day > 0 && day <= DateTime.DaysInMonth(year, month) then
+      Some(new DateTime(year, month, day, hour, 0, 0))
+    else
+      None
+
   /// Attempts to convert the string to a date time. Returns some datetime if
   /// successful
   let tryDateParse (str:string) =
     if str |> Seq.forall (fun c -> isNum c || c = '.') then
       match str.Split('.') with
-      | [|y;m;d|] -> Some(new DateTime(int y, int m, int d))
-      | [|y;m;d;h|] -> Some(new DateTime(int y, int m, int d, int h, 0, 0))
+      | [|y;m;d|] -> tryDate (int y) (int m) (int d) 0
+      | [|y;m;d;h|] -> tryDate (int y) (int m) (int d) (int h)
       | _ -> None
     else
       None

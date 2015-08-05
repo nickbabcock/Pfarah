@@ -392,7 +392,17 @@ let ``time parse double`` () =
 
 let (``try parse date cases``:obj[][]) = [|
   [| "1.1.1"; Some(new DateTime(1, 1, 1)) |]
+  [| "2015.8.1"; Some(new DateTime(2015, 8, 1)) |]
   [| "1942.5.2.4"; Some(new DateTime(1942, 5, 2, 4, 0, 0)) |]
+  [| "1942.5.2.14"; Some(new DateTime(1942, 5, 2, 14, 0, 0)) |]
+  [| "1942.5.2.24"; None |]
+  [| "2015.8.32"; None |]
+  [| "99999.8.1"; None |]
+  [| "1942.0.1"; None |]
+  [| "1942.13.1"; None |]
+  [| "1942.1.0"; None |]
+  [| "0.8.1"; None |]
+  [| "50.50.50"; None |]
   [| "1.a.1"; None |]
   [| "1!1.1"; None |]
   [| "1.1"; None |]
