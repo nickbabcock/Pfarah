@@ -1,3 +1,7 @@
+### 0.3.4 August 5th 2015
+* More robust textual date parsing
+* Update DotNetZip to 1.9.5
+
 ### 0.3.3 July 26th 2015
 * Update parsing to support Common Sense data types
 * Performance optimizations in iron man parsing
@@ -6,7 +10,7 @@
 ### 0.3.2 - June 23rd 2015
 * Fix interpretation of empty '{}' in binary format from arrays to objects
 * Fix int vs. uint binary type detection
-* Interpret binary dates of `1.1.1` correctly 
+* Interpret binary dates of `1.1.1` correctly
 
 ### 0.3.1 - June 21st 2015
 * Swap zip implementation for one that works
