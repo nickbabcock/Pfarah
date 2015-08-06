@@ -1,3 +1,7 @@
+### 0.3.5 August 6th 2015
+* Release proper NuGet packages
+* Update DotNetZip to 1.9.6
+
 ### 0.3.4 August 5th 2015
 * More robust textual date parsing
 * Update DotNetZip to 1.9.5
