@@ -1,3 +1,6 @@
+### 0.3.6 August 6th 2015
+* Third time is the charm with Paket and Nuget
+
 ### 0.3.5 August 6th 2015
 * Release proper NuGet packages
 * Update DotNetZip to 1.9.6
