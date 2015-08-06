@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8"/>
-    <title>Utils - Pfarah</title>
+    <title>Tokens - Pfarah</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description" content=""/>
     <meta name="author" content="Nick Babcock <nbabcock19@hotmail.com>"/>
@@ -36,7 +36,7 @@
 
 
 
-<h1>Utils</h1>
+<h1>Tokens</h1>
 <p>
   <span>Namespace: Pfarah</span><br />
 </p>
@@ -54,144 +54,73 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '22', 22)" onmouseover="showTip(event, '22', 22)">
-            cut n
+          <code onmouseout="hideTip(event, '18', 18)" onmouseover="showTip(event, '18', 18)">
+            deduce txt bin
           </code>
-          <div class="tip" id="22">
-            <strong>Signature:</strong> n:int -&gt; float<br />
+          <div class="tip" id="18">
+            <strong>Signature:</strong> txt:ParaValue -&gt; bin:ParaValue -&gt; IDictionary&lt;string,string&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L12-12" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Tokens.fs#L25-25" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Converts an integer that represents a Q16.16 fixed-point number into its
-floating point representation. See:
-<a href="https://en.wikipedia.org/wiki/Q_(number_format)">https://en.wikipedia.org/wiki/Q_(number_format)</a></p>
-
-
-
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '23', 23)" onmouseover="showTip(event, '23', 23)">
-            cut32 n
+          <code onmouseout="hideTip(event, '19', 19)" onmouseover="showTip(event, '19', 19)">
+            deduceInner txt bin
           </code>
-          <div class="tip" id="23">
-            <strong>Signature:</strong> n:int -&gt; float<br />
+          <div class="tip" id="19">
+            <strong>Signature:</strong> txt:ParaValue -&gt; bin:ParaValue -&gt; seq&lt;string * string&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L18-18" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Tokens.fs#L14-14" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Converts the smaller precision binary float from the integer it is stored
-as to a float. It makes sense to be encoded this way as the numbers are
-textually represented with three decimal points (#.000)</p>
-
-
-
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '24', 24)" onmouseover="showTip(event, '24', 24)">
-            tryDateParse str
+          <code onmouseout="hideTip(event, '20', 20)" onmouseover="showTip(event, '20', 20)">
+            extractKeys x y
           </code>
-          <div class="tip" id="24">
-            <strong>Signature:</strong> str:string -&gt; DateTime option<br />
+          <div class="tip" id="20">
+            <strong>Signature:</strong> x:ParaValue -&gt; y:ParaValue -&gt; seq&lt;string * string&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L88-88" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Tokens.fs#L9-9" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Attempts to convert the string to a date time. Returns some datetime if
-successful</p>
-
-
-
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '25', 25)" onmouseover="showTip(event, '25', 25)">
-            tryDoubleParse str
+          <code onmouseout="hideTip(event, '21', 21)" onmouseover="showTip(event, '21', 21)">
+            isTokenKey xkey ykey
           </code>
-          <div class="tip" id="25">
-            <strong>Signature:</strong> str:string -&gt; float option<br />
+          <div class="tip" id="21">
+            <strong>Signature:</strong> xkey:string -&gt; ykey:string -&gt; bool<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L25-25" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Tokens.fs#L6-6" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>A highly optimized version of Double.TryParse that takes advantage of
-the fact that we know that the number format is (in regex form):
-<(\d+)\.(\d{3})?>. In profiling it was shown that Double.TryParse was a
-bottleneck at around 20-50% of the CPU time and after this function was
-written, the bottleneck completely disappeared.</p>
-
-
-
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <h3>Active patterns</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Active pattern</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '26', 26)" onmouseover="showTip(event, '26', 26)">
-            ( |ParaDate|_| ) 
-          </code>
-          <div class="tip" id="26">
-            <strong>Signature:</strong> string -&gt; DateTime option<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L98-98" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Partial active pattern that will return a date if matched</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '27', 27)" onmouseover="showTip(event, '27', 27)">
-            ( |ParaNumber|_| ) 
-          </code>
-          <div class="tip" id="27">
-            <strong>Signature:</strong> string -&gt; float option<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L101-101" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Partial active pattern that will return a float if matched</p>
-
-
-
+          
         </td>
       </tr>
     </tbody>

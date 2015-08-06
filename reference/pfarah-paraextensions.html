@@ -37,6 +37,9 @@
 
 
 <h1>ParaExtensions</h1>
+<p>
+  <span>Namespace: Pfarah</span><br />
+</p>
 <div class="xmldoc">
 </div>
 
@@ -67,6 +70,8 @@
 name. If the object is not a Record or the property does not exist on
 the Record, the function will fail</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -85,6 +90,8 @@ the Record, the function will fail</p>
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Get the array value of an object</p>
+
+
 
         </td>
       </tr>
@@ -105,6 +112,8 @@ the Record, the function will fail</p>
             </a>
           <p>Get the boolean value of an object</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -123,6 +132,8 @@ the Record, the function will fail</p>
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Get the date value of an object</p>
+
+
 
         </td>
       </tr>
@@ -143,6 +154,8 @@ the Record, the function will fail</p>
             </a>
           <p>Get the floating point precision value of an object</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -161,6 +174,8 @@ the Record, the function will fail</p>
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Get the integer value of an object</p>
+
+
 
         </td>
       </tr>
@@ -181,6 +196,8 @@ the Record, the function will fail</p>
             </a>
           <p>Get the record value of the object</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -199,6 +216,8 @@ the Record, the function will fail</p>
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Get the string value of an object</p>
+
+
 
         </td>
       </tr>
@@ -219,6 +238,8 @@ the Record, the function will fail</p>
             </a>
           <p>Returns the boolean value if it exists else false</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -238,6 +259,8 @@ the Record, the function will fail</p>
             </a>
           <p>Finds all the properties of the object with a given key and aggregates
 all the values under a single array.</p>
+
+
 
         </td>
       </tr>
@@ -262,11 +285,17 @@ property did not occur in all given objects.</p>
 
 <h2>Example Return Value</h2>
 
-<pre><code>[("hello", true); ("world", false)]
-</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp">[(<span class="s">&quot;hello&quot;</span>, <span class="k">true</span>); (<span class="s">&quot;world&quot;</span>, <span class="k">false</span>)]
+</code></pre></td>
+</tr>
+</table>
 
 <p>means that the "hello" property is optional and the "world" property is
 required in each object</p>
+
+
 
         </td>
       </tr>
@@ -287,6 +316,8 @@ required in each object</p>
             </a>
           <p>Returns the float value if it exists else 0.0</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -306,6 +337,8 @@ required in each object</p>
             </a>
           <p>Returns the integer value if it exists else 0</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -324,6 +357,8 @@ required in each object</p>
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the string value if it exists else the empty string</p>
+
+
 
         </td>
       </tr>
@@ -345,6 +380,8 @@ required in each object</p>
           <p>Tries to find the first property of the object that has the given key.
 If a property is found then <code>Some ParaValue</code> will be returned else
 <code>None</code></p>
+
+
 
         </td>
       </tr>
@@ -374,6 +411,8 @@ If a property is found then <code>Some ParaValue</code> will be returned else
           <p>Assumes the object is an array and returns the enumerator for the
 array</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -393,6 +432,8 @@ array</p>
             </a>
           <p>Assumes the object is an array and returns the value at a given index
 in the array</p>
+
+
 
         </td>
       </tr>

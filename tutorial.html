@@ -48,20 +48,16 @@ but for the sake of the tutorial it is shown the second way.</p>
 
 <h2><a name="Quickstart" class="anchor" href="#Quickstart">Quickstart</a></h2>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="prep">#r</span> <span class="s">&quot;Pfarah.dll&quot;</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;Pfarah.dll&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">Pfarah</span>
 
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">obj</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="t">ParaValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="f">Parse</span> <span class="s">&quot;foo=bar&quot;</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -71,8 +67,7 @@ one interfaces with the data</p>
 
 <h2><a name="Working-with-the-Data" class="anchor" href="#Working-with-the-Data">Working with the Data</a></h2>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l"> 1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
 <span class="l"> 4: </span>
@@ -89,10 +84,8 @@ one interfaces with the data</p>
 <span class="l">15: </span>
 <span class="l">16: </span>
 <span class="l">17: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="c">// Print the property&#39;s keys, so this will print &quot;foo&quot;</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Print the property&#39;s keys, so this will print &quot;foo&quot;</span>
 <span class="k">match</span> <span onmouseout="hideTip(event, 'fs2', 5)" onmouseover="showTip(event, 'fs2', 5)" class="i">obj</span> <span class="k">with</span>
 | <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="t">ParaValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs5', 7)" onmouseover="showTip(event, 'fs5', 7)" class="p">Record</span> <span onmouseout="hideTip(event, 'fs6', 8)" onmouseover="showTip(event, 'fs6', 8)" class="i">properties</span> <span class="k">-&gt;</span>
   <span onmouseout="hideTip(event, 'fs7', 9)" onmouseover="showTip(event, 'fs7', 9)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%A</span><span class="s">&quot;</span> (<span onmouseout="hideTip(event, 'fs6', 10)" onmouseover="showTip(event, 'fs6', 10)" class="i">properties</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 11)" onmouseover="showTip(event, 'fs8', 11)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 12)" onmouseover="showTip(event, 'fs9', 12)" class="f">map</span> <span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="f">fst</span>)
@@ -109,8 +102,7 @@ one interfaces with the data</p>
     | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs11', 32)" onmouseover="showTip(event, 'fs11', 32)" class="f">failwith</span> <span class="s">&quot;Expected foo to be a string&quot;</span>
   | <span onmouseout="hideTip(event, 'fs19', 33)" onmouseover="showTip(event, 'fs19', 33)" class="p">None</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs11', 34)" onmouseover="showTip(event, 'fs11', 34)" class="f">failwith</span> <span class="s">&quot;Expected foo to exist&quot;</span>
 | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs11', 35)" onmouseover="showTip(event, 'fs11', 35)" class="f">failwith</span> <span class="s">&quot;Expected `obj` to be a `Record` type&quot;</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -120,24 +112,20 @@ one interfaces with the data</p>
 make a project become bloated very quickly. Hence why Pfarah provides a bit of
 syntactic sugar and helper methods to make dealing with the data easier.</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="c">// The previous example of printing foo&#39;s value can be shortened to</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// The previous example of printing foo&#39;s value can be shortened to</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs20', 36)" onmouseover="showTip(event, 'fs20', 36)" class="i">obj2</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 37)" onmouseover="showTip(event, 'fs3', 37)" class="t">ParaValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 38)" onmouseover="showTip(event, 'fs4', 38)" class="f">Parse</span> <span class="s">&quot;foo=bar&quot;</span>
 <span onmouseout="hideTip(event, 'fs7', 39)" onmouseover="showTip(event, 'fs7', 39)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s">&quot;</span> (<span onmouseout="hideTip(event, 'fs20', 40)" onmouseover="showTip(event, 'fs20', 40)" class="i">obj2</span><span class="o">?</span><span class="i">foo</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 41)" onmouseover="showTip(event, 'fs21', 41)" class="f">asString</span>)
 
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 42)" onmouseover="showTip(event, 'fs22', 42)" class="i">data</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 43)" onmouseover="showTip(event, 'fs3', 43)" class="t">ParaValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 44)" onmouseover="showTip(event, 'fs4', 44)" class="f">Parse</span> <span class="s">&quot;y={1 2 4 8 16 32}&quot;</span>
 <span onmouseout="hideTip(event, 'fs7', 45)" onmouseover="showTip(event, 'fs7', 45)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%A</span><span class="s">&quot;</span> (<span onmouseout="hideTip(event, 'fs22', 46)" onmouseover="showTip(event, 'fs22', 46)" class="i">data</span><span class="o">?</span><span class="i">y</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs23', 47)" onmouseover="showTip(event, 'fs23', 47)" class="f">asArray</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs12', 48)" onmouseover="showTip(event, 'fs12', 48)" class="t">Array</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 49)" onmouseover="showTip(event, 'fs24', 49)" class="f">map</span> <span onmouseout="hideTip(event, 'fs25', 50)" onmouseover="showTip(event, 'fs25', 50)" class="f">asInteger</span>)
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -148,8 +136,7 @@ name on the same level, but the number of occurrences of the key in an object is
 subject to differ. In cases such as these it is best to use <code>collect</code>, which
 will aggregate values in an object with that particular key.</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l"> 1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
 <span class="l"> 4: </span>
@@ -177,10 +164,8 @@ will aggregate values in an object with that particular key.</p>
 <span class="l">26: </span>
 <span class="l">27: </span>
 <span class="l">28: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs26', 51)" onmouseover="showTip(event, 'fs26', 51)" class="i">army</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs26', 51)" onmouseover="showTip(event, 'fs26', 51)" class="i">army</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">army=</span>
 <span class="s">{</span>
 <span class="s">    name=&quot;1st army&quot;</span>
@@ -208,8 +193,7 @@ will aggregate values in an object with that particular key.</p>
     <span class="k">let</span> <span onmouseout="hideTip(event, 'fs30', 60)" onmouseover="showTip(event, 'fs30', 60)" class="i">units</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs29', 61)" onmouseover="showTip(event, 'fs29', 61)" class="i">x</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs28', 62)" onmouseover="showTip(event, 'fs28', 62)" class="f">collect</span> <span class="s">&quot;unit&quot;</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs12', 63)" onmouseover="showTip(event, 'fs12', 63)" class="t">Array</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 64)" onmouseover="showTip(event, 'fs24', 64)" class="f">map</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs31', 65)" onmouseover="showTip(event, 'fs31', 65)" class="i">u</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs31', 66)" onmouseover="showTip(event, 'fs31', 66)" class="i">u</span><span class="o">?</span><span class="i">name</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 67)" onmouseover="showTip(event, 'fs21', 67)" class="f">asString</span>)
     <span onmouseout="hideTip(event, 'fs29', 68)" onmouseover="showTip(event, 'fs29', 68)" class="i">x</span><span class="o">?</span><span class="i">name</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 69)" onmouseover="showTip(event, 'fs21', 69)" class="f">asString</span>, <span onmouseout="hideTip(event, 'fs30', 70)" onmouseover="showTip(event, 'fs30', 70)" class="i">units</span>)
 <span onmouseout="hideTip(event, 'fs7', 71)" onmouseover="showTip(event, 'fs7', 71)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%A</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs27', 72)" onmouseover="showTip(event, 'fs27', 72)" class="i">armyData</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -220,8 +204,7 @@ Some may only have a limited subset of the properties wanted. The <code>tryFind<
 function will return <code>Some ParaValue</code> if the property exists and <code>None</code> if it
 doesn't.</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l"> 1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
 <span class="l"> 4: </span>
@@ -237,10 +220,8 @@ doesn't.</p>
 <span class="l">14: </span>
 <span class="l">15: </span>
 <span class="l">16: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs32', 73)" onmouseover="showTip(event, 'fs32', 73)" class="i">ships</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs32', 73)" onmouseover="showTip(event, 'fs32', 73)" class="i">ships</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">ship={</span>
 <span class="s">    name=&quot;1st ship&quot;</span>
 <span class="s">    patrol=yes</span>
@@ -256,8 +237,7 @@ doesn't.</p>
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs12', 79)" onmouseover="showTip(event, 'fs12', 79)" class="t">Array</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 80)" onmouseover="showTip(event, 'fs34', 80)" class="f">filter</span> (<span onmouseout="hideTip(event, 'fs35', 81)" onmouseover="showTip(event, 'fs35', 81)" class="f">tryFind</span> <span class="s">&quot;patrol&quot;</span> <span class="o">&gt;</span><span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs36', 82)" onmouseover="showTip(event, 'fs36', 82)" class="t">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs37', 83)" onmouseover="showTip(event, 'fs37', 83)" class="f">isSome</span>)
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs12', 84)" onmouseover="showTip(event, 'fs12', 84)" class="t">Array</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 85)" onmouseover="showTip(event, 'fs24', 85)" class="f">map</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs29', 86)" onmouseover="showTip(event, 'fs29', 86)" class="i">x</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs29', 87)" onmouseover="showTip(event, 'fs29', 87)" class="i">x</span><span class="o">?</span><span class="i">name</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 88)" onmouseover="showTip(event, 'fs21', 88)" class="f">asString</span>)
 <span onmouseout="hideTip(event, 'fs7', 89)" onmouseover="showTip(event, 'fs7', 89)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%A</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs27', 90)" onmouseover="showTip(event, 'fs27', 90)" class="i">armyData</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -265,8 +245,7 @@ doesn't.</p>
 you aren't sure if <code>A</code>, <code>B</code>, or <code>C</code> exists, you can use <code>tryFind</code> in conjuntion
 with <code>Option.bind</code> to select <code>C</code>'s value or <code>None</code></p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l"> 1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
 <span class="l"> 4: </span>
@@ -282,10 +261,8 @@ with <code>Option.bind</code> to select <code>C</code>'s value or <code>None</co
 <span class="l">14: </span>
 <span class="l">15: </span>
 <span class="l">16: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs38', 91)" onmouseover="showTip(event, 'fs38', 91)" class="i">nested</span> <span class="o">=</span> <span class="s">&quot;A={B={C=1.000}}&quot;</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs38', 91)" onmouseover="showTip(event, 'fs38', 91)" class="i">nested</span> <span class="o">=</span> <span class="s">&quot;A={B={C=1.000}}&quot;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs39', 92)" onmouseover="showTip(event, 'fs39', 92)" class="i">cvalue</span> <span class="o">=</span>
   <span onmouseout="hideTip(event, 'fs3', 93)" onmouseover="showTip(event, 'fs3', 93)" class="t">ParaValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 94)" onmouseover="showTip(event, 'fs4', 94)" class="f">Parse</span> <span onmouseout="hideTip(event, 'fs38', 95)" onmouseover="showTip(event, 'fs38', 95)" class="i">nested</span>
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs35', 96)" onmouseover="showTip(event, 'fs35', 96)" class="f">tryFind</span> <span class="s">&quot;A&quot;</span>
@@ -301,8 +278,7 @@ with <code>Option.bind</code> to select <code>C</code>'s value or <code>None</co
 
 <span class="c">// floatDefault will assume that if the value exists that it is</span>
 <span class="c">// a float. If the value doesn&#39;t exist then it will return 0.0</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -314,8 +290,7 @@ the properties available. <code>findOptional</code> fixes this problem by dissec
 list of  supposedly similar objects and returning the properties that it knows
 are always present and the ones that are optional.</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l"> 1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
 <span class="l"> 4: </span>
@@ -337,10 +312,8 @@ are always present and the ones that are optional.</p>
 <span class="l">20: </span>
 <span class="l">21: </span>
 <span class="l">22: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs43', 114)" onmouseover="showTip(event, 'fs43', 114)" class="i">nodes</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs43', 114)" onmouseover="showTip(event, 'fs43', 114)" class="i">nodes</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">node={</span>
 <span class="s">  definition=foo</span>
 <span class="s">  incoming={1 2 3}</span>
@@ -362,8 +335,7 @@ are always present and the ones that are optional.</p>
 <span class="c">// Will print:</span>
 <span class="c">// definition</span>
 <span class="c">// incoming?</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -388,8 +360,7 @@ unnecessarily if it is a plain text file, the dictionary is <code>lazy</code></l
 <p>The following code sample will work for a file that is in any format
 (plain text/binary and compressed/uncompressed)</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
@@ -398,10 +369,8 @@ unnecessarily if it is a plain text file, the dictionary is <code>lazy</code></l
 <span class="l">7: </span>
 <span class="l">8: </span>
 <span class="l">9: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs49', 130)" onmouseover="showTip(event, 'fs49', 130)" class="i">path</span> <span class="o">=</span> <span class="s">&quot;game.eu4&quot;</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs49', 130)" onmouseover="showTip(event, 'fs49', 130)" class="i">path</span> <span class="o">=</span> <span class="s">&quot;game.eu4&quot;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs50', 131)" onmouseover="showTip(event, 'fs50', 131)" class="i">``binary header``</span> <span class="o">=</span> <span class="s">&quot;EU4bin&quot;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs51', 132)" onmouseover="showTip(event, 'fs51', 132)" class="i">``text header``</span> <span class="o">=</span> <span class="s">&quot;EU4txt&quot;</span>
 
@@ -410,8 +379,7 @@ unnecessarily if it is a plain text file, the dictionary is <code>lazy</code></l
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs52', 133)" onmouseover="showTip(event, 'fs52', 133)" class="i">tokens</span> <span class="o">=</span> <span class="k">lazy</span> <span onmouseout="hideTip(event, 'fs53', 134)" onmouseover="showTip(event, 'fs53', 134)" class="f">dict</span>([(<span class="n">0x284ds</span>, <span class="s">&quot;date&quot;</span>)])
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs54', 135)" onmouseover="showTip(event, 'fs54', 135)" class="i">game</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 136)" onmouseover="showTip(event, 'fs3', 136)" class="t">ParaValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs55', 137)" onmouseover="showTip(event, 'fs55', 137)" class="f">Load</span>(<span onmouseout="hideTip(event, 'fs49', 138)" onmouseover="showTip(event, 'fs49', 138)" class="i">path</span>, <span onmouseout="hideTip(event, 'fs50', 139)" onmouseover="showTip(event, 'fs50', 139)" class="i">``binary header``</span>, <span onmouseout="hideTip(event, 'fs51', 140)" onmouseover="showTip(event, 'fs51', 140)" class="i">``text header``</span>, <span onmouseout="hideTip(event, 'fs52', 141)" onmouseover="showTip(event, 'fs52', 141)" class="i">tokens</span>)
 <span onmouseout="hideTip(event, 'fs54', 142)" onmouseover="showTip(event, 'fs54', 142)" class="i">game</span><span class="o">?</span><span class="i">date</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs56', 143)" onmouseover="showTip(event, 'fs56', 143)" class="f">asDate</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
