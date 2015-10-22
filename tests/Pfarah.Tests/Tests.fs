@@ -420,15 +420,18 @@ let (``ParaValue toString cases``:obj[][]) = [|
   [| ParaValue.Bool true; "true" |]
   [| ParaValue.Bool false; "false" |]
   [| ParaValue.Array([||]); "[]" |]
-  [| ParaValue.Array([|ParaValue.String "a"|]); "[a]" |]
+  [| ParaValue.Array([|ParaValue.String "a"|]); "[\n  a\n]" |]
   [| ParaValue.Array([|ParaValue.String "a"
-                       ParaValue.String "b"|]); "[a, b]" |]
-  [| ParaValue.Record([||]); "[]" |]
+                       ParaValue.String "b"|]); "[\n  a,\n  b\n]" |]
+  [| ParaValue.Record([||]); "{}" |]
   [| ParaValue.Record(
-      [| ("a", ParaValue.String "b") |]); "[(a: b)]" |]
+      [| ("a", ParaValue.String "b") |]); "{\n  a: b\n}" |]
   [| ParaValue.Record(
       [| ("a", ParaValue.String "b")
-         ("b", ParaValue.String "c") |]); "[(a: b), (b: c)]" |]
+         ("b", ParaValue.String "c") |]); "{\n  a: b,\n  b: c\n}" |]
+  [| ParaValue.Record(
+      [| ("a", ParaValue.Record [| ("b", ParaValue.String "c") |])
+        |]); "{\n  a: {\n    b: c\n  }\n}" |]
 |]
 
 [<Test>]

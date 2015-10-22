@@ -17,20 +17,36 @@ type ParaValue =
   | Array of elements:ParaValue[]
   | Record of properties:(string * ParaValue)[]
 with
-  override this.ToString() =
-    match this with
+  /// Returns a string of the prettified structure. For simple cases it will
+  /// just print the contents (string, bool, number, and date). For arrays and
+  /// records, the result will contain a newline string of each value with
+  /// each value indented depending on how nested the structure. The one exception
+  /// to is when the array or object is empty, which will just print the brackets
+  /// on the same line.
+  static member private Prettify value indent =
+    let nestedPrint inner = ParaValue.Prettify inner (indent + 1)
+    let indentStr = System.String(' ', (indent + 1) * 2)
+    match value with
     | String(x) -> x
     | Bool(x) -> sprintf "%b" x
     | Number(x) -> sprintf "%.3f" x
     | Date(x) -> (x.ToString("yyyy.M.d"))
     | Array(arr) ->
-      let vals = arr |> Array.map (fun x -> (x.ToString()))
-      "[" + String.Join(", ", vals) + "]"
-    | Record(cord) ->
-      let fn (x,y) = "(" + x + ": " + (y.ToString()) + ")"
-      let vals = cord |> Array.map fn
-      "[" + String.Join(", ", vals) + "]"
+      let stringed = arr |> Array.map (nestedPrint >> (sprintf "%s%s" indentStr))
+      let contents = String.Join(",\n", stringed)
 
+      match contents with
+      | "" -> "[]"
+      | x -> sprintf "[\n%s\n%s]" x (System.String(' ', indent * 2))
+    | Record(cord) ->
+      let stringed = cord |> Seq.map (fun (key, v) -> sprintf "%s%s: %s" indentStr key (nestedPrint v))
+      let contents = String.Join(",\n", stringed)
+
+      match contents with
+      | "" -> "{}"
+      | x -> sprintf "{\n%s\n%s}" x (System.String(' ', indent * 2))
+
+  override this.ToString() = ParaValue.Prettify this 0
 
 type private ParaParser (stream:StreamReader) =
   /// The max token size of any string, as defined by paradox internal source
