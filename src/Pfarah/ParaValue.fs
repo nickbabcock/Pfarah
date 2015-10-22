@@ -150,7 +150,7 @@ type private ParaParser (stream:StreamReader) =
     let pairs = ResizeArray<_>()
     pairs.Add((key, parseValue()))
     skipWhitespace stream
-    while stopFn(stream) = false do
+    while not(stopFn stream) do
       // Beware of empty objects "{}" that don't have a key. If we encounter
       // them, just blow right by them.
       if (stream.Peek()) = 123 then
@@ -491,7 +491,7 @@ type ParaValue with
         stream.Write('=')
         write v)
     and write = function
-      | ParaValue.Bool b -> stream.WriteLine(if b = true then "yes" else "no")
+      | ParaValue.Bool b -> stream.WriteLine(if b then "yes" else "no")
       | ParaValue.Date d -> stream.WriteLine(d.ToString("yyyy.M.d"))
       | ParaValue.Number n -> stream.WriteLine(n.ToString("0.000"))
       | ParaValue.String s -> stream.WriteLine("\"" + s + "\"")
