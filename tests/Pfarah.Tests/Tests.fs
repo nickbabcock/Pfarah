@@ -425,10 +425,10 @@ let (``ParaValue toString cases``:obj[][]) = [|
                        ParaValue.String "b"|]); "[a, b]" |]
   [| ParaValue.Record([||]); "[]" |]
   [| ParaValue.Record(
-      [| ("a", ParaValue.String "b") |]); "[(a, b)]" |]
+      [| ("a", ParaValue.String "b") |]); "[(a: b)]" |]
   [| ParaValue.Record(
       [| ("a", ParaValue.String "b")
-         ("b", ParaValue.String "c") |]); "[(a, b), (b, c)]" |]
+         ("b", ParaValue.String "c") |]); "[(a: b), (b: c)]" |]
 |]
 
 [<Test>]

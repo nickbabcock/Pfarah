@@ -27,7 +27,7 @@ with
       let vals = arr |> Array.map (fun x -> (x.ToString()))
       "[" + String.Join(", ", vals) + "]"
     | Record(cord) ->
-      let fn (x,y) = "(" + x + ", " + (y.ToString()) + ")"
+      let fn (x,y) = "(" + x + ": " + (y.ToString()) + ")"
       let vals = cord |> Array.map fn
       "[" + String.Join(", ", vals) + "]"
 
