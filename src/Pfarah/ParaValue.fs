@@ -235,18 +235,41 @@ type StreamingParaParser (inner:ParaParser, stream:StreamReader) =
         p <- stream.Read()
       skipWhitespace(stream)
 
-  member __.(?) property =
+  member self.MatchKeys fn =
+    skipWhitespace(stream)
+    if (stream.Peek()) = 123 then
+      stream.Read() |> ignore
+
     let mutable first = inner.NextString()
+    let mutable don = stream.Read() = 125
+    while not (stream.EndOfStream) && not don do
+      fn(first)(self)
+      skipWhitespace(stream)
+      first <- inner.NextString()
+      skipWhitespace(stream)
+      don <- stream.Read() = 125
+
+  member __.(?) property =
+    skipWhitespace(stream)
+    let mutable first = inner.NextString()
+    skipWhitespace(stream)
+
     // Read through the '='
     stream.Read() |> ignore
     while first <> property do
       skipValue()
       first <- inner.NextString()
-      
+      skipWhitespace(stream)
       // Read through the '='
       stream.Read() |> ignore
+    skipWhitespace(stream)
     inner.NextValue()
   
+  member __.NextValue () =
+    let result = inner.NextValue()
+    skipWhitespace(stream)
+    result
+  member __.SkipValue () = skipValue()
   interface IDisposable with member x.Dispose(): unit = stream.Dispose()
 
 [<RequireQualifiedAccess>]
@@ -536,7 +559,7 @@ type ParaValue with
   static member Stream (stream:Stream) =
     let stream = new StreamReader(stream, Encoding.GetEncoding(1252), false, 0x8000)
     let parser = ParaParser stream
-    StreamingParaParser(parser, stream)
+    new StreamingParaParser(parser, stream)
 
   /// Writes the given data to a stream
   static member Save (stream:Stream, data:ParaValue) =

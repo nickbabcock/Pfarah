@@ -100,3 +100,6 @@ module ParaExtensions =
     /// Assumes the object is an array and returns the value at a given index
     /// in the array
     member x.Item(index) = asArray(x).[index]
+
+  type StreamingParaParser with
+    member x.AsString () = x.NextValue() |> asString
