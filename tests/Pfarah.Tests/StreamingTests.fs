@@ -61,3 +61,17 @@ let ``try parse streaming nested match keys`` () =
       | _ -> fun _ -> x.SkipValue())
     | _ -> fun x -> x.SkipValue())
   CollectionAssert.AreEqual(["d"; "e"], ays)
+
+[<Test>]
+let ``try parse streaming nested match keys and dynamic lookup`` () =
+  let str = "a={b=d} a={b=g} b=f\nz={y=x}"
+  let db = Encoding.GetEncoding(1252).GetBytes(str)
+  let strm = ParaValue.Stream(new MemoryStream(db))
+  let ays = ResizeArray<String>()
+  let (b:Ref<option<string>>) = ref None
+  strm.MatchKeys(function
+    | "a" -> fun x -> x.MatchKeys(function
+      | "b" -> fun _ -> b := Some(x.AsString())
+      | _ -> fun _ -> x.SkipValue())
+    | _ -> fun x -> x.SkipValue())
+  !b |> shouldEqual (Some("g"))
