@@ -1,3 +1,6 @@
+### 0.4.0 Unreleased
+* `findOptional` returns a much more idiomatic tuple
+
 ### 0.3.6 August 6th 2015
 * Third time is the charm with Paket and Nuget
 

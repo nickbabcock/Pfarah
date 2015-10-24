@@ -81,16 +81,8 @@ module ParaExtensions =
       properties |> Array.tryFind (fst >> (=) prop) |> Option.map snd
     | _ -> None
 
-  /// Given a sequence of similar objects, return sequence of tuples where it
-  /// is the name of the property and a boolean value denoting whether the
-  /// property did not occur in all given objects.
-  ///
-  /// ## Example Return Value
-  ///
-  ///     [("hello", true); ("world", false)]
-  ///
-  /// means that the "hello" property is optional and the "world" property is
-  /// required in each object
+  /// Given a sequence of similar objects, return a tuple of required
+  /// properties and optional properties
   let findOptional (objs:seq<ParaValue>) =
     // Boil the given objects down to top level property names
     let props = objs |> Seq.map (asRecord >> (Seq.map fst) >> Set.ofSeq)
@@ -98,8 +90,7 @@ module ParaExtensions =
     let all = Set.unionMany props
     let optional = props |> Seq.map (Set.difference all) |> Set.unionMany
 
-    let td isRequired = Seq.map (fun x -> (x, isRequired))
-    Seq.append (Set.difference all optional |> td false) (optional |> td true)
+    (Set.difference all optional), optional
 
   type ParaValue with
     /// Assumes the object is an array and returns the enumerator for the

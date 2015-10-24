@@ -174,7 +174,7 @@ printfn "C's value: %f" (cvalue |> floatDefault)
 Knowing the data is the first step to any type of analysis. This is made
 difficult when there can be thousands of objects, each one having a subset of
 the properties available. `findOptional` fixes this problem by dissecting a
-list of  supposedly similar objects and returning the properties that it knows
+list of supposedly similar objects and returning the properties that it knows
 are always present and the ones that are optional.
 
 *)
@@ -191,12 +191,13 @@ node={
 // Print all the properties of the "node" objects in alphabetical order.
 // Append a question mark after the property name to signify that the property
 // is optional.
-ParaValue.Parse nodes
-|> collect "node"
-|> findOptional
-|> Seq.sortBy fst
-|> Seq.iter(fun (property, isOptional) ->
-  printfn "%s%s" property (if isOptional then "?" else ""))
+let required, optional =
+  ParaValue.Parse nodes
+  |> collect "node"
+  |> findOptional
+
+required |> Seq.iter (printfn "%s")
+optional |> Seq.iter (printfn "%s?")
 
 // Will print:
 // definition

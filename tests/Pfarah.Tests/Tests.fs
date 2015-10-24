@@ -308,9 +308,9 @@ let ``findOptional works`` () =
   let data2 =
       ParaValue.Record([| ("hello", ParaValue.String "foo"); |])
 
-  let actual = findOptional [data; data2]
-  let expected = [("hello", false); ("world", true)]
-  CollectionAssert.AreEquivalent(expected, actual)
+  let required, optional = findOptional [data; data2]
+  CollectionAssert.AreEquivalent(["hello"], required)
+  CollectionAssert.AreEquivalent(["world"], optional)
 
 [<Test>]
 let ``save data format example`` () =
