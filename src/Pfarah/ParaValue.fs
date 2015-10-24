@@ -74,6 +74,13 @@ type private ParaParser (stream:StreamReader) =
     | ParaDate d -> ParaValue.Date d
     | x -> ParaValue.String x
 
+  /// Trim leading and trailing whitespace from a value
+  let trim fn =
+    skipWhitespace(stream)
+    let result = fn()
+    skipWhitespace(stream)
+    result
+
   let rec parseValue () =
     match stream.Peek() with
     | 34 -> parseQuotes()
@@ -118,9 +125,7 @@ type private ParaParser (stream:StreamReader) =
 
   and parseArray (vals:ResizeArray<_>) =
     while (stream.Peek() <> 125) do
-      skipWhitespace stream
-      vals.Add(parseValue())
-      skipWhitespace stream
+      vals.Add(trim parseValue)
 
   and parseContainerContents() =
     // The first key or element depending on object or list
@@ -162,10 +167,8 @@ type private ParaParser (stream:StreamReader) =
   and parseObject key stopFn =
     // Read through the '='
     stream.Read() |> ignore
-    skipWhitespace stream
     let pairs = ResizeArray<_>()
-    pairs.Add((key, parseValue()))
-    skipWhitespace stream
+    pairs.Add(key, trim parseValue)
     while not(stopFn stream) do
       // Beware of empty objects "{}" that don't have a key. If we encounter
       // them, just blow right by them.
@@ -187,15 +190,10 @@ type private ParaParser (stream:StreamReader) =
     | None -> ParaValue.String q
 
   and parsePair () =
-    skipWhitespace stream
-    let key = readString()
-    skipWhitespace stream
+    let key = trim readString
     assert (stream.Peek() = 61)
     stream.Read() |> ignore
-    skipWhitespace stream
-    let result = key, parseValue()
-    skipWhitespace stream
-    result
+    key, trim parseValue
 
   member x.Parse () =
     // Before we too far into parsing the stream we need to check if we have a

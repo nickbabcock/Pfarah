@@ -192,6 +192,13 @@ let ``parse obj as nested objects`` () =
   obj?bar.[1]?zoo |> asString |> shouldEqual "zob"
 
 [<Test>]
+let ``parse obj as nested objects whitespace`` () =
+  let obj = ParaValue.Parse "bar = { { foo = qux } { foo = qix zoo = zob } }"
+  obj?bar.[0]?foo |> asString |> shouldEqual "qux"
+  obj?bar.[1]?foo |> asString |> shouldEqual "qix"
+  obj?bar.[1]?zoo |> asString |> shouldEqual "zob"
+
+[<Test>]
 let ``parse gameplay settings`` () =
   let data = """gameplaysettings=
 {
