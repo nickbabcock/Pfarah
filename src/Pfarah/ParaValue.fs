@@ -48,21 +48,13 @@ with
 
   override this.ToString() = ParaValue.Prettify this 0
 
-type private ParaParser (stream:StreamReader) =
+type ParaParser (stream:StreamReader) =
   /// The max token size of any string, as defined by paradox internal source
   /// code is 256
   let (stringBuffer:char[]) = Array.zeroCreate 256
 
   /// Mutable variable to let us know how much of the string buffer is filled
   let mutable stringBufferCount = 0
-
-  /// Returns whether a given int is considered whitespace
-  let isspace (c:int) = c = 10 || c = 13 || c = 9 || c = 32
-
-  /// Advance the stream until a non-whitespace character is encountered
-  let skipWhitespace (stream:StreamReader) =
-    while (isspace (stream.Peek())) do
-      stream.Read() |> ignore
 
   /// Narrows a given string to a better data representation. If no better
   /// representation can be found then the string is returned.
@@ -212,6 +204,50 @@ type private ParaParser (stream:StreamReader) =
       skipWhitespace stream
       assert (stream.Peek() = 61)
       parseObject first (fun stream -> stream.EndOfStream)
+
+  member internal x.NextString() = readString()
+  member internal x.NextValue() = parseValue()
+
+type StreamingParaParser (inner:ParaParser, stream:StreamReader) =
+  let rec skipContainer () =
+    let mutable don = false
+    while not don do
+      let mutable p = stream.Read()
+      match p with
+      | 123 -> skipContainer()
+      | 125 | -1 -> don <- true
+      | _ -> ()
+    skipWhitespace(stream)
+
+  let skipValue() =
+    skipWhitespace(stream)
+    match (stream.Peek()) with
+    | 34 ->
+      let mutable next = stream.Read()
+      next <- stream.Read()
+      while next <> -1 && next <> 34 do
+        next <- stream.Read()
+      skipWhitespace(stream)
+    | 123 -> stream.Read() |> ignore; skipContainer()
+    | _ ->
+      let mutable p = stream.Read()
+      while p <> -1 && not (isspace p) do
+        p <- stream.Read()
+      skipWhitespace(stream)
+
+  member __.(?) property =
+    let mutable first = inner.NextString()
+    // Read through the '='
+    stream.Read() |> ignore
+    while first <> property do
+      skipValue()
+      first <- inner.NextString()
+      
+      // Read through the '='
+      stream.Read() |> ignore
+    inner.NextValue()
+  
+  interface IDisposable with member x.Dispose(): unit = stream.Dispose()
 
 [<RequireQualifiedAccess>]
 type private BinaryToken =
@@ -496,6 +532,11 @@ type ParaValue with
   static member Parse (text:string) =
     let str = new MemoryStream(Encoding.GetEncoding(1252).GetBytes(text))
     ParaValue.LoadText str
+
+  static member Stream (stream:Stream) =
+    let stream = new StreamReader(stream, Encoding.GetEncoding(1252), false, 0x8000)
+    let parser = ParaParser stream
+    StreamingParaParser(parser, stream)
 
   /// Writes the given data to a stream
   static member Save (stream:Stream, data:ParaValue) =

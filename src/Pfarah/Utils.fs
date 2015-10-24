@@ -3,8 +3,11 @@ namespace Pfarah
 open System
 
 module Utils =
+  open System.IO
+
   let inline private isNum (c:char) = c >= '0' && c <= '9'
   let inline private toNum (c:char) = int c - 48
+  let inline isspace (c:int) = c = 10 || c = 13 || c = 9 || c = 32
 
   /// Converts an integer that represents a Q16.16 fixed-point number into its
   /// floating point representation. See:
@@ -16,6 +19,11 @@ module Utils =
   /// as to a float. It makes sense to be encoded this way as the numbers are
   /// textually represented with three decimal points (#.000)
   let inline cut32 (n:int) = float(n) / 1000.0
+
+  /// Advance the stream until a non-whitespace character is encountered
+  let skipWhitespace (stream:StreamReader) =
+    while (isspace (stream.Peek())) do
+      stream.Read() |> ignore
 
   /// A highly optimized version of Double.TryParse that takes advantage of
   /// the fact that we know that the number format is (in regex form):
