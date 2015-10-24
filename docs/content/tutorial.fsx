@@ -205,6 +205,26 @@ optional |> Seq.iter (printfn "%s?")
 
 (**
 
+If the data is in a difficult or hard to read format (eg. thousands of items
+on a single line), call the ToString method, which will print a prettified
+version of the data
+
+*)
+
+let mini = "names={Fred Jones Barb Barbara George Harry Hermoine Golem Sam}"
+(ParaValue.Parse mini).ToString()
+
+// {
+//   names: [
+//     Fred,
+//     Jones,
+//     Barb,
+//     ...
+//   ]
+// }
+
+(**
+
 ## Binary Data
 
 The examples that we have been working with have been plain text, but
