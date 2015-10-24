@@ -271,29 +271,16 @@ all the values under a single array.</p>
             findOptional objs
           </code>
           <div class="tip" id="11">
-            <strong>Signature:</strong> objs:seq&lt;ParaValue&gt; -&gt; seq&lt;string * bool&gt;<br />
+            <strong>Signature:</strong> objs:seq&lt;ParaValue&gt; -&gt; Set&lt;string&gt; * Set&lt;string&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L94-94" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L86-86" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Given a sequence of similar objects, return sequence of tuples where it
-is the name of the property and a boolean value denoting whether the
-property did not occur in all given objects.</p>
-
-<h2>Example Return Value</h2>
-
-<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp">[(<span class="s">&quot;hello&quot;</span>, <span class="k">true</span>); (<span class="s">&quot;world&quot;</span>, <span class="k">false</span>)]
-</code></pre></td>
-</tr>
-</table>
-
-<p>means that the "hello" property is optional and the "world" property is
-required in each object</p>
+          <p>Given a sequence of similar objects, return a tuple of required
+properties and optional properties</p>
 
 
 
@@ -404,7 +391,7 @@ If a property is found then <code>Some ParaValue</code> will be returned else
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L107-107" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L98-98" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -426,7 +413,7 @@ array</p>
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L111-111" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L102-102" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
