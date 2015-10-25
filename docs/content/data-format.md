@@ -14,12 +14,12 @@ The last time I checked, the files are encoded as Windows 1252.
     [lang=text]
     # This is a comment
     # The root element is always an object that map string keys to another object:
-    # (string, integer, float, date, array, object )
+    # (string, integer, float, date, array, object)
 
     # Strings
     foo=bar
 
-    # Strings with quotes that span multiple lines
+    # Strings with quotes that can span multiple lines
     baz=" hello  ##
           cheese"
 
@@ -29,16 +29,17 @@ The last time I checked, the files are encoded as Windows 1252.
     # Dates with hour
     middle=1841.2.3.4
 
-    # Dates with strings
+    # Dates that are quoted
     end="1300.10.1"
 
     # Integers
     type=49
 
-    # Floating point (always in the format #.###)
+    # Floating point (always in the format #.### or #.#####)
     strength=10.435
+    morale=5.10875
 
-    # An array of homogenous types
+    # An array is always composed of homogenous types
     nums={1 2 3 4}
 
     # Keys don't have to be unique
@@ -60,7 +61,7 @@ The last time I checked, the files are encoded as Windows 1252.
             patrol=yes
         }
 
-        # Empty object (bug?) -- I ignore this!
+        # Empty object (bug with the format?)
         { }
 
         # An array of objects without keys
