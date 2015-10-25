@@ -1,4 +1,4 @@
-### 0.4.0 Unreleased
+### 0.4.0 October 24th 2015
 * `findOptional` returns a much more idiomatic tuple
 * `ToString` now produces a prettified output
 
