@@ -8,6 +8,7 @@ open System.Collections.Generic
 open Ionic.Zip
 open System.Globalization
 
+
 [<RequireQualifiedAccess>]
 type ParaValue =
   | Bool of bool
@@ -48,6 +49,24 @@ with
 
   override this.ToString() = ParaValue.Prettify this 0
 
+module Frequencies =
+  // Approximately 50% of numbers in savegames are either 0's or 1's. Other
+  // popular numbers are -10 for opinion cache, 100000 for border distance,
+  // and 2048 for flags
+  let p0 = ParaValue.Number 0.0
+  let p1 = ParaValue.Number 1.0
+
+  /// Top keys found in a savegame. Roughly 25% of all keys
+  let pflags = ParaValue.String "flags"
+  let ptype = ParaValue.String "type"
+  let pname = ParaValue.String "name"
+  let pempty = ParaValue.String ""
+  let pid = ParaValue.String "id"
+
+  // There is only two possible values for booleans, so cache these bad boys
+  let ptrue = ParaValue.Bool true
+  let pfalse = ParaValue.Bool false
+
 type private ParaParser (stream:StreamReader) =
   /// The max token size of any string, as defined by paradox internal source
   /// code is 256
@@ -68,10 +87,19 @@ type private ParaParser (stream:StreamReader) =
   /// representation can be found then the string is returned.
   let narrow str =
     match str with
-    | "yes" -> ParaValue.Bool true
-    | "no" -> ParaValue.Bool false
-    | ParaNumber x -> ParaValue.Number x
+    | "yes" -> Frequencies.ptrue
+    | "no" -> Frequencies.pfalse
+    | ParaNumber x ->
+      match x with
+      | 0.0 -> Frequencies.p0
+      | 1.0 -> Frequencies.p1
+      | _ -> ParaValue.Number x
     | ParaDate d -> ParaValue.Date d
+    | "flags" -> Frequencies.pflags
+    | "type" -> Frequencies.ptype
+    | "id" -> Frequencies.pid
+    | "" -> Frequencies.pempty
+    | "name" -> Frequencies.pname
     | x -> ParaValue.String x
 
   /// Trim leading and trailing whitespace from a value
@@ -107,7 +135,7 @@ type private ParaParser (stream:StreamReader) =
         stringBuffer.[stringBufferCount] <- (char (stream.Read()))
         stringBufferCount <- stringBufferCount + 1
 
-    let result = new String(stringBuffer, 0, stringBufferCount)
+    let result = getString stringBuffer stringBufferCount
     stringBufferCount <- 0
     result
 
