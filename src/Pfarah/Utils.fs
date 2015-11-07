@@ -86,7 +86,16 @@ module Utils =
   /// Attempts to convert the string to a date time. Returns some datetime if
   /// successful
   let tryDateParse (str:string) =
-    if str |> Seq.forall (fun c -> isNum c || c = '.') then
+    // imperatively check to see if the string contains only numbers and
+    // periods as this cuts the function time in half compared to the
+    // functional equivalent (Seq.forall)
+    let mutable canBe = true
+    let mutable i = 0
+    while canBe && i < str.Length do
+      canBe <- isNum (str.Chars(i)) || (str.Chars(i)) = '.'
+      i <- i + 1
+
+    if canBe then
       match str.Split('.') with
       | [|y;m;d|] -> tryDate (int y) (int m) (int d) 0
       | [|y;m;d;h|] -> tryDate (int y) (int m) (int d) (int h)
