@@ -140,22 +140,6 @@ module Utils =
       tryDate y m d h
     | _ -> new Nullable<DateTime>()
 
-  /// Partial active pattern that will return a date if matched
-  let (|ParaDate|_|) str strLength =
-    let result = tryDateParse str strLength
-    if result.HasValue then
-      Some(result.Value)
-    else
-      None
-
-  /// Partial active pattern that will return a float if matched
-  let (|ParaNumber|_|) str strLength =
-    let result = tryDoubleParse str strLength
-    if result.HasValue then
-      Some(result.Value)
-    else
-      None
-
   let encoding = Encoding.GetEncoding(1252)
   let inline getString (buffer:byte[]) (bufferLength:int) : string =
     encoding.GetString(buffer, 0, bufferLength)
