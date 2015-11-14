@@ -1,6 +1,7 @@
 source https://nuget.org/api/v2
 
 nuget DotNetZip
+nuget Farmhash.Sharp
 nuget FSharp.Formatting
 nuget NUnit 
 nuget NUnit.Runners

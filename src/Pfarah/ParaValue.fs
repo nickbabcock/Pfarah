@@ -7,6 +7,7 @@ open System.Text
 open System.Collections.Generic
 open Ionic.Zip
 open System.Globalization
+open Farmhash.Sharp
 
 
 [<RequireQualifiedAccess>]
@@ -50,24 +51,14 @@ with
   override this.ToString() = ParaValue.Prettify this 0
 
 module Frequencies =
-  // Approximately 50% of numbers in savegames are either 0's or 1's. Other
-  // popular numbers are -10 for opinion cache, 100000 for border distance,
-  // and 2048 for flags
-  let p0 = ParaValue.Number 0.0
-  let p1 = ParaValue.Number 1.0
-
-  /// Top keys found in a savegame. Roughly 25% of all keys
-  let pflags = ParaValue.String "flags"
-  let ptype = ParaValue.String "type"
-  let pname = ParaValue.String "name"
-  let pempty = ParaValue.String ""
-  let pid = ParaValue.String "id"
-
   // There is only two possible values for booleans, so cache these bad boys
   let ptrue = ParaValue.Bool true
   let pfalse = ParaValue.Bool false
 
 type private ParaParser (stream:PeekingStream) =
+  let cache = Dictionary<uint64, ParaValue>()
+  let strCache = Dictionary<uint64, string>()
+
   /// The max token size of any string, as defined by paradox internal source
   /// code is 256
   let (stringBuffer:byte[]) = Array.zeroCreate 256
@@ -105,21 +96,28 @@ type private ParaParser (stream:PeekingStream) =
     | _ -> narrow ()
   
   and narrowBuffer() =
-    let result = 
-      match stringBufferCount with
-      | 3 when stringBuffer.[0] = 121uy && stringBuffer.[1] = 101uy &&
-               stringBuffer.[2] = 115uy -> Frequencies.ptrue
-      | 2 when stringBuffer.[0] = 110uy && stringBuffer.[1] = 111uy -> Frequencies.pfalse
-      | _ ->
-        let num = tryDoubleParse stringBuffer stringBufferCount
-        if num.HasValue then
-          ParaValue.Number (num.Value)
-        else
-          let date = tryDateParse stringBuffer stringBufferCount
-          if date.HasValue then
-            ParaValue.Date (date.Value)
-          else
-            ParaValue.String (Utils.getString stringBuffer stringBufferCount)
+    let hash = Farmhash.Hash64(stringBuffer, int64 stringBufferCount)
+    let result =
+      let mutable pval = Frequencies.ptrue
+      if cache.TryGetValue(hash, &pval) then pval
+      else
+        let newCache = 
+          match stringBufferCount with
+          | 3 when stringBuffer.[0] = 121uy && stringBuffer.[1] = 101uy &&
+                   stringBuffer.[2] = 115uy -> Frequencies.ptrue
+          | 2 when stringBuffer.[0] = 110uy && stringBuffer.[1] = 111uy -> Frequencies.pfalse
+          | _ ->
+            let num = tryDoubleParse stringBuffer stringBufferCount
+            if num.HasValue then
+              ParaValue.Number (num.Value)
+            else
+              let date = tryDateParse stringBuffer stringBufferCount
+              if date.HasValue then
+                ParaValue.Date (date.Value)
+              else
+                ParaValue.String (Utils.getString stringBuffer stringBufferCount)
+        cache.Add(hash, newCache)
+        newCache
     stringBufferCount <- 0
     result
 
@@ -140,7 +138,14 @@ type private ParaParser (stream:PeekingStream) =
         stringBufferCount <- stringBufferCount + 1
   
   and bufferToString () =
-    let result = getString stringBuffer stringBufferCount
+    let hash = Farmhash.Hash64(stringBuffer, int64 stringBufferCount)
+    let result =
+      let mutable str = ""
+      if strCache.TryGetValue(hash, &str) then str
+      else
+        str <- getString stringBuffer stringBufferCount
+        strCache.Add(hash, str)
+        str
     stringBufferCount <- 0
     result
 
@@ -239,15 +244,19 @@ type private ParaParser (stream:PeekingStream) =
     let pairs = ResizeArray<_>()
     skipWhitespace stream
     let first = readString()
-    match (stream.Peek()) with
-    | 10 | 13 ->
-      while (not stream.EndOfStream) do
-        pairs.Add(parsePair())
-      ParaValue.Record (pairs.ToArray())
-    | _ ->
-      skipWhitespace stream
-      assert (stream.Peek() = 61)
-      parseObject first (fun stream -> stream.EndOfStream)
+    let result =
+      match (stream.Peek()) with
+      | 10 | 13 ->
+        while (not stream.EndOfStream) do
+          pairs.Add(parsePair())
+        ParaValue.Record (pairs.ToArray())
+      | _ ->
+        skipWhitespace stream
+        assert (stream.Peek() = 61)
+        parseObject first (fun stream -> stream.EndOfStream)
+    cache.Clear()
+    strCache.Clear()
+    result
 
 [<RequireQualifiedAccess>]
 type private BinaryToken =
