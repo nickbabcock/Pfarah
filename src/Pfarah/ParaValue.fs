@@ -89,12 +89,12 @@ type private ParaParser (stream:StreamReader) =
     match str with
     | "yes" -> Frequencies.ptrue
     | "no" -> Frequencies.pfalse
-    | ParaNumber x ->
+    (**| ParaNumber x ->
       match x with
       | 0.0 -> Frequencies.p0
       | 1.0 -> Frequencies.p1
-      | _ -> ParaValue.Number x
-    | ParaDate d -> ParaValue.Date d
+      | _ -> ParaValue.Number x**)
+    (**| ParaDate d -> ParaValue.Date d*)
     | "flags" -> Frequencies.pflags
     | "type" -> Frequencies.ptype
     | "id" -> Frequencies.pid
@@ -213,9 +213,10 @@ type private ParaParser (stream:StreamReader) =
     stream.Read() |> ignore
 
     let q = quotedStringRead()
-    match Utils.tryDateParse q with
+    ParaValue.String q
+    (**match Utils.tryDateParse q with
     | Some(date) -> ParaValue.Date date
-    | None -> ParaValue.String q
+    | None -> ParaValue.String q*)
 
   and parsePair () =
     let key = trim readString
