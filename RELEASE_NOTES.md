@@ -1,3 +1,8 @@
+### 0.5.0 Unreleased
+* Major performance increases (2x speedup)
+* Major memory reductions
+* Update to .NET 4.5
+
 ### 0.4.0 October 24th 2015
 * `findOptional` returns a much more idiomatic tuple
 * `ToString` now produces a prettified output
