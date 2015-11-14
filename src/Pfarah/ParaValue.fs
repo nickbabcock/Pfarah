@@ -67,10 +67,10 @@ module Frequencies =
   let ptrue = ParaValue.Bool true
   let pfalse = ParaValue.Bool false
 
-type private ParaParser (stream:StreamReader) =
+type private ParaParser (stream:PeekingStream) =
   /// The max token size of any string, as defined by paradox internal source
   /// code is 256
-  let (stringBuffer:char[]) = Array.zeroCreate 256
+  let (stringBuffer:byte[]) = Array.zeroCreate 256
 
   /// Mutable variable to let us know how much of the string buffer is filled
   let mutable stringBufferCount = 0
@@ -79,28 +79,9 @@ type private ParaParser (stream:StreamReader) =
   let isspace (c:int) = c = 10 || c = 13 || c = 9 || c = 32
 
   /// Advance the stream until a non-whitespace character is encountered
-  let skipWhitespace (stream:StreamReader) =
+  let skipWhitespace (stream:PeekingStream) =
     while (isspace (stream.Peek())) do
       stream.Read() |> ignore
-
-  /// Narrows a given string to a better data representation. If no better
-  /// representation can be found then the string is returned.
-  let narrow str =
-    match str with
-    | "yes" -> Frequencies.ptrue
-    | "no" -> Frequencies.pfalse
-    (**| ParaNumber x ->
-      match x with
-      | 0.0 -> Frequencies.p0
-      | 1.0 -> Frequencies.p1
-      | _ -> ParaValue.Number x**)
-    (**| ParaDate d -> ParaValue.Date d*)
-    | "flags" -> Frequencies.pflags
-    | "type" -> Frequencies.ptype
-    | "id" -> Frequencies.pid
-    | "" -> Frequencies.pempty
-    | "name" -> Frequencies.pname
-    | x -> ParaValue.String x
 
   /// Trim leading and trailing whitespace from a value
   let trim fn =
@@ -121,9 +102,32 @@ type private ParaParser (stream:StreamReader) =
       assert (stream.Peek() = 125)
       stream.Read() |> ignore
       result
-    | _ -> narrow (readString())
+    | _ -> narrow ()
+  
+  and narrowBuffer() =
+    let result = 
+      match stringBufferCount with
+      | 3 when stringBuffer.[0] = 121uy && stringBuffer.[1] = 101uy &&
+               stringBuffer.[2] = 115uy -> Frequencies.ptrue
+      | 2 when stringBuffer.[0] = 110uy && stringBuffer.[1] = 111uy -> Frequencies.pfalse
+      | _ ->
+        let num = tryDoubleParse stringBuffer stringBufferCount
+        if num.HasValue then
+          ParaValue.Number (num.Value)
+        else
+          let date = tryDateParse stringBuffer stringBufferCount
+          if date.HasValue then
+            ParaValue.Date (date.Value)
+          else
+            ParaValue.String (Utils.getString stringBuffer stringBufferCount)
+    stringBufferCount <- 0
+    result
 
-  and readString () =
+  and narrow () =
+    fillBuffer()
+    narrowBuffer()
+
+  and fillBuffer () =
     let mutable isDone = false
     while not isDone do
       let next = stream.Peek()
@@ -132,24 +136,26 @@ type private ParaParser (stream:StreamReader) =
       // sign, the end of a buffer, or a left curly (end of an object/list)
       isDone <- isspace next || next = 61 || next = -1 || next = 125
       if not (isDone) then
-        stringBuffer.[stringBufferCount] <- (char (stream.Read()))
+        stringBuffer.[stringBufferCount] <- byte (stream.Read())
         stringBufferCount <- stringBufferCount + 1
-
+  
+  and bufferToString () =
     let result = getString stringBuffer stringBufferCount
     stringBufferCount <- 0
     result
 
-  and quotedStringRead() =
+  and readString () =
+    fillBuffer()
+    bufferToString()
+
+  and quotedFillBuffer() =
     // Read until the next quote
     while stream.Peek() <> 34 do
-      stringBuffer.[stringBufferCount] <- (char (stream.Read()))
+      stringBuffer.[stringBufferCount] <- (byte (stream.Read()))
       stringBufferCount <- stringBufferCount + 1
-
+   
     // Read the trailing quote
     stream.Read() |> ignore
-    let result = new String(stringBuffer, 0, stringBufferCount)
-    stringBufferCount <- 0
-    result
 
   and parseArray (vals:ResizeArray<_>) =
     while (stream.Peek() <> 125) do
@@ -157,21 +163,19 @@ type private ParaParser (stream:StreamReader) =
 
   and parseContainerContents() =
     // The first key or element depending on object or list
-    let first = readString()
+    fillBuffer()
+    //let first = readString()
     skipWhitespace stream
 
     match (stream.Peek()) with
-    | 125 -> // List of one
-      let vals = ResizeArray<_>()
-      vals.Add(narrow first)
-      ParaValue.Array (vals.ToArray())
+    | 125 -> ParaValue.Array ([| narrowBuffer() |])
 
     // An equals sign means we are parsing an object
-    | 61 -> parseObject first (fun (stream:StreamReader) -> stream.Peek() = 125)
+    | 61 -> parseObject (bufferToString()) (fun (stream:PeekingStream) -> stream.Peek() = 125)
     | _ -> // parse list
       skipWhitespace stream
       let vals = ResizeArray<_>()
-      vals.Add(narrow first)
+      vals.Add(narrowBuffer())
       parseArray vals
       ParaValue.Array (vals.ToArray())
 
@@ -201,6 +205,7 @@ type private ParaParser (stream:StreamReader) =
       // Beware of empty objects "{}" that don't have a key. If we encounter
       // them, just blow right by them.
       if (stream.Peek()) = 123 then
+        stream.Read() |> ignore
         while (stream.Read()) <> 125 do
           ()
       else
@@ -212,11 +217,15 @@ type private ParaParser (stream:StreamReader) =
     // Read through the quote
     stream.Read() |> ignore
 
-    let q = quotedStringRead()
-    ParaValue.String q
-    (**match Utils.tryDateParse q with
-    | Some(date) -> ParaValue.Date date
-    | None -> ParaValue.String q*)
+    quotedFillBuffer()
+    let date = Utils.tryDateParse stringBuffer stringBufferCount
+    let result =
+      if date.HasValue then
+        ParaValue.Date (date.Value)
+      else
+        ParaValue.String (bufferToString())
+    stringBufferCount <- 0
+    result
 
   and parsePair () =
     let key = trim readString
@@ -476,8 +485,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
 type ParaValue with
   /// Parses the given stream assuming that it contains strictly plain text.
   static member LoadText (stream:Stream) =
-    use stream = new StreamReader(stream, Encoding.GetEncoding(1252), false, 0x8000)
-    let parser = ParaParser stream
+    let parser = ParaParser (PeekingStream(stream))
     parser.Parse ()
 
   /// Parses the given stream filled with binary data with a token lookup and

@@ -1,6 +1,7 @@
 namespace Pfarah
 
 open System
+open System.Text
 
 module Utils =
   [<Literal>]
@@ -155,19 +156,6 @@ module Utils =
     else
       None
 
-  /// Specialized method on creating strings. Takes advantage of the fact 25%
-  /// of strings in a savegame come from just 5 different string, so we pre-
-  /// emptively check the buffer to see if this is a string we have already
-  /// seen.
-  let inline getString (buffer:char[]) (bufferLength:int) : string =
-    match bufferLength with
-    | 0 -> ""
-    | 2 when buffer.[0] = 'i' && buffer.[1] = 'd' -> "id"
-    | 4 when buffer.[0] = 'n' && buffer.[1] = 'a' &&
-              buffer.[2] = 'm' && buffer.[3] = 'e' -> "name"
-    | 4 when buffer.[0] = 't' && buffer.[1] = 'y' &&
-              buffer.[2] = 'p' && buffer.[3] = 'e' -> "type"
-    | 5 when buffer.[0] = 'f' && buffer.[1] = 'l' &&
-              buffer.[2] = 'a' && buffer.[3] = 'g' &&
-              buffer.[4] = 's' -> "flags"
-    | _ -> String(buffer, 0, bufferLength)
+  let encoding = Encoding.GetEncoding(1252)
+  let inline getString (buffer:byte[]) (bufferLength:int) : string =
+    encoding.GetString(buffer, 0, bufferLength)
