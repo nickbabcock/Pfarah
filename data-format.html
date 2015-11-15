@@ -108,15 +108,16 @@ that the format resembles JSON.</p>
 <span class="l">59: </span>
 <span class="l">60: </span>
 <span class="l">61: </span>
+<span class="l">62: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip"><code lang="text"># This is a comment
 # The root element is always an object that map string keys to another object:
-# (string, integer, float, date, array, object )
+# (string, integer, float, date, array, object)
 
 # Strings
 foo=bar
 
-# Strings with quotes that span multiple lines
+# Strings with quotes that can span multiple lines
 baz=" hello  ##
       cheese"
 
@@ -126,16 +127,17 @@ start=1841.2.3
 # Dates with hour
 middle=1841.2.3.4
 
-# Dates with strings
+# Dates that are quoted
 end="1300.10.1"
 
 # Integers
 type=49
 
-# Floating point (always in the format #.###)
+# Floating point (always in the format #.### or #.#####)
 strength=10.435
+morale=5.10875
 
-# An array of homogenous types
+# An array is always composed of homogenous types
 nums={1 2 3 4}
 
 # Keys don't have to be unique
@@ -157,7 +159,7 @@ army={
         patrol=yes
     }
 
-    # Empty object (bug?) -- I ignore this!
+    # Empty object (bug with the format?)
     { }
 
     # An array of objects without keys
