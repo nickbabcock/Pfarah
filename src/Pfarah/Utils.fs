@@ -60,7 +60,8 @@ module Utils =
       // If the encountered character is a dot, then we know that the next
       // three characters represent the fractional part of the number. If the
       // next three characters aren't numbers then we aren't looking at a
-      // number
+      // number. The same logic is applied for numbers that are five digits
+      // long
       else if (str.[i]) = Period then
         if (i + 3 = strLength - 1) && isNum (str.[i + 1])
           && isNum(str.[i + 2]) && isNum(str.[i + 3]) then
@@ -96,6 +97,9 @@ module Utils =
     else
       new Nullable<DateTime>()
 
+  /// Given a byte array that contains numbers in ASCII and the start and end
+  /// index of the number in the array, extract out the numerical of the
+  /// number. For instance '1234' will be transformed into 1234.
   let private numToPeriod (str:byte[]) (strIndex:int) (strEndIndex:int) =
     let mutable result = 0
     let mutable i = strIndex
