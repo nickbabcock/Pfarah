@@ -1,4 +1,4 @@
-### 0.5.0 Unreleased
+### 0.5.0 November 14th 2015
 * Major performance increases (2x speedup)
 * Major memory reductions
 * Update to .NET 4.5
