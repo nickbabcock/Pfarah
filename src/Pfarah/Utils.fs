@@ -112,9 +112,11 @@ module Utils =
   /// Attempts to convert the string to a date time. Returns some datetime if
   /// successful
   let tryDateParse (str:byte[]) (strLength:int) =
-    // imperatively check to see if the string contains only numbers and
+    // Imperatively check to see if the string contains only numbers and
     // periods as this cuts the function time in half compared to the
-    // functional equivalent (Seq.forall)
+    // functional equivalent (Seq.forall). We also count the number
+    // of periods so that we can optimize extracting the numbers
+    // between the periods.
     let mutable canBe = true
     let mutable i = 0
     let mutable periodCount = 0
@@ -127,6 +129,7 @@ module Utils =
     
     match periodCount with
     | 2 ->
+      // Two periods mean yyyy.mm.dd
       let firstPeriod = Array.IndexOf(str, Period)
       let secondPeriod = Array.IndexOf(str, Period, firstPeriod + 1)
       let y = numToPeriod str 0 firstPeriod
@@ -134,6 +137,7 @@ module Utils =
       let d = numToPeriod str (secondPeriod + 1) (strLength)
       tryDate y m d 0
     | 3 ->
+      // Three periods mean yyyy.mm.dd.hh
       let firstPeriod = Array.IndexOf(str, Period)
       let secondPeriod = Array.IndexOf(str, Period, firstPeriod + 1)
       let thirdPeriod = Array.IndexOf(str, Period, secondPeriod + 1)
