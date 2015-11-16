@@ -56,6 +56,11 @@ module Frequencies =
   let pfalse = ParaValue.Bool false
 
 type private ParaParser (stream:PeekingStream) =
+  // Caches that allow us to take the 64bit hash of a byte array of some
+  // length and map it to another object thus reducing gc allocations and gc
+  // pressure. In theory these caches are not fool proof because a hash
+  // collision would be disasterous, but in reality, in a domain of 200,000
+  // unique hashes, the chances of a collision is 1 in a billion.
   let cache = Dictionary<uint64, ParaValue>()
   let strCache = Dictionary<uint64, string>()
 
@@ -96,17 +101,24 @@ type private ParaParser (stream:PeekingStream) =
     | _ -> narrow ()
   
   and narrowBuffer() =
+    // Now that we have a filled buffer, we have to determine what value it
+    // holds. We first try the fast path of hashing the buffer and seeing if
+    // the contents are something we have already seen (if so, just return
+    // that value). Else we compute the value that the buffer holds.
     let hash = Farmhash.Hash64(stringBuffer, int64 stringBufferCount)
     let result =
       let mutable pval = Frequencies.ptrue
       if cache.TryGetValue(hash, &pval) then pval
       else
-        let newCache = 
+        let newCache =
           match stringBufferCount with
           | 3 when stringBuffer.[0] = 121uy && stringBuffer.[1] = 101uy &&
                    stringBuffer.[2] = 115uy -> Frequencies.ptrue
           | 2 when stringBuffer.[0] = 110uy && stringBuffer.[1] = 111uy -> Frequencies.pfalse
           | _ ->
+            // Try parsing the buffer as a number and then as a date, in that order.
+            // We have somewhat of a waterfall conditional, but we avoid partial
+            // active patterns because they do incur a heap allocation
             let num = tryDoubleParse stringBuffer stringBufferCount
             if num.HasValue then
               ParaValue.Number (num.Value)
@@ -138,6 +150,9 @@ type private ParaParser (stream:PeekingStream) =
         stringBufferCount <- stringBufferCount + 1
   
   and bufferToString () =
+    // In order to avoid allocating many instances of the same string and
+    // wasting memory in the process, query the string cache. Essentially this
+    // is poor man's -- but faster man's string interning
     let hash = Farmhash.Hash64(stringBuffer, int64 stringBufferCount)
     let result =
       let mutable str = ""
