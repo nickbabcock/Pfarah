@@ -1,3 +1,8 @@
+### 0.5.1 November 17th 2015
+* Keep signatures of previous `try` functions in the Utils module. Though not
+  used internally, the methods are helpful for other libraries when
+  interpreting keys that may be dates.
+
 ### 0.5.0 November 14th 2015
 * Major performance increases (2x speedup)
 * Major memory reductions
