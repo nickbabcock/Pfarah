@@ -16,6 +16,8 @@ module Utils =
   [<Literal>]
   let private Nine = 57uy;
 
+  let encoding = Encoding.GetEncoding(1252)
+
   let inline private isNum (c:byte) = c >= Zero && c <= Nine
   let inline private toNum (c:byte) = int c - 48
 
@@ -148,6 +150,5 @@ module Utils =
       tryDate y m d h
     | _ -> new Nullable<DateTime>()
 
-  let encoding = Encoding.GetEncoding(1252)
   let inline getString (buffer:byte[]) (bufferLength:int) : string =
     encoding.GetString(buffer, 0, bufferLength)

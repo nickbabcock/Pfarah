@@ -515,7 +515,7 @@ type ParaValue with
   /// Parses the given stream filled with binary data with a token lookup and
   /// header
   static member LoadBinary (stream:Stream, lookup:IDictionary<int16, string>, header:option<string>) =
-    use stream = new BinaryReader(stream, Encoding.GetEncoding(1252))
+    use stream = new BinaryReader(stream, encoding)
     let parser = BinaryParaParser(stream, lookup)
     parser.Parse (header)
 
@@ -540,7 +540,7 @@ type ParaValue with
       failwith "Headers should be the same length"
     let bt = Array.zeroCreate binHeader.Length
     let length = stream.Read(bt, 0, binHeader.Length)
-    let header = Encoding.GetEncoding(1252).GetString(bt, 0, length)
+    let header = encoding.GetString(bt, 0, length)
     match header with
     | x when x = binHeader -> ParaValue.LoadBinary(stream, (lookup.Force()), None)
     | x when x = txtHeader -> ParaValue.LoadText(stream)
@@ -553,12 +553,12 @@ type ParaValue with
 
   /// Parses the given string
   static member Parse (text:string) =
-    let str = new MemoryStream(Encoding.GetEncoding(1252).GetBytes(text))
+    let str = new MemoryStream(encoding.GetBytes(text))
     ParaValue.LoadText str
 
   /// Writes the given data to a stream
   static member Save (stream:Stream, data:ParaValue) =
-    use stream = new StreamWriter(stream, Encoding.GetEncoding(1252), 0x8000)
+    use stream = new StreamWriter(stream, encoding, 0x8000)
 
     let rec recWrite props =
       props |> Array.iter (fun ((prop:string), v) ->
