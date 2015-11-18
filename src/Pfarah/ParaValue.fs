@@ -119,11 +119,11 @@ type private ParaParser (stream:PeekingStream) =
             // Try parsing the buffer as a number and then as a date, in that order.
             // We have somewhat of a waterfall conditional, but we avoid partial
             // active patterns because they do incur a heap allocation
-            let num = tryDoubleParse stringBuffer stringBufferCount
+            let num = parseDouble stringBuffer stringBufferCount
             if num.HasValue then
               ParaValue.Number (num.Value)
             else
-              let date = tryDateParse stringBuffer stringBufferCount
+              let date = parseDate stringBuffer stringBufferCount
               if date.HasValue then
                 ParaValue.Date (date.Value)
               else
@@ -238,7 +238,7 @@ type private ParaParser (stream:PeekingStream) =
     stream.Read() |> ignore
 
     quotedFillBuffer()
-    let date = Utils.tryDateParse stringBuffer stringBufferCount
+    let date = parseDate stringBuffer stringBufferCount
     let result =
       if date.HasValue then
         ParaValue.Date (date.Value)

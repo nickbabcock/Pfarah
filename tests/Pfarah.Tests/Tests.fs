@@ -16,8 +16,6 @@ let parse str =
   | ParaValue.Record properties -> properties
   | _ -> failwith "Expected a record"
 
-let strToBytes (str:string) = str.ToCharArray() |> Array.map byte
-
 [<Test>]
 let ``parse basic object`` () =
   parse "foo=bar"
@@ -388,19 +386,13 @@ let (``try parse double cases``:obj[][]) = [|
 [<Test>]
 [<TestCaseSource("try parse double cases")>]
 let ``try parse double`` str expected =
-  let expect =
-    match expected with
-    | Some(x) -> new Nullable<double>(x)
-    | None -> new Nullable<double>()
-  let data = strToBytes str
-  tryDoubleParse data data.Length |> shouldEqual expect
+  tryDoubleParse str |> shouldEqual expected
 
 [<Test>]
 let ``time parse double`` () =
-  let data = strToBytes "15.455"
   let watch = Stopwatch.StartNew()
   for i = 1 to 10000000 do
-    tryDoubleParse data data.Length |> ignore
+    tryDoubleParse "15.455" |> ignore
 
   watch.Stop()
   printfn "Double parsing: %d millseconds" watch.ElapsedMilliseconds
@@ -426,12 +418,7 @@ let (``try parse date cases``:obj[][]) = [|
 [<Test>]
 [<TestCaseSource("try parse date cases")>]
 let ``try parse date`` str expected =
-  let expect =
-    match expected with
-    | Some(x) -> new Nullable<DateTime>(x)
-    | None -> new Nullable<DateTime>()
-  let data = strToBytes str
-  tryDateParse data data.Length |> shouldEqual expect
+  tryDateParse str |> shouldEqual expected
 
 let (``ParaValue toString cases``:obj[][]) = [|
   [| ParaValue.String "a"; "a" |]
