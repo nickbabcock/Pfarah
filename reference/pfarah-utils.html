@@ -62,7 +62,7 @@
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L25-25" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L27-27" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -85,7 +85,7 @@ floating point representation. See:
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L31-31" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L33-33" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -108,7 +108,7 @@ textually represented with three decimal points (#.000)</p>
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L147-147" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L19-19" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -119,62 +119,41 @@ textually represented with three decimal points (#.000)</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '27', 27)" onmouseover="showTip(event, '27', 27)">
-            getString buffer bufferLength
+            tryDateParse str
           </code>
           <div class="tip" id="27">
-            <strong>Signature:</strong> buffer:byte [] -&gt; bufferLength:int -&gt; string<br />
+            <strong>Signature:</strong> str:string -&gt; DateTime option<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L148-148" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L155-155" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Attempts to convert a given string of the form yyyy.mm.dd with and
+optional hour part into a proper DateTime.</p>
+
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '28', 28)" onmouseover="showTip(event, '28', 28)">
-            tryDateParse str strLength
+            tryDoubleParse str
           </code>
           <div class="tip" id="28">
-            <strong>Signature:</strong> str:byte [] -&gt; strLength:int -&gt; Nullable&lt;DateTime&gt;<br />
+            <strong>Signature:</strong> str:string -&gt; double option<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L114-114" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L162-162" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Attempts to convert the string to a date time. Returns some datetime if
-successful</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '29', 29)" onmouseover="showTip(event, '29', 29)">
-            tryDoubleParse str strLength
-          </code>
-          <div class="tip" id="29">
-            <strong>Signature:</strong> str:byte [] -&gt; strLength:int -&gt; Nullable&lt;double&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L38-38" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>A highly optimized version of Double.TryParse that takes advantage of
-the fact that we know that the number format is (in regex form):
-<(\d+)\.(\d{3})?>. In profiling it was shown that Double.TryParse was a
-bottleneck at around 20-50% of the CPU time and after this function was
-written, the bottleneck completely disappeared.</p>
+          <p>Attempts to convert a given string into a number that either has
+no fractional part, 3 decimal, or 5 decimal points.</p>
 
 
 
