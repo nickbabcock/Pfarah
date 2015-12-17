@@ -25,6 +25,7 @@ If you're familiar with [FSharp.Data JSON][fdj] library, you'll be familiar with
 *)
 #r "Pfarah.dll"
 open Pfarah
+open Pfarah.Operators
 
 let obj = ParaValue.Parse "foo=bar"
 (**

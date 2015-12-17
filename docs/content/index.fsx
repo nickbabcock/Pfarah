@@ -26,6 +26,7 @@ by Clausewitz engine from Paradox Interactive
 
 #r "Pfarah.dll"
 open Pfarah
+open Pfarah.Operators
 
 // Parse strings. Great for discovering how to work with Pfarah or the sample
 // data

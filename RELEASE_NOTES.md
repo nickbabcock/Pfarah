@@ -1,3 +1,8 @@
+### 0.6.0
+* Move the dynamic lookup operator (?) to a package that is not auto opened by
+  default, so as not to clash with other dynamic lookup operators in other
+  libraries. The new module is `Pfarah.Operators`
+
 ### 0.5.1 November 17th 2015
 * Keep signatures of previous `try` functions in the Utils module. Though not
   used internally, the methods are helpful for other libraries when
