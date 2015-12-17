@@ -1,6 +1,7 @@
 ﻿module Pfarah.BinaryTests
 
 open Pfarah
+open Pfarah.Operators
 open System
 open System.IO
 open NUnit.Framework

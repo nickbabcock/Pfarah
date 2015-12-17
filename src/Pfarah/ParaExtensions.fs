@@ -1,8 +1,6 @@
 ﻿namespace Pfarah
 
-[<AutoOpen>]
-module ParaExtensions =
-
+module Operators =
   /// Retrieves the property on the ParaValue Record with the given property
   /// name. If the object is not a Record or the property does not exist on
   /// the Record, the function will fail
@@ -14,6 +12,8 @@ module ParaExtensions =
       | None -> failwithf "Didn't find property '%s' in %A" propertyName obj
     | _ -> failwithf "Not an object: %A" obj
 
+[<AutoOpen>]
+module ParaExtensions =
   /// Get the integer value of an object
   let asInteger = function
     | ParaValue.Number n -> int n

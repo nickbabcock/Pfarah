@@ -1,6 +1,7 @@
 module Pfarah.Tests
 
 open Pfarah
+open Pfarah.Operators
 open Utils
 open NUnit.Framework
 open System
