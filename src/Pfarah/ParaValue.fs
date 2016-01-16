@@ -506,6 +506,100 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       ParaValue.Record(parseTopObject())
     | None -> ParaValue.Record(parseTopObject())
 
+module Functional =
+  type ParaValue<'a> = ParaValue -> ParaResult<'a> * ParaValue
+
+  and ParaResult<'a> =
+      | Value of 'a
+      | Error of string
+
+  let inline error (e: string) : ParaValue<'a> = fun va -> Error e, va
+
+  type FromJsonDefaults = FromJsonDefaults with
+    static member inline FromJson (_: bool)  =
+      fun x ->
+        match x with
+        | ParaValue.Bool b -> Value(b), x
+        | ParaValue.Number n -> Value((int n) <> 0), x
+        | err -> error "Expected boolean but received something else" x
+
+    static member inline FromJson (_: int) =
+      fun x ->
+        match x with
+        | ParaValue.Number n -> Value(int n), x
+        | err -> error "Expected int but received something else" x
+
+    static member inline FromJson (_: uint32) =
+      fun x ->
+        match x with
+        | ParaValue.Number n -> Value(uint32 n), x
+        | err -> error "Expected uint but received something else" x
+
+    static member inline FromJson (_: sbyte) =
+      fun x ->
+        match x with
+        | ParaValue.Number n -> Value(sbyte n), x
+        | err -> error "Expected sbyte but received something else" x
+
+    static member inline FromJson (_: byte) =
+      fun x ->
+        match x with
+        | ParaValue.Number n -> Value(byte n), x
+        | err -> error "Expected byte but received something else" x
+
+    static member inline FromJson (_: int16) =
+      fun x ->
+        match x with
+        | ParaValue.Number n -> Value(int16 n), x
+        | err -> error "Expected int16 but received something else" x
+
+    static member inline FromJson (_: uint16) =
+      fun x ->
+        match x with
+        | ParaValue.Number n -> Value(uint16 n), x
+        | err -> error "Expected uint16 but received something else" x
+
+    static member inline FromJson (_: int64) =
+      fun x ->
+        match x with
+        | ParaValue.Number n -> Value(int64 n), x
+        | err -> error "Expected int64 but received something else" x
+
+    static member inline FromJson (_: uint64) =
+      fun x ->
+        match x with
+        | ParaValue.Number n -> Value(uint64 n), x
+        | err -> error "Expected uint64 but received something else" x
+
+    static member inline FromJson (_: single) =
+      fun x ->
+        match x with
+        | ParaValue.Number n -> Value(single n), x
+        | err -> error "Expected single but received something else" x
+
+    static member inline FromJson (_: float) =
+      fun x ->
+        match x with
+        | ParaValue.Number n -> Value(float n), x
+        | err -> error "Expected float but received something else" x
+
+    static member inline FromJson (_: string) =
+      fun x ->
+        match x with
+        | ParaValue.String s -> Value(s), x
+        | err -> error "Expected string but received something else" x
+
+  let inline internal fromParaDefaults (a: ^a, _: ^b) =
+        ((^a or ^b) : (static member FromJson: ^a -> ^a ParaValue) a)
+
+  let inline internal fromJson x =
+        fst (fromParaDefaults (Unchecked.defaultof<'a>, FromJsonDefaults) x)
+
+  let inline deserialize paraValue =
+      fromJson paraValue
+      |> function | Value a -> a
+                  | Error e -> failwith e
+
 type ParaValue with
   /// Parses the given stream assuming that it contains strictly plain text.
   static member LoadText (stream:Stream) =

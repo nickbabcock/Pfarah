@@ -2,6 +2,7 @@ module Pfarah.Tests
 
 open Pfarah
 open Pfarah.Operators
+open Pfarah.Functional
 open Utils
 open NUnit.Framework
 open System
@@ -509,3 +510,63 @@ let ``load zip text file`` () =
   let path = Path.Combine("data", "eu4txt-zip.eu4")
   ParaValue.Load(path, "EU4bin", "EU4txt", lazy(dict([])))
   |> shouldEqual (ParaValue.Record([| ("date", ParaValue.Date (DateTime(1821, 1, 1)))|]))
+
+[<Test>]
+let ``deserialize true boolean`` () =
+  deserialize (ParaValue.Bool true) |> shouldEqual true
+
+[<Test>]
+let ``deserialize false boolean`` () =
+  deserialize (ParaValue.Bool false) |> shouldEqual false
+
+[<Test>]
+let ``deserialize zero number as false boolean`` () =
+  deserialize (ParaValue.Number 0.0) |> shouldEqual false
+
+[<Test>]
+let ``deserialize non-zero number as true boolean`` () =
+  deserialize (ParaValue.Number 1.0) |> shouldEqual true
+
+[<Test>]
+let ``deserialize number as a signed 32-bit integer`` () =
+  deserialize (ParaValue.Number 1.0) |> shouldEqual 1
+
+[<Test>]
+let ``deserialize a number as a signed 8-bit integer`` () =
+  deserialize (ParaValue.Number 1.0) |> shouldEqual 1y
+
+[<Test>]
+let ``deserialize a number as a unsigned 8-bit natural number`` () =
+  deserialize (ParaValue.Number 1.0) |> shouldEqual 1uy
+
+[<Test>]
+let ``deserialize a number as a signed 16-bit integer`` () =
+  deserialize (ParaValue.Number 1.0) |> shouldEqual 1s
+
+[<Test>]
+let ``deserialize a number as a unsigned 16-bit natural number`` () =
+  deserialize (ParaValue.Number 1.0) |> shouldEqual 1us
+
+[<Test>]
+let ``deserialize a number as a unsigned 32-bit natural number`` () =
+  deserialize (ParaValue.Number 1.0) |> shouldEqual 1u
+
+[<Test>]
+let ``deserialize a number as a signed 64-bit integer`` () =
+  deserialize (ParaValue.Number 1.0) |> shouldEqual 1L
+
+[<Test>]
+let ``deserialize a number as a unsigned 64-bit natural number`` () =
+  deserialize (ParaValue.Number 1.0) |> shouldEqual 1UL
+
+[<Test>]
+let ``deserialize a number as a 32-bit floating point number`` () =
+  deserialize (ParaValue.Number 1.0) |> shouldEqual 1.0f
+
+[<Test>]
+let ``deserialize a number as a 64-bit floating point number`` () =
+  deserialize (ParaValue.Number 1.0) |> shouldEqual 1.0
+
+[<Test>]
+let ``deserialize a string`` () =
+  deserialize (ParaValue.String "hello") |> shouldEqual "hello"
