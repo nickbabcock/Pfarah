@@ -570,3 +570,24 @@ let ``deserialize a number as a 64-bit floating point number`` () =
 [<Test>]
 let ``deserialize a string`` () =
   deserialize (ParaValue.String "hello") |> shouldEqual "hello"
+
+type Cheese = {
+  Label: string
+  Age: int
+} with
+  static member Create label age = { Cheese.Label = label; Age = age }
+  static member FromJson (_:Cheese) =
+    fun x ->
+      match x with
+      | ParaValue.Record b ->
+        let label = x?label
+        let age = x?age
+        Value(Cheese.Create (label |> asString) (age |> asInteger)), x
+      | y -> Error("B"), x
+
+[<Test>]
+let ``deserialize a record`` () =
+  let data =
+    ParaValue.Record [| ("label", ParaValue.String "american")
+                        ("age", ParaValue.Number 1.0) |]
+  deserialize data |> shouldEqual { Cheese.Label = "american"; Age = 1 }

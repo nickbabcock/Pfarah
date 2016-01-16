@@ -515,6 +515,11 @@ module Functional =
 
   let inline error (e: string) : ParaValue<'a> = fun va -> Error e, va
 
+  let num paravalue fn err =
+    match paravalue with
+    | ParaValue.Number n -> Value(fn n)
+    | y -> err(y)
+
   type FromJsonDefaults = FromJsonDefaults with
     static member inline FromJson (_: bool)  =
       fun x ->
@@ -524,10 +529,7 @@ module Functional =
         | err -> error "Expected boolean but received something else" x
 
     static member inline FromJson (_: int) =
-      fun x ->
-        match x with
-        | ParaValue.Number n -> Value(int n), x
-        | err -> error "Expected int but received something else" x
+      fun x -> num x int (fun y -> Error("Expected int but received something else")), x
 
     static member inline FromJson (_: uint32) =
       fun x ->
