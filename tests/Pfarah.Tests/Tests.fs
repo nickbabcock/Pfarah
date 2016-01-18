@@ -571,19 +571,44 @@ let ``deserialize a number as a 64-bit floating point number`` () =
 let ``deserialize a string`` () =
   deserialize (ParaValue.String "hello") |> shouldEqual "hello"
 
+
+let inline init (a: 'a) : ParaValue<'a> = 
+    fun paravalue -> Value a, paravalue
+
+let inline bind (m: ParaValue<'a>) (f: 'a -> ParaValue<'b>) : ParaValue<'b> =
+    fun paravalue ->
+        match m paravalue with
+        | Value a, paravalue -> (f a) paravalue
+        | Error e, paravalue -> Error e, paravalue
+
+let inline apply (f: ParaValue<'a -> 'b>) (m: ParaValue<'a>) : ParaValue<'b> =
+    bind f (fun f' ->
+        bind m (fun m' ->
+            init (f' m')))
+
+let inline map (f: 'a -> 'b) (m: ParaValue<'a>) : ParaValue<'b> =
+    bind m (fun m' ->
+        init (f m'))
+
+let (<*>) f m = apply f m
+let (<!>) f m = map f m
+
+let inline pget (key:string) : ParaValue<'a> =
+  fun o ->
+    match o with 
+    | ParaValue.Record(props) ->
+      match Array.filter (fst >> (=) key) props with
+      | [| x |] -> fromJson (snd x), o
+      | x -> Error("B"), o
+    | _ -> Error("A"), o
+
 type Cheese = {
   Label: string
   Age: int
 } with
-  static member Create label age = { Cheese.Label = label; Age = age }
-  static member FromJson (_:Cheese) =
-    fun x ->
-      match x with
-      | ParaValue.Record b ->
-        let label = x?label
-        let age = x?age
-        Value(Cheese.Create (label |> asString) (age |> asInteger)), x
-      | y -> Error("B"), x
+  static member inline Create label age = { Cheese.Label = label; Age = age }
+  static member inline FromJson (_:Cheese) =
+    Cheese.Create <!> (pget "label") <*> (pget "age")
 
 [<Test>]
 let ``deserialize a record`` () =

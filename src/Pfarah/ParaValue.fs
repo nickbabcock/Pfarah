@@ -594,7 +594,7 @@ module Functional =
   let inline internal fromParaDefaults (a: ^a, _: ^b) =
         ((^a or ^b) : (static member FromJson: ^a -> ^a ParaValue) a)
 
-  let inline internal fromJson x =
+  let inline fromJson x =
         fst (fromParaDefaults (Unchecked.defaultof<'a>, FromJsonDefaults) x)
 
   let inline deserialize paraValue =
