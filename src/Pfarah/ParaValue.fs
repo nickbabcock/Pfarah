@@ -597,6 +597,13 @@ module Functional =
   let inline fromJson x =
         fst (fromParaDefaults (Unchecked.defaultof<'a>, FromJsonDefaults) x)
 
+  type FromJsonDefaults with
+    static member inline FromJson (_: 'a option) =
+      fun x ->
+        (match fromJson x with
+        | Value(y) -> Value(Some(y))
+        | Error e as z -> Error(e)), x
+
   let inline deserialize paraValue =
       fromJson paraValue
       |> function | Value a -> a

@@ -571,6 +571,9 @@ let ``deserialize a number as a 64-bit floating point number`` () =
 let ``deserialize a string`` () =
   deserialize (ParaValue.String "hello") |> shouldEqual "hello"
 
+[<Test>]
+let ``deserialize a string into an option`` () =
+  deserialize (ParaValue.String "hello") |> shouldEqual (Some "hello")
 
 let inline init (a: 'a) : ParaValue<'a> = 
     fun paravalue -> Value a, paravalue
