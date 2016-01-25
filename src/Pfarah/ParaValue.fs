@@ -510,8 +510,8 @@ module Functional =
   type ParaValue<'a> = ParaValue -> ParaResult<'a> * ParaValue
 
   and ParaResult<'a> =
-      | Value of 'a
-      | Error of string
+  | Value of 'a
+  | Error of string
 
   let inline error (e: string) : ParaValue<'a> = fun va -> Error e, va
 
@@ -592,10 +592,10 @@ module Functional =
         | err -> error "Expected string but received something else" x
 
   let inline internal fromParaDefaults (a: ^a, _: ^b) =
-        ((^a or ^b) : (static member FromPara: ^a -> ^a ParaValue) a)
+    ((^a or ^b) : (static member FromPara: ^a -> ^a ParaValue) a)
 
   let inline fromPara x =
-        fst (fromParaDefaults (Unchecked.defaultof<'a>, FromParaDefaults) x)
+    fst (fromParaDefaults (Unchecked.defaultof<'a>, FromParaDefaults) x)
 
   type FromParaDefaults with
     static member inline FromPara (_: 'a option) =
@@ -605,25 +605,25 @@ module Functional =
         | Error e as z -> Error(e)), x
 
   let inline deserialize paraValue =
-      fromPara paraValue
-      |> function | Value a -> a
-                  | Error e -> failwith e
+    fromPara paraValue
+    |> function | Value a -> a
+                | Error e -> failwith e
 
   let inline init (a: 'a) : ParaValue<'a> =
     fun paravalue -> Value a, paravalue
 
   let inline bind (m: ParaValue<'a>) (f: 'a -> ParaValue<'b>) : ParaValue<'b> =
-      fun paravalue ->
-          match m paravalue with
-          | Value a, paravalue -> (f a) paravalue
-          | Error e, paravalue -> Error e, paravalue
+    fun paravalue ->
+      match m paravalue with
+      | Value a, paravalue -> (f a) paravalue
+      | Error e, paravalue -> Error e, paravalue
 
   let inline apply (f: ParaValue<'a -> 'b>) (m: ParaValue<'a>) : ParaValue<'b> =
-      bind f (fun f' ->
-          bind m (f' >> init))
+    bind f (fun f' ->
+      bind m (f' >> init))
 
   let inline map (f: 'a -> 'b) (m: ParaValue<'a>) : ParaValue<'b> =
-      bind m (f >> init)
+    bind m (f >> init)
 
   let (<*>) = apply
   let (<!>) = map
@@ -636,7 +636,6 @@ module Functional =
         | [| x |] -> fromPara (snd x), o
         | x -> Error(sprintf "Found not 1 but %d of %s" (Array.length x) key), o
       | typ -> Error(sprintf "Unable to extract properties from a %O" typ), o
-
 
 type ParaValue with
   /// Parses the given stream assuming that it contains strictly plain text.
