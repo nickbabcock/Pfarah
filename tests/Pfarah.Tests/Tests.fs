@@ -575,34 +575,6 @@ let ``deserialize a string`` () =
 let ``deserialize a string into an option`` () =
   deserialize (ParaValue.String "hello") |> shouldEqual (Some "hello")
 
-let inline init (a: 'a) : ParaValue<'a> = 
-    fun paravalue -> Value a, paravalue
-
-let inline bind (m: ParaValue<'a>) (f: 'a -> ParaValue<'b>) : ParaValue<'b> =
-    fun paravalue ->
-        match m paravalue with
-        | Value a, paravalue -> (f a) paravalue
-        | Error e, paravalue -> Error e, paravalue
-
-let inline apply (f: ParaValue<'a -> 'b>) (m: ParaValue<'a>) : ParaValue<'b> =
-    bind f (fun f' ->
-        bind m (f' >> init))
-
-let inline map (f: 'a -> 'b) (m: ParaValue<'a>) : ParaValue<'b> =
-    bind m (f >> init)
-
-let (<*>) = apply
-let (<!>) = map
-
-let inline pget (key:string) : ParaValue<'a> =
-  fun o ->
-    match o with 
-    | ParaValue.Record(props) ->
-      match Array.filter (fst >> (=) key) props with
-      | [| x |] -> fromPara (snd x), o
-      | x -> Error(sprintf "Found not 1 but %d of %s" (Array.length x) key), o
-    | typ -> Error(sprintf "Unable to extract properties from a %O" typ), o
-
 type Cheese = {
   Label: string
   Age: int
