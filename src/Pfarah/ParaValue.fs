@@ -520,92 +520,92 @@ module Functional =
     | ParaValue.Number n -> Value(fn n)
     | y -> err(y)
 
-  type FromJsonDefaults = FromJsonDefaults with
-    static member inline FromJson (_: bool)  =
+  type FromParaDefaults = FromParaDefaults with
+    static member inline FromPara (_: bool)  =
       fun x ->
         match x with
         | ParaValue.Bool b -> Value(b), x
         | ParaValue.Number n -> Value((int n) <> 0), x
         | err -> error "Expected boolean but received something else" x
 
-    static member inline FromJson (_: int) =
+    static member inline FromPara (_: int) =
       fun x -> num x int (fun y -> Error("Expected int but received something else")), x
 
-    static member inline FromJson (_: uint32) =
+    static member inline FromPara (_: uint32) =
       fun x ->
         match x with
         | ParaValue.Number n -> Value(uint32 n), x
         | err -> error "Expected uint but received something else" x
 
-    static member inline FromJson (_: sbyte) =
+    static member inline FromPara (_: sbyte) =
       fun x ->
         match x with
         | ParaValue.Number n -> Value(sbyte n), x
         | err -> error "Expected sbyte but received something else" x
 
-    static member inline FromJson (_: byte) =
+    static member inline FromPara (_: byte) =
       fun x ->
         match x with
         | ParaValue.Number n -> Value(byte n), x
         | err -> error "Expected byte but received something else" x
 
-    static member inline FromJson (_: int16) =
+    static member inline FromPara (_: int16) =
       fun x ->
         match x with
         | ParaValue.Number n -> Value(int16 n), x
         | err -> error "Expected int16 but received something else" x
 
-    static member inline FromJson (_: uint16) =
+    static member inline FromPara (_: uint16) =
       fun x ->
         match x with
         | ParaValue.Number n -> Value(uint16 n), x
         | err -> error "Expected uint16 but received something else" x
 
-    static member inline FromJson (_: int64) =
+    static member inline FromPara (_: int64) =
       fun x ->
         match x with
         | ParaValue.Number n -> Value(int64 n), x
         | err -> error "Expected int64 but received something else" x
 
-    static member inline FromJson (_: uint64) =
+    static member inline FromPara (_: uint64) =
       fun x ->
         match x with
         | ParaValue.Number n -> Value(uint64 n), x
         | err -> error "Expected uint64 but received something else" x
 
-    static member inline FromJson (_: single) =
+    static member inline FromPara (_: single) =
       fun x ->
         match x with
         | ParaValue.Number n -> Value(single n), x
         | err -> error "Expected single but received something else" x
 
-    static member inline FromJson (_: float) =
+    static member inline FromPara (_: float) =
       fun x ->
         match x with
         | ParaValue.Number n -> Value(float n), x
         | err -> error "Expected float but received something else" x
 
-    static member inline FromJson (_: string) =
+    static member inline FromPara (_: string) =
       fun x ->
         match x with
         | ParaValue.String s -> Value(s), x
         | err -> error "Expected string but received something else" x
 
   let inline internal fromParaDefaults (a: ^a, _: ^b) =
-        ((^a or ^b) : (static member FromJson: ^a -> ^a ParaValue) a)
+        ((^a or ^b) : (static member FromPara: ^a -> ^a ParaValue) a)
 
-  let inline fromJson x =
-        fst (fromParaDefaults (Unchecked.defaultof<'a>, FromJsonDefaults) x)
+  let inline fromPara x =
+        fst (fromParaDefaults (Unchecked.defaultof<'a>, FromParaDefaults) x)
 
-  type FromJsonDefaults with
-    static member inline FromJson (_: 'a option) =
+  type FromParaDefaults with
+    static member inline FromPara (_: 'a option) =
       fun x ->
-        (match fromJson x with
+        (match fromPara x with
         | Value(y) -> Value(Some(y))
         | Error e as z -> Error(e)), x
 
   let inline deserialize paraValue =
-      fromJson paraValue
+      fromPara paraValue
       |> function | Value a -> a
                   | Error e -> failwith e
 

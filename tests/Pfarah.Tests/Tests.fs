@@ -599,7 +599,7 @@ let inline pget (key:string) : ParaValue<'a> =
     match o with 
     | ParaValue.Record(props) ->
       match Array.filter (fst >> (=) key) props with
-      | [| x |] -> fromJson (snd x), o
+      | [| x |] -> fromPara (snd x), o
       | x -> Error(sprintf "Found not 1 but %d of %s" (Array.length x) key), o
     | typ -> Error(sprintf "Unable to extract properties from a %O" typ), o
 
@@ -608,7 +608,7 @@ type Cheese = {
   Age: int
 } with
   static member inline Create label age = { Cheese.Label = label; Age = age }
-  static member inline FromJson (_:Cheese) =
+  static member inline FromPara (_:Cheese) =
     Cheese.Create <!> (pget "label") <*> (pget "age")
 
 [<Test>]
