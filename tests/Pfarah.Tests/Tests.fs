@@ -617,3 +617,14 @@ let ``deserialize a record`` () =
     ParaValue.Record [| ("label", ParaValue.String "american")
                         ("age", ParaValue.Number 1.0) |]
   deserialize data |> shouldEqual { Cheese.Label = "american"; Age = 1 }
+
+[<Test>]
+let ``fail deserialization without property`` () =
+  let data =
+    ParaValue.Record [| ("label", ParaValue.String "american") |]
+  fromPara data |> shouldEqual (ParaResult<Cheese>.Error("Found not 1 but 0 of age"))
+
+[<Test>]
+let ``fail deserialization because not a record`` () =
+  let data = ParaValue.String "hello"
+  fromPara data |> shouldEqual (ParaResult<Cheese>.Error("Unable to extract properties from a hello"))
