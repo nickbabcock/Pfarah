@@ -600,8 +600,8 @@ let inline pget (key:string) : ParaValue<'a> =
     | ParaValue.Record(props) ->
       match Array.filter (fst >> (=) key) props with
       | [| x |] -> fromJson (snd x), o
-      | x -> Error("B"), o
-    | _ -> Error("A"), o
+      | x -> Error(sprintf "Found not 1 but %d of %s" (Array.length x) key), o
+    | typ -> Error(sprintf "Unable to extract properties from a %O" typ), o
 
 type Cheese = {
   Label: string
