@@ -591,8 +591,8 @@ let inline apply (f: ParaValue<'a -> 'b>) (m: ParaValue<'a>) : ParaValue<'b> =
 let inline map (f: 'a -> 'b) (m: ParaValue<'a>) : ParaValue<'b> =
     bind m (f >> init)
 
-let (<*>) f m = apply f m
-let (<!>) f m = map f m
+let (<*>) = apply
+let (<!>) = map
 
 let inline pget (key:string) : ParaValue<'a> =
   fun o ->
