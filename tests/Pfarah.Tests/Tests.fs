@@ -581,7 +581,7 @@ type Cheese = {
 } with
   static member inline Create label age = { Cheese.Label = label; Age = age }
   static member inline FromPara (_:Cheese) =
-    Cheese.Create <!> (pget "label") <*> (pget "age")
+    Cheese.Create <!> (!. "label") <*> (!. "age")
 
 [<Test>]
 let ``deserialize a record`` () =

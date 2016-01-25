@@ -625,9 +625,6 @@ module Functional =
   let inline map (f: 'a -> 'b) (m: ParaValue<'a>) : ParaValue<'b> =
     bind m (f >> init)
 
-  let (<*>) = apply
-  let (<!>) = map
-
   let inline pget (key:string) : ParaValue<'a> =
     fun o ->
       match o with
@@ -636,6 +633,10 @@ module Functional =
         | [| x |] -> fromPara (snd x), o
         | x -> Error(sprintf "Found not 1 but %d of %s" (Array.length x) key), o
       | typ -> Error(sprintf "Unable to extract properties from a %O" typ), o
+
+  let inline (<*>) f m = apply f m
+  let inline (<!>) f m = map f m
+  let inline (!.) key = pget key
 
 type ParaValue with
   /// Parses the given stream assuming that it contains strictly plain text.
