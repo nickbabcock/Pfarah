@@ -586,12 +586,10 @@ let inline bind (m: ParaValue<'a>) (f: 'a -> ParaValue<'b>) : ParaValue<'b> =
 
 let inline apply (f: ParaValue<'a -> 'b>) (m: ParaValue<'a>) : ParaValue<'b> =
     bind f (fun f' ->
-        bind m (fun m' ->
-            init (f' m')))
+        bind m (f' >> init))
 
 let inline map (f: 'a -> 'b) (m: ParaValue<'a>) : ParaValue<'b> =
-    bind m (fun m' ->
-        init (f m'))
+    bind m (f >> init)
 
 let (<*>) f m = apply f m
 let (<!>) f m = map f m
