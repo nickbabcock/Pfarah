@@ -515,10 +515,29 @@ module Functional =
 
   let inline error (e: string) : ParaValue<'a> = fun va -> Error e, va
 
-  let num paravalue fn err =
-    match paravalue with
-    | ParaValue.Number n -> Value(fn n)
-    | y -> err(y)
+  let number = function
+  | ParaValue.Number x -> Value(x)
+  | y -> Error(sprintf "Expected number but received %O" y)
+
+  let stringify = function
+  | ParaValue.String s -> Value(s)
+  | y -> Error(sprintf "Expected string but received %O" y)
+
+  let inline init (a: 'a) : ParaValue<'a> =
+    fun paravalue -> Value a, paravalue
+
+  let inline bind (m: ParaValue<'a>) (f: 'a -> ParaValue<'b>) : ParaValue<'b> =
+    fun paravalue ->
+      match m paravalue with
+      | Value a, paravalue -> (f a) paravalue
+      | Error e, paravalue -> Error e, paravalue
+
+  let inline apply (f: ParaValue<'a -> 'b>) (m: ParaValue<'a>) : ParaValue<'b> =
+    bind f (fun f' ->
+      bind m (f' >> init))
+
+  let inline map (f: 'a -> 'b) (m: ParaValue<'a>) : ParaValue<'b> =
+    bind m (f >> init)
 
   type FromParaDefaults = FromParaDefaults with
     static member inline FromPara (_: bool)  =
@@ -528,68 +547,17 @@ module Functional =
         | ParaValue.Number n -> Value((int n) <> 0), x
         | err -> error "Expected boolean but received something else" x
 
-    static member inline FromPara (_: int) =
-      fun x -> num x int (fun y -> Error("Expected int but received something else")), x
-
-    static member inline FromPara (_: uint32) =
-      fun x ->
-        match x with
-        | ParaValue.Number n -> Value(uint32 n), x
-        | err -> error "Expected uint but received something else" x
-
-    static member inline FromPara (_: sbyte) =
-      fun x ->
-        match x with
-        | ParaValue.Number n -> Value(sbyte n), x
-        | err -> error "Expected sbyte but received something else" x
-
-    static member inline FromPara (_: byte) =
-      fun x ->
-        match x with
-        | ParaValue.Number n -> Value(byte n), x
-        | err -> error "Expected byte but received something else" x
-
-    static member inline FromPara (_: int16) =
-      fun x ->
-        match x with
-        | ParaValue.Number n -> Value(int16 n), x
-        | err -> error "Expected int16 but received something else" x
-
-    static member inline FromPara (_: uint16) =
-      fun x ->
-        match x with
-        | ParaValue.Number n -> Value(uint16 n), x
-        | err -> error "Expected uint16 but received something else" x
-
-    static member inline FromPara (_: int64) =
-      fun x ->
-        match x with
-        | ParaValue.Number n -> Value(int64 n), x
-        | err -> error "Expected int64 but received something else" x
-
-    static member inline FromPara (_: uint64) =
-      fun x ->
-        match x with
-        | ParaValue.Number n -> Value(uint64 n), x
-        | err -> error "Expected uint64 but received something else" x
-
-    static member inline FromPara (_: single) =
-      fun x ->
-        match x with
-        | ParaValue.Number n -> Value(single n), x
-        | err -> error "Expected single but received something else" x
-
-    static member inline FromPara (_: float) =
-      fun x ->
-        match x with
-        | ParaValue.Number n -> Value(float n), x
-        | err -> error "Expected float but received something else" x
-
-    static member inline FromPara (_: string) =
-      fun x ->
-        match x with
-        | ParaValue.String s -> Value(s), x
-        | err -> error "Expected string but received something else" x
+    static member inline FromPara (_: int) = map int (fun x -> number x, x)
+    static member inline FromPara (_: uint32) = map uint32 (fun x -> number x, x)
+    static member inline FromPara (_: sbyte) = map sbyte (fun x -> number x, x)
+    static member inline FromPara (_: byte) = map byte (fun x -> number x, x)
+    static member inline FromPara (_: int16) = map int16 (fun x -> number x, x)
+    static member inline FromPara (_: uint16) = map uint16 (fun x -> number x, x)
+    static member inline FromPara (_: int64) = map int64 (fun x -> number x, x)
+    static member inline FromPara (_: uint64) = map uint64 (fun x -> number x, x)
+    static member inline FromPara (_: single) = map single (fun x -> number x, x)
+    static member inline FromPara (_: float) = map float (fun x -> number x, x)
+    static member inline FromPara (_: string) = fun x -> stringify x, x
 
   let inline internal fromParaDefaults (a: ^a, _: ^b) =
     ((^a or ^b) : (static member FromPara: ^a -> ^a ParaValue) a)
@@ -608,22 +576,6 @@ module Functional =
     fromPara paraValue
     |> function | Value a -> a
                 | Error e -> failwith e
-
-  let inline init (a: 'a) : ParaValue<'a> =
-    fun paravalue -> Value a, paravalue
-
-  let inline bind (m: ParaValue<'a>) (f: 'a -> ParaValue<'b>) : ParaValue<'b> =
-    fun paravalue ->
-      match m paravalue with
-      | Value a, paravalue -> (f a) paravalue
-      | Error e, paravalue -> Error e, paravalue
-
-  let inline apply (f: ParaValue<'a -> 'b>) (m: ParaValue<'a>) : ParaValue<'b> =
-    bind f (fun f' ->
-      bind m (f' >> init))
-
-  let inline map (f: 'a -> 'b) (m: ParaValue<'a>) : ParaValue<'b> =
-    bind m (f >> init)
 
   let inline pget (key:string) : ParaValue<'a> =
     fun o ->
