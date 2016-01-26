@@ -566,11 +566,7 @@ module Functional =
     fst (fromParaDefaults (Unchecked.defaultof<'a>, FromParaDefaults) x)
 
   type FromParaDefaults with
-    static member inline FromPara (_: 'a option) =
-      fun x ->
-        (match fromPara x with
-        | Value(y) -> Value(Some(y))
-        | Error e as z -> Error(e)), x
+    static member inline FromPara (_: 'a option) = map Some (fun b -> fromPara b, b)
 
   let inline deserialize paraValue =
     fromPara paraValue
