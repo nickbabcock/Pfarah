@@ -575,6 +575,11 @@ let ``deserialize a string`` () =
 let ``deserialize a string into an option`` () =
   deserialize (ParaValue.String "hello") |> shouldEqual (Some "hello")
 
+[<Test>]
+let ``deserialize an array into an array`` () =
+  deserialize (ParaValue.Array [| ParaValue.String "a"; ParaValue.String "b" |])
+  |> shouldEqual ([| "a"; "b"; |])
+
 type Cheese = {
   Label: string
   Age: int
