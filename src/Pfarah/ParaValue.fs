@@ -526,6 +526,11 @@ module Functional =
   let inline init (a: 'a) : ParaValue<'a> =
     fun paravalue -> Value a, paravalue
 
+  let inline bind2 (m: ParaResult<'a>) (f: 'a -> ParaResult<'b>) : ParaResult<'b> =
+    match m with
+    | Value(x) -> f x
+    | Error(x) -> Error(x)
+
   let inline bind (m: ParaValue<'a>) (f: 'a -> ParaValue<'b>) : ParaValue<'b> =
     fun paravalue ->
       match m paravalue with
@@ -565,27 +570,30 @@ module Functional =
   let inline fromPara x =
     fst (fromParaDefaults (Unchecked.defaultof<'a>, FromParaDefaults) x)
 
-  let inline lister fn =
-    fun para ->
-      (match para with
-      | ParaValue.Array arr ->
-        let ls = ResizeArray<'a>()
-        let mutable err = None
-        for i in arr do
-          match fromPara i with
-          | Value(x) -> ls.Add(x)
-          | Error(y) as z -> err <- Some(y)
+  let inline paraFold arr =
+    let ls = ResizeArray<'a>()
+    let mutable err = None
+    for i in arr do
+      match fromPara i with
+      | Value(x) -> ls.Add(x)
+      | Error(y) as z -> err <- Some(y)
 
-        match err with
-        | Some(x) -> Error(x)
-        | None -> Value(fn ls)
-      | y -> Error(sprintf "Expected list of values but received %O" y)), para
+    match err with
+    | Some(x) -> Error(x)
+    | None -> Value(ls)
+
+  let inline lister fn =
+    map fn (fun x ->
+        (match x with
+        | ParaValue.Array arr -> paraFold arr
+        | y -> Error(sprintf "Expected list of values but received %O" y)), x)
 
   type FromParaDefaults with
     static member inline FromPara (_: 'a option) = map Some (fun b -> fromPara b, b)
-    static member inline FromPara (_: 'a[]) : ParaValue<'a[]> = lister (fun x -> x.ToArray())
+    static member inline FromPara (_: 'a[]) : ParaValue<'a[]> =
+      lister (fun x -> x.ToArray())
     static member inline FromPara (_: 'a list) : ParaValue<'a list> =
-     lister List.ofSeq
+      lister List.ofSeq
 
   let inline deserialize paraValue =
     fromPara paraValue
