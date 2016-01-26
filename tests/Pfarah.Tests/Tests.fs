@@ -600,3 +600,10 @@ let ``fail deserialization without property`` () =
 let ``fail deserialization because not a record`` () =
   let data = ParaValue.String "hello"
   fromPara data |> shouldEqual (ParaResult<Cheese>.Error("Unable to extract properties from a hello"))
+
+[<Test>]
+let ``fail deserialization because mismatching types`` () =
+  let data =
+    ParaValue.Record [| ("label", ParaValue.String "american")
+                        ("age", ParaValue.Array [| |]) |]
+  fromPara data |> shouldEqual (ParaResult<Cheese>.Error("Expected number but received []"))
