@@ -583,6 +583,22 @@ module Functional =
           | None -> Value(ls.ToArray())
         | y -> Error(sprintf "Expected list of values but received %O" y)), para
 
+    static member inline FromPara (_: 'a list) : ParaValue<'a list> =
+      fun para ->
+        (match para with
+        | ParaValue.Array arr ->
+          let ls = ResizeArray<'a>()
+          let mutable err = None
+          for i in arr do
+            match fromPara i with
+            | Value(x) -> ls.Add(x)
+            | Error(y) as z -> err <- Some(y)
+
+          match err with
+          | Some(x) -> Error(x)
+          | None -> Value(List.ofSeq ls)
+        | y -> Error(sprintf "Expected list of values but received %O" y)), para
+
   let inline deserialize paraValue =
     fromPara paraValue
     |> function | Value a -> a
