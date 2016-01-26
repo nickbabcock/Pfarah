@@ -585,6 +585,11 @@ let ``fail deserialize an string into an array`` () =
   let data = ParaValue.String "hello"
   fromPara data |> shouldEqual (ParaResult<int[]>.Error("Expected list of values but received hello"))
 
+[<Test>]
+let ``fail deserialize a string array into an int array`` () =
+  let data = ParaValue.Array [| ParaValue.String "hello" |]
+  fromPara data |> shouldEqual (ParaResult<int[]>.Error("Expected number but received hello"))
+
 type Cheese = {
   Label: string
   Age: int
