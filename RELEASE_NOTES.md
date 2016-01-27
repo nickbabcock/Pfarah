@@ -2,6 +2,7 @@
 * Move the dynamic lookup operator (?) to a package that is not auto opened by
   default, so as not to clash with other dynamic lookup operators in other
   libraries. The new module is `Pfarah.Operators`
+* Fix: Correctly parse objects where the first object is a empty object
 
 ### 0.5.1 November 17th 2015
 * Keep signatures of previous `try` functions in the Utils module. Though not
