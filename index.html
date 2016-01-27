@@ -62,17 +62,19 @@ by Clausewitz engine from Paradox Interactive</p>
 <span class="l"> 8: </span>
 <span class="l"> 9: </span>
 <span class="l">10: </span>
+<span class="l">11: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;Pfarah.dll&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">Pfarah</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">Pfarah</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="i">Operators</span>
 
 <span class="c">// Parse strings. Great for discovering how to work with Pfarah or the sample</span>
 <span class="c">// data</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">obj</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="t">ParaValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="f">Parse</span> <span class="s">&quot;foo=bar&quot;</span>
-<span onmouseout="hideTip(event, 'fs2', 5)" onmouseover="showTip(event, 'fs2', 5)" class="i">obj</span><span class="o">?</span><span class="i">foo</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs5', 6)" onmouseover="showTip(event, 'fs5', 6)" class="f">asString</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">obj</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 5)" onmouseover="showTip(event, 'fs4', 5)" class="t">ParaValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs5', 6)" onmouseover="showTip(event, 'fs5', 6)" class="f">Parse</span> <span class="s">&quot;foo=bar&quot;</span>
+<span onmouseout="hideTip(event, 'fs3', 7)" onmouseover="showTip(event, 'fs3', 7)" class="i">obj</span><span class="o">?</span><span class="i">foo</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs6', 8)" onmouseover="showTip(event, 'fs6', 8)" class="f">asString</span>
 
 <span class="c">// Load files. Great for performance</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">obj2</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 8)" onmouseover="showTip(event, 'fs3', 8)" class="t">ParaValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 9)" onmouseover="showTip(event, 'fs7', 9)" class="f">LoadText</span> <span class="s">@&quot;C:\somefilepath&quot;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs7', 9)" onmouseover="showTip(event, 'fs7', 9)" class="i">obj2</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 10)" onmouseover="showTip(event, 'fs4', 10)" class="t">ParaValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 11)" onmouseover="showTip(event, 'fs8', 11)" class="f">LoadText</span> <span class="s">@&quot;C:\somefilepath&quot;</span>
 </code></pre></td>
 </tr>
 </table>
@@ -107,12 +109,13 @@ fork  the project and submit pull requests. You might also want to read the
 <a href="https://github.com/fsprojects/Pfarah/blob/master/LICENSE.txt">License file</a> in the GitHub repository.</p>
 
 <div class="tip" id="fs1">namespace Pfarah</div>
-<div class="tip" id="fs2">Multiple items<br />val obj : ParaValue<br /><br />Full name: Index.obj<br /><br />--------------------<br />type obj = System.Object<br /><br />Full name: Microsoft.FSharp.Core.obj</div>
-<div class="tip" id="fs3">type ParaValue =<br />&#160;&#160;| Bool of bool<br />&#160;&#160;| Number of float<br />&#160;&#160;| Date of DateTime<br />&#160;&#160;| String of string<br />&#160;&#160;| Array of elements: ParaValue []<br />&#160;&#160;| Record of properties: (string * ParaValue) []<br />&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;static member Load : stream:Stream * binHeader:string * txtHeader:string * lookup:Lazy&lt;IDictionary&lt;int16,string&gt;&gt; -&gt; ParaValue<br />&#160;&#160;static member Load : file:string * binHeader:string * txtHeader:string * lookup:Lazy&lt;IDictionary&lt;int16,string&gt;&gt; -&gt; ParaValue<br />&#160;&#160;static member LoadBinary : stream:Stream * lookup:IDictionary&lt;int16,string&gt; * header:string option -&gt; ParaValue<br />&#160;&#160;static member LoadText : file:string -&gt; ParaValue<br />&#160;&#160;static member LoadText : stream:Stream -&gt; ParaValue<br />&#160;&#160;static member Parse : text:string -&gt; ParaValue<br />&#160;&#160;static member private Prettify : value:ParaValue -&gt; indent:int -&gt; string<br />&#160;&#160;static member Save : stream:Stream * data:ParaValue -&gt; unit<br /><br />Full name: Pfarah.ParaValue</div>
-<div class="tip" id="fs4">static member ParaValue.Parse : text:string -&gt; ParaValue</div>
-<div class="tip" id="fs5">val asString : _arg1:ParaValue -&gt; string<br /><br />Full name: Pfarah.ParaExtensions.asString</div>
-<div class="tip" id="fs6">val obj2 : ParaValue<br /><br />Full name: Index.obj2</div>
-<div class="tip" id="fs7">static member ParaValue.LoadText : file:string -&gt; ParaValue<br />static member ParaValue.LoadText : stream:System.IO.Stream -&gt; ParaValue</div>
+<div class="tip" id="fs2">module Operators<br /><br />from Pfarah</div>
+<div class="tip" id="fs3">Multiple items<br />val obj : ParaValue<br /><br />Full name: Index.obj<br /><br />--------------------<br />type obj = System.Object<br /><br />Full name: Microsoft.FSharp.Core.obj</div>
+<div class="tip" id="fs4">type ParaValue =<br />&#160;&#160;| Bool of bool<br />&#160;&#160;| Number of float<br />&#160;&#160;| Date of DateTime<br />&#160;&#160;| String of string<br />&#160;&#160;| Array of elements: ParaValue []<br />&#160;&#160;| Record of properties: (string * ParaValue) []<br />&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;static member Load : stream:Stream * binHeader:string * txtHeader:string * lookup:Lazy&lt;IDictionary&lt;int16,string&gt;&gt; -&gt; ParaValue<br />&#160;&#160;static member Load : file:string * binHeader:string * txtHeader:string * lookup:Lazy&lt;IDictionary&lt;int16,string&gt;&gt; -&gt; ParaValue<br />&#160;&#160;static member LoadBinary : stream:Stream * lookup:IDictionary&lt;int16,string&gt; * header:string option -&gt; ParaValue<br />&#160;&#160;static member LoadText : file:string -&gt; ParaValue<br />&#160;&#160;static member LoadText : stream:Stream -&gt; ParaValue<br />&#160;&#160;static member Parse : text:string -&gt; ParaValue<br />&#160;&#160;static member private Prettify : value:ParaValue -&gt; indent:int -&gt; string<br />&#160;&#160;static member Save : stream:Stream * data:ParaValue -&gt; unit<br /><br />Full name: Pfarah.ParaValue</div>
+<div class="tip" id="fs5">static member ParaValue.Parse : text:string -&gt; ParaValue</div>
+<div class="tip" id="fs6">val asString : _arg1:ParaValue -&gt; string<br /><br />Full name: Pfarah.ParaExtensions.asString</div>
+<div class="tip" id="fs7">val obj2 : ParaValue<br /><br />Full name: Index.obj2</div>
+<div class="tip" id="fs8">static member ParaValue.LoadText : file:string -&gt; ParaValue<br />static member ParaValue.LoadText : stream:System.IO.Stream -&gt; ParaValue</div>
 
         </div>
         <div class="span3">
