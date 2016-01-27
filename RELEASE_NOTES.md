@@ -1,4 +1,4 @@
-### 0.6.0
+### 0.6.0 January 26th 2016
 * Move the dynamic lookup operator (?) to a package that is not auto opened by
   default, so as not to clash with other dynamic lookup operators in other
   libraries. The new module is `Pfarah.Operators`
