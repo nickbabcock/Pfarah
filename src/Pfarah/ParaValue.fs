@@ -184,7 +184,6 @@ type private ParaParser (stream:PeekingStream) =
   and parseContainerContents() =
     // The first key or element depending on object or list
     fillBuffer()
-    //let first = readString()
     skipWhitespace stream
 
     match (stream.Peek()) with
@@ -206,9 +205,25 @@ type private ParaParser (stream:PeekingStream) =
     // Encountering a '}' means an empty object
     | 125 -> ParaValue.Record ([||])
 
-    // Encountering a '{' means we are dealing with a nested list and a quote
-    // means a quoted list
-    | 123 | 34 ->
+    // Encountering a '{' means we are dealing with a nested list or the first
+    // element is an empty object.
+    | 123 ->
+      stream.Read() |> ignore
+      skipWhitespace stream
+      if (stream.Peek() = 125) then
+        stream.Read() |> ignore
+        parseContainer()
+      else
+        let firstObj =
+          parseObject (trim readString) (fun (stream:PeekingStream) -> stream.Peek() = 125)
+        stream.Read() |> ignore
+        let vals = ResizeArray<_>()
+        vals.Add(firstObj)
+        parseArray vals
+        ParaValue.Array (vals.ToArray())
+
+    // A quote means a quoted list
+    | 34 ->
       let vals = ResizeArray<_>()
       parseArray vals
       ParaValue.Array (vals.ToArray())
