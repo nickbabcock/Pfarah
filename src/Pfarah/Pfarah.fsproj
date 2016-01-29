@@ -43,6 +43,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="PeekingStream.fs" />
     <Compile Include="Utils.fs" />
     <Compile Include="ParaValue.fs" />
