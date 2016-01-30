@@ -1,3 +1,6 @@
+### 0.6.2
+* Fix: Improve parsing of nested objects and lists
+
 ### 0.6.1
 * Fix: Include assembly info in resulting library
 
