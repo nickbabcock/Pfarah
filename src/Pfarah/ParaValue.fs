@@ -214,13 +214,37 @@ type private ParaParser (stream:PeekingStream) =
         stream.Read() |> ignore
         parseContainer()
       else
-        let firstObj =
-          parseObject (trim readString) (fun (stream:PeekingStream) -> stream.Peek() = 125)
-        stream.Read() |> ignore
-        let vals = ResizeArray<_>()
-        vals.Add(firstObj)
-        parseArray vals
-        ParaValue.Array (vals.ToArray())
+        trim fillBuffer
+        match (stream.Peek()) with
+        | 125 ->
+          let firstElem = ParaValue.Array ([| narrowBuffer() |])
+          stream.Read() |> ignore
+          let vals = ResizeArray<_>()
+          vals.Add(firstElem)
+          parseArray vals
+          ParaValue.Array (vals.ToArray())
+
+        // An equals sign means we are parsing an object
+        | 61 ->
+          let firstObj =
+            parseObject (bufferToString()) (fun (stream:PeekingStream) -> stream.Peek() = 125)
+          stream.Read() |> ignore
+          let vals = ResizeArray<_>()
+          vals.Add(firstObj)
+          parseArray vals
+          ParaValue.Array (vals.ToArray())
+        | _ -> // parse list
+          skipWhitespace stream
+          let innerArray = ResizeArray<_>()
+          innerArray.Add(narrowBuffer())
+          parseArray innerArray
+          let firstElem = ParaValue.Array (innerArray.ToArray())
+          assert (stream.Peek() = 125)
+          stream.Read() |> ignore
+          let vals = ResizeArray<_>()
+          vals.Add(firstElem)
+          parseArray vals
+          ParaValue.Array (vals.ToArray())
 
     // A quote means a quoted list
     | 34 ->

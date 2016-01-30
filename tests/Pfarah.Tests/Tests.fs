@@ -157,6 +157,52 @@ history={
     ))|]
 
 [<Test>]
+let ``parse longer continuous nested arrays`` () =
+  let data = """
+  primary_mapmodes={
+	{ 0 0 } { 1 1 } { 4 4 } { 3 3 } { 2 2 } { 5 5 } { } { } { } { }
+}"""
+  parse data
+  |> shouldEqual
+    [| ("primary_mapmodes", ParaValue.Array(
+          [|
+            ParaValue.Array([| ParaValue.Number 0.0; ParaValue.Number 0.0 |])
+            ParaValue.Array([| ParaValue.Number 1.0; ParaValue.Number 1.0 |])
+            ParaValue.Array([| ParaValue.Number 4.0; ParaValue.Number 4.0 |])
+            ParaValue.Array([| ParaValue.Number 3.0; ParaValue.Number 3.0 |])
+            ParaValue.Array([| ParaValue.Number 2.0; ParaValue.Number 2.0 |])
+            ParaValue.Array([| ParaValue.Number 5.0; ParaValue.Number 5.0 |])
+            ParaValue.Record([| |])
+            ParaValue.Record([| |])
+            ParaValue.Record([| |])
+            ParaValue.Record([| |])
+          |])
+    )|]
+
+[<Test>]
+let ``parse continuous nested arrays`` () =
+  let data = """
+  primary_mapmodes={
+	{ 0 } { 1 } { 4 } { 3 } { 2 } { 5 } { } { } { } { }
+}"""
+  parse data
+  |> shouldEqual
+    [| ("primary_mapmodes", ParaValue.Array(
+          [|
+            ParaValue.Array([| ParaValue.Number 0.0 |])
+            ParaValue.Array([| ParaValue.Number 1.0 |])
+            ParaValue.Array([| ParaValue.Number 4.0 |])
+            ParaValue.Array([| ParaValue.Number 3.0 |])
+            ParaValue.Array([| ParaValue.Number 2.0 |])
+            ParaValue.Array([| ParaValue.Number 5.0 |])
+            ParaValue.Record([| |])
+            ParaValue.Record([| |])
+            ParaValue.Record([| |])
+            ParaValue.Record([| |])
+          |])
+    )|]
+
+[<Test>]
 let ``parse object with dynamic`` () =
   let obj = ParaValue.Parse "foo={bar=baz qux=zux}"
   obj?foo?bar |> shouldEqual (ParaValue.String "baz")
