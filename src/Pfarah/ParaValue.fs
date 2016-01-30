@@ -55,6 +55,12 @@ module Frequencies =
   let ptrue = ParaValue.Bool true
   let pfalse = ParaValue.Bool false
 
+module internal Common =
+  let internal parseArrayFirst first (fn:ResizeArray<_> -> ParaValue[]) =
+      let values = ResizeArray<_>()
+      values.Add(first)
+      ParaValue.Array (fn values)
+
 type private ParaParser (stream:PeekingStream) =
   // Caches that allow us to take the 64bit hash of a byte array of some
   // length and map it to another object thus reducing gc allocations and gc
@@ -180,6 +186,12 @@ type private ParaParser (stream:PeekingStream) =
   and parseArray (vals:ResizeArray<_>) =
     while (stream.Peek() <> 125) do
       vals.Add(trim parseValue)
+    vals.ToArray()
+
+  and parseArrayElem firstElem =
+    assert (stream.Peek() = 125)
+    stream.Read() |> ignore
+    Common.parseArrayFirst firstElem parseArray
 
   and parseContainerContents() =
     // The first key or element depending on object or list
@@ -193,10 +205,7 @@ type private ParaParser (stream:PeekingStream) =
     | 61 -> parseObject (bufferToString()) (fun (stream:PeekingStream) -> stream.Peek() = 125)
     | _ -> // parse list
       skipWhitespace stream
-      let vals = ResizeArray<_>()
-      vals.Add(narrowBuffer())
-      parseArray vals
-      ParaValue.Array (vals.ToArray())
+      Common.parseArrayFirst (narrowBuffer()) parseArray
 
   and parseContainer () =
     skipWhitespace stream
@@ -216,41 +225,18 @@ type private ParaParser (stream:PeekingStream) =
       else
         trim fillBuffer
         match (stream.Peek()) with
-        | 125 ->
-          let firstElem = ParaValue.Array ([| narrowBuffer() |])
-          stream.Read() |> ignore
-          let vals = ResizeArray<_>()
-          vals.Add(firstElem)
-          parseArray vals
-          ParaValue.Array (vals.ToArray())
+        | 125 -> parseArrayElem (ParaValue.Array ([| narrowBuffer() |]))
 
         // An equals sign means we are parsing an object
         | 61 ->
-          let firstObj =
             parseObject (bufferToString()) (fun (stream:PeekingStream) -> stream.Peek() = 125)
-          stream.Read() |> ignore
-          let vals = ResizeArray<_>()
-          vals.Add(firstObj)
-          parseArray vals
-          ParaValue.Array (vals.ToArray())
+            |> parseArrayElem
         | _ -> // parse list
           skipWhitespace stream
-          let innerArray = ResizeArray<_>()
-          innerArray.Add(narrowBuffer())
-          parseArray innerArray
-          let firstElem = ParaValue.Array (innerArray.ToArray())
-          assert (stream.Peek() = 125)
-          stream.Read() |> ignore
-          let vals = ResizeArray<_>()
-          vals.Add(firstElem)
-          parseArray vals
-          ParaValue.Array (vals.ToArray())
+          parseArrayElem (Common.parseArrayFirst (narrowBuffer()) parseArray)
 
     // A quote means a quoted list
-    | 34 ->
-      let vals = ResizeArray<_>()
-      parseArray vals
-      ParaValue.Array (vals.ToArray())
+    | 34 -> ParaValue.Array(parseArray(ResizeArray<_>()))
 
     // Else we are not quite sure what we are parsing, so we need more info
     | _ -> parseContainerContents()
@@ -469,11 +455,6 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       skipEmptyObjects()
     pairs.ToArray()
 
-  and parseArrayFirst first =
-    let values = ResizeArray<_>()
-    values.Add(first)
-    parseArray(values)
-
   and parseArray (values:ResizeArray<_>) =
     while not (endGroup tok) do
       values.Add(parseValue())
@@ -505,7 +486,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
     | BinaryToken.Float ->
       let temp = floatToken
       nextToken() |> ignore
-      ParaValue.Array(parseArrayFirst (ParaValue.Number(temp)))
+      Common.parseArrayFirst (ParaValue.Number(temp)) parseArray
     | BinaryToken.String ->
       let temp = stringToken
       subber temp (fun () -> ParaValue.String temp)
@@ -514,7 +495,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       nextToken() |> ensureEquals
       let first = ParaValue.Record(parseObject firstKey)
       nextToken() |> ignore
-      ParaValue.Array(parseArrayFirst first)
+      Common.parseArrayFirst first parseArray
     | BinaryToken.Token ->
       nextToken() |> ensureEquals
       ParaValue.Record(parseObject tokenString)
