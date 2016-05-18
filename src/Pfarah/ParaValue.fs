@@ -144,16 +144,21 @@ type private ParaParser (stream:PeekingStream) =
     narrowBuffer()
 
   and fillBuffer () =
-    let mutable isDone = false
-    while not isDone do
-      let next = stream.Peek()
+    if stream.Peek() = 34 then
+      stream.Read() |> ignore
+      quotedFillBuffer()
+    else
+      let mutable isDone = false
+      while not isDone do
+        let next = stream.Peek()
 
-      // We are done reading the current string if we hit whitespace an equal
-      // sign, the end of a buffer, or a left curly (end of an object/list)
-      isDone <- isspace next || next = 61 || next = -1 || next = 125
-      if not (isDone) then
-        stringBuffer.[stringBufferCount] <- byte (stream.Read())
-        stringBufferCount <- stringBufferCount + 1
+        // We are done reading the current string if we hit whitespace an equal
+        // sign, the end of a buffer, or a left curly (end of an object/list)
+        isDone <- isspace next || (next = 61 && stringBufferCount <> 0) ||
+                  next = -1 || next = 125
+        if not (isDone) then
+          stringBuffer.[stringBufferCount] <- byte (stream.Read())
+          stringBufferCount <- stringBufferCount + 1
   
   and bufferToString () =
     // In order to avoid allocating many instances of the same string and

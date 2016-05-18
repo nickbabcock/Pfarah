@@ -39,6 +39,23 @@ let ``parse yes`` () =
   |> shouldEqual [| ("foo", ParaValue.Bool true)|]
 
 [<Test>]
+let ``parse colon`` () =
+  parse "foo=bar:qux"
+  |> shouldEqual [| ("foo", ParaValue.String "bar:qux")|]
+
+[<Test>]
+let ``parse quoted key`` () =
+  parse "\"foo\"=\"11\""
+  |> shouldEqual [| ("foo", ParaValue.String "11")|]
+
+[<Test>]
+let ``parse double equal key`` () =
+  parse "flags={bar=a ==b}"
+  |> shouldEqual [| ("flags",
+                      ParaValue.Record ([|("bar", ParaValue.String "a")
+                                          ("=", ParaValue.String("b")) |]))|]
+
+[<Test>]
 let ``parse date`` () =
   parse "foo=1492.3.2"
   |> shouldEqual [| ("foo", ParaValue.Date (new DateTime(1492,3,2)))|]
