@@ -1,3 +1,6 @@
+### 0.6.3 May 17th 2016
+* Add: Stellaris save format
+
 ### 0.6.2
 * Fix: Improve parsing of nested objects and lists
 
