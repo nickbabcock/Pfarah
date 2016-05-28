@@ -61,6 +61,11 @@ let ``parse date`` () =
   |> shouldEqual [| ("foo", ParaValue.Date (new DateTime(1492,3,2)))|]
 
 [<Test>]
+let ``parse variable`` () =
+  parse "@foo = 2"
+  |> shouldEqual [| ("@foo", ParaValue.Number 2.0 )|]
+
+[<Test>]
 let ``parse invalid date is none`` () =
   parse "foo=1.a.2"
   |> shouldEqual [| ("foo", ParaValue.String "1.a.2")|]
