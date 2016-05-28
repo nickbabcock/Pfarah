@@ -1,3 +1,7 @@
+### 0.6.4 May 28th 2016
+* Add parsing of Stellaris variables
+* Add parsing of Stellaris colors
+
 ### 0.6.3 May 17th 2016
 * Add: Stellaris save format
 
