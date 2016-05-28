@@ -66,6 +66,16 @@ let ``parse variable`` () =
   |> shouldEqual [| ("@foo", ParaValue.Number 2.0 )|]
 
 [<Test>]
+let ``parse hsv`` () =
+  parse "color = hsv { 0.5 0.2 0.8 }"
+  |> shouldEqual [| ("color", ParaValue.Hsv(0.5, 0.2, 0.8) )|]
+
+[<Test>]
+let ``parse rgb`` () =
+  parse "color = rgb { 100 150 200 }"
+  |> shouldEqual [| ("color", ParaValue.Rgb(100uy, 150uy, 200uy) )|]
+
+[<Test>]
 let ``parse invalid date is none`` () =
   parse "foo=1.a.2"
   |> shouldEqual [| ("foo", ParaValue.String "1.a.2")|]
@@ -416,6 +426,8 @@ start=1841.2.3
 end="1300.10.1"
 type=49
 strength=10.435
+colorHsv = hsv { 0.1 0.2 0.3 }
+colorRgb = rgb { 100 200 150 }
 nums={1 2 3 4}
 core=YOU
 core=MEE
@@ -449,6 +461,7 @@ army={
 
 let (``try parse double cases``:obj[][]) = [|
   [| "1.000"; Some(1.0) |]
+  [| "1.0"; Some(1.0) |]
   [| "-1.000"; Some(-1.0) |]
   [| "1.542"; Some(1.542) |]
   [| "15"; Some(15.0) |]
@@ -511,6 +524,8 @@ let (``ParaValue toString cases``:obj[][]) = [|
   [| ParaValue.String "a"; "a" |]
   [| ParaValue.Number 1.500; "1.500" |]
   [| ParaValue.Date (DateTime(1441, 10, 5)); "1441.10.5" |]
+  [| ParaValue.Hsv (0.1, 0.2, 0.3); "(0.100, 0.200, 0.300)" |]
+  [| ParaValue.Rgb (100uy, 150uy, 200uy); "(100, 150, 200)" |]
   [| ParaValue.Bool true; "true" |]
   [| ParaValue.Bool false; "false" |]
   [| ParaValue.Array([||]); "[]" |]

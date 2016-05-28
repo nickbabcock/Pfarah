@@ -63,8 +63,11 @@ module Utils =
       // three characters represent the fractional part of the number. If the
       // next three characters aren't numbers then we aren't looking at a
       // number. The same logic is applied for numbers that are five digits
-      // long
+      // and one digits
       else if (str.[i]) = Period then
+        if (i + 1 = strLength - 1) && isNum (str.[i + 1]) then
+          let fraction = float (toNum (str.[i + 1])) / 10.0
+          result <- new Nullable<double>((float whole + fraction) * sign)
         if (i + 3 = strLength - 1) && isNum (str.[i + 1])
           && isNum(str.[i + 2]) && isNum(str.[i + 3]) then
           let fraction =

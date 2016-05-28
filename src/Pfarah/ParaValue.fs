@@ -14,6 +14,8 @@ open Farmhash.Sharp
 type ParaValue =
   | Bool of bool
   | Number of float
+  | Hsv of float * float * float
+  | Rgb of byte * byte * byte
   | Date of DateTime
   | String of string
   | Array of elements:ParaValue[]
@@ -33,6 +35,8 @@ with
     | Bool(x) -> sprintf "%b" x
     | Number(x) -> sprintf "%.3f" x
     | Date(x) -> (x.ToString("yyyy.M.d"))
+    | Hsv(h, s, v) -> sprintf "(%.3f, %.3f, %.3f)" h s v
+    | Rgb(r, g, b) -> sprintf "(%i, %i, %i)" r g b
     | Array(arr) ->
       let stringed = arr |> Array.map (nestedPrint >> (sprintf "%s%s" indentStr))
       let contents = String.Join(",\n", stringed)
@@ -69,6 +73,14 @@ type private ParaParser (stream:PeekingStream) =
   // unique hashes, the chances of a collision is 1 in a billion.
   let cache = Dictionary<uint64, ParaValue>()
   let strCache = Dictionary<uint64, string>()
+
+  let asByte = function
+  | ParaValue.Number n -> byte n
+  | x -> failwithf "Not an integer: %s" (x.ToString())
+
+  let asFloat = function
+  | ParaValue.Number n -> n
+  | x -> failwithf "Not a float: %s" (x.ToString())
 
   /// The max token size of any string, as defined by paradox internal source
   /// code is 256
@@ -141,7 +153,20 @@ type private ParaParser (stream:PeekingStream) =
 
   and narrow () =
     fillBuffer()
-    narrowBuffer()
+    if stringBufferCount = 3 && stringBuffer.[0] = 104uy &&
+      stringBuffer.[1] = 115uy && stringBuffer.[2] = 118uy then
+      stringBufferCount <- 0
+      match (trim parseValue) with
+      | ParaValue.Array [| h; s; v |] -> ParaValue.Hsv(h |> asFloat, s |> asFloat, v |> asFloat)
+      | _ -> failwith "Expected an array with three elements for hsv"
+    else if stringBufferCount = 3 && stringBuffer.[0] = 114uy &&
+      stringBuffer.[1] = 103uy && stringBuffer.[2] = 98uy then
+      stringBufferCount <- 0
+      match (trim parseValue) with
+      | ParaValue.Array [| r; g; b |] -> ParaValue.Rgb(r |> asByte, g |> asByte, b |> asByte)
+      | _ -> failwith "Expected an array with three elements for hsv"
+    else
+      narrowBuffer()
 
   and fillBuffer () =
     if stream.Peek() = 34 then
@@ -702,6 +727,8 @@ type ParaValue with
       | ParaValue.Date d -> stream.WriteLine(d.ToString("yyyy.M.d"))
       | ParaValue.Number n -> stream.WriteLine(n.ToString("0.000"))
       | ParaValue.String s -> stream.WriteLine("\"" + s + "\"")
+      | ParaValue.Hsv(h, s, v) -> stream.WriteLine(sprintf "hsv { %.3f %.3f %.3f }" h s v)
+      | ParaValue.Rgb(r, g, b) -> stream.WriteLine(sprintf "rgb { %i %i %i }" r g b)
       | ParaValue.Array a ->
         stream.Write('{')
         Array.iter write a
