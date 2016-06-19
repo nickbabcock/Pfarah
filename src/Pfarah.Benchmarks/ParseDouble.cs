@@ -28,7 +28,7 @@ namespace Pfarah.Benchmarks
         public double? bclParseDouble()
         {
             double res;
-            if (double.TryParse("3.0000", numStyle, CultureInfo.InvariantCulture, out res))
+            if (double.TryParse(Payload, numStyle, CultureInfo.InvariantCulture, out res))
             {
                 return res;
             }
