@@ -1,5 +1,6 @@
 NUGET
   remote: https://www.nuget.org/api/v2
+    BenchmarkDotNet (0.9.7)
     coveralls.net (0.6)
     DotNetZip (1.9.7)
     FAKE (4.25.5)
@@ -25,5 +26,5 @@ NUGET
     SourceLink.Fake (1.1)
 GITHUB
   remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (26cd2e6430a3ada972fa37a5a65606b2f7f427e3)
+    modules/Octokit/Octokit.fsx (f1d6399702cea83af9cc1f72f89cbf3dc0f86a5a)
       Octokit

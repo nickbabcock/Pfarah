@@ -342,6 +342,18 @@ Target "CoverageReport" (fun _ ->
     if result <> 0 then failwith "Coverage Report failed"
 )
 
+Target "Benchmark" (fun _ ->
+    trace "Starting benchmarks"
+
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- ("src/Pfarah.Benchmarks/bin/Pfarah.Benchmarks.exe")
+            info.WorkingDirectory <- "src/Pfarah.Benchmarks/bin"
+        ) (System.TimeSpan.FromMinutes 30.)
+
+    if result <> 0 then failwith "Failed result from Benchmark tests"
+)
+
 Target "BuildPackage" DoNothing
 
 // --------------------------------------------------------------------------------------
@@ -374,6 +386,7 @@ Target "All" DoNothing
   ==> "GenerateHelp"
   ==> "GenerateReferenceDocs"
   ==> "GenerateDocs"
+  =?> ("Benchmark", isLocalBuild)
 
 "CleanDocs"
   ==> "GenerateHelpDebug"
