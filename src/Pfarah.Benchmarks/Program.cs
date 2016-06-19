@@ -7,6 +7,7 @@ namespace Pfarah.Benchmarks
         static void Main()
         {
             BenchmarkRunner.Run<ParseDouble>();
+            BenchmarkRunner.Run<ParseDateTime>();
         }
     }
 }
