@@ -488,17 +488,6 @@ let (``try parse double cases``:obj[][]) = [|
 let ``try parse double`` str expected =
   tryDoubleParse str |> shouldEqual expected
 
-(*
-[<Test>]
-let ``time parse double`` () =
-  let watch = Stopwatch.StartNew()
-  for i = 1 to 10000000 do
-    tryDoubleParse "15.455" |> ignore
-
-  watch.Stop()
-  printfn "Double parsing: %d millseconds" watch.ElapsedMilliseconds
-*)
-
 let (``try parse date cases``:obj[][]) = [|
   [| "1.1.1"; Some(new DateTime(1, 1, 1)) |]
   [| "2015.8.1"; Some(new DateTime(2015, 8, 1)) |]
