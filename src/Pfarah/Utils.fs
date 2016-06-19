@@ -34,10 +34,10 @@ module Utils =
 
   /// A highly optimized version of Double.TryParse that takes advantage of
   /// the fact that we know that the number format is (in regex form):
-  /// <(\d+)\.(\d{3})?>. In profiling it was shown that Double.TryParse was a
+  /// <(\d+)\.(\d{1,3,5})?>. In profiling it was shown that Double.TryParse was a
   /// bottleneck at around 20-50% of the CPU time and after this function was
   /// written, the bottleneck completely disappeared.
-  let internal parseDouble (str:byte[]) (strLength:int) =
+  let parseDouble (str:byte[]) (strLength:int) =
     let mutable whole = 0
     let mutable i = 0
     let mutable isDone = strLength = 0
@@ -116,7 +116,7 @@ module Utils =
 
   /// Attempts to convert the string to a date time. Returns some datetime if
   /// successful
-  let internal parseDate (str:byte[]) (strLength:int) =
+  let parseDate (str:byte[]) (strLength:int) =
     // Imperatively check to see if the string contains only numbers and
     // periods as this cuts the function time in half compared to the
     // functional equivalent (Seq.forall). We also count the number
