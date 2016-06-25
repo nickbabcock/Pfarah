@@ -4,7 +4,7 @@ NUGET
     coveralls.net (0.6)
     DotNetZip (1.9.7)
     FAKE (4.25.5)
-    Farmhash.Sharp (0.1)
+    Farmhash.Sharp (0.2)
     FSharp.Compiler.Service (2.0.0.6)
     FSharp.Formatting (2.14.4)
       FSharp.Compiler.Service (2.0.0.6)
@@ -26,5 +26,5 @@ NUGET
     SourceLink.Fake (1.1)
 GITHUB
   remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (f1d6399702cea83af9cc1f72f89cbf3dc0f86a5a)
+    modules/Octokit/Octokit.fsx (c063bf415dac7f7d4df4c37fe76badce76cae3c3)
       Octokit
