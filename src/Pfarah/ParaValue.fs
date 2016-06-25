@@ -123,7 +123,7 @@ type private ParaParser (stream:PeekingStream) =
     // holds. We first try the fast path of hashing the buffer and seeing if
     // the contents are something we have already seen (if so, just return
     // that value). Else we compute the value that the buffer holds.
-    let hash = Farmhash.Hash64(stringBuffer, int64 stringBufferCount)
+    let hash = Farmhash.Hash64(stringBuffer, stringBufferCount)
     let result =
       let mutable pval = Frequencies.ptrue
       if cache.TryGetValue(hash, &pval) then pval
@@ -189,7 +189,7 @@ type private ParaParser (stream:PeekingStream) =
     // In order to avoid allocating many instances of the same string and
     // wasting memory in the process, query the string cache. Essentially this
     // is poor man's -- but faster man's string interning
-    let hash = Farmhash.Hash64(stringBuffer, int64 stringBufferCount)
+    let hash = Farmhash.Hash64(stringBuffer, stringBufferCount)
     let result =
       let mutable str = ""
       if strCache.TryGetValue(hash, &str) then str
