@@ -8,6 +8,7 @@ namespace Pfarah.Benchmarks
         {
             BenchmarkRunner.Run<ParseDouble>();
             BenchmarkRunner.Run<ParseDateTime>();
+            BenchmarkRunner.Run<ParseFile>();
         }
     }
 }
