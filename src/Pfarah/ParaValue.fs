@@ -73,6 +73,8 @@ type private ParaParser (stream:PeekingStream) =
   // unique hashes, the chances of a collision is 1 in a billion.
   let cache = Dictionary<uint64, ParaValue>()
   let strCache = Dictionary<uint64, string>()
+  let vecCache = ResizeArray<ResizeArray<string * ParaValue>>()
+  let mutable vecCacheInd = 0
 
   let asByte = function
   | ParaValue.Number n -> byte n
@@ -81,6 +83,19 @@ type private ParaParser (stream:PeekingStream) =
   let asFloat = function
   | ParaValue.Number n -> n
   | x -> failwithf "Not a float: %s" (x.ToString())
+
+  let vec () =
+    if vecCacheInd = vecCache.Count then
+      vecCache.Add(ResizeArray<_>())
+    let result = vecCache.[vecCacheInd]
+    vecCacheInd <- vecCacheInd + 1
+    result
+
+  let freeVec (vec:ResizeArray<_>) =
+    let result = vec.ToArray()
+    vec.Clear()
+    vecCacheInd <- vecCacheInd - 1
+    result
 
   /// The max token size of any string, as defined by paradox internal source
   /// code is 256
@@ -274,7 +289,7 @@ type private ParaParser (stream:PeekingStream) =
   and parseObject key stopFn =
     // Read through the '='
     stream.Read() |> ignore
-    let pairs = ResizeArray<_>()
+    let pairs = vec()
     pairs.Add(key, trim parseValue)
     while not(stopFn stream) do
       // Beware of empty objects "{}" that don't have a key. If we encounter
@@ -286,7 +301,7 @@ type private ParaParser (stream:PeekingStream) =
       else
         pairs.Add(parsePair())
       skipWhitespace stream
-    ParaValue.Record (pairs.ToArray())
+    ParaValue.Record (freeVec pairs)
 
   and parseQuotes () =
     // Read through the quote
@@ -311,7 +326,7 @@ type private ParaParser (stream:PeekingStream) =
   member x.Parse () =
     // Before we too far into parsing the stream we need to check if we have a
     // header. If we do see a header, ignore it.
-    let pairs = ResizeArray<_>()
+    let pairs = vec()
     skipWhitespace stream
     let first = readString()
     let result =
@@ -324,6 +339,7 @@ type private ParaParser (stream:PeekingStream) =
         skipWhitespace stream
         assert (stream.Peek() = 61)
         parseObject first (fun stream -> stream.EndOfStream)
+    vecCache.Clear()
     cache.Clear()
     strCache.Clear()
     result
