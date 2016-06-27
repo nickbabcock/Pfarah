@@ -1,6 +1,9 @@
 NUGET
   remote: https://www.nuget.org/api/v2
     BenchmarkDotNet (0.9.7)
+    BenchmarkDotNet.Diagnostics.Windows (0.9.7)
+      BenchmarkDotNet (>= 0.9.7) - framework: >= net40, dnx451
+      Microsoft.Diagnostics.Tracing.TraceEvent (>= 1.0.41) - framework: >= net40, dnx451
     coveralls.net (0.6)
     DotNetZip (1.9.7)
     FAKE (4.25.5)
@@ -14,17 +17,18 @@ NUGET
     Microsoft.Bcl (1.1.10) - framework: net10, net11, net20, net30, net35, net40, net40-full
       Microsoft.Bcl.Build (>= 1.0.14)
     Microsoft.Bcl.Build (1.0.21) - import_targets: false, framework: net10, net11, net20, net30, net35, net40, net40-full
+    Microsoft.Diagnostics.Tracing.TraceEvent (1.0.41) - framework: >= net40, dnx451
     Microsoft.Net.Http (2.2.29) - framework: net10, net11, net20, net30, net35, net40, net40-full
       Microsoft.Bcl (>= 1.1.10)
       Microsoft.Bcl.Build (>= 1.0.14)
     NUnit (2.6.4)
     NUnit.Runners (2.6.4)
-    Octokit (0.19)
+    Octokit (0.20)
       Microsoft.Net.Http  - framework: net10, net11, net20, net30, net35, net40, net40-full
     OpenCover (4.6.519)
     ReportGenerator (2.4.5)
     SourceLink.Fake (1.1)
 GITHUB
   remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (c063bf415dac7f7d4df4c37fe76badce76cae3c3)
-      Octokit
+    modules/Octokit/Octokit.fsx (911c3efbc9127d52b1db0dc0ed6e12aafd23d548)
+      Octokit (>= 0.20)

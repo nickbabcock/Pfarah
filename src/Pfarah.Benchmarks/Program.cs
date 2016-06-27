@@ -1,4 +1,6 @@
-﻿using BenchmarkDotNet.Running;
+﻿using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Diagnostics.Windows;
+using BenchmarkDotNet.Running;
 
 namespace Pfarah.Benchmarks
 {
@@ -8,7 +10,8 @@ namespace Pfarah.Benchmarks
         {
             BenchmarkRunner.Run<ParseDouble>();
             BenchmarkRunner.Run<ParseDateTime>();
-            BenchmarkRunner.Run<ParseFile>();
+            BenchmarkRunner.Run<ParseFile>(ManualConfig.Create(DefaultConfig.Instance)
+                .With(new MemoryDiagnoser()));
         }
     }
 }

@@ -192,3 +192,4 @@ results.xml
 report/
 .fake/
 *.svclog
+*TraceEvent*

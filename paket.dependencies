@@ -1,6 +1,7 @@
 source https://nuget.org/api/v2
 
 nuget BenchmarkDotNet
+nuget BenchmarkDotNet.Diagnostics.Windows
 nuget DotNetZip
 nuget Farmhash.Sharp
 nuget FSharp.Formatting
