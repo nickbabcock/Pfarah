@@ -11,17 +11,29 @@ open System.IO
 type internal PeekingStream (stream:Stream) =
   let mutable current = 0;
   let mutable eof = false
+  let (buf:byte[]) = Array.zeroCreate 0x8000
+  let mutable readLen = 0
+  let mutable readPos = 0
+
+  let readByte () : int =
+    if readPos < readLen then
+      readPos <- readPos + 1
+      int buf.[readPos]
+    else if not eof then
+      readLen <- stream.Read(buf, 0, 0x8000) - 1
+      readPos <- 0
+      if readLen < 0x8000 - 1 then
+        eof <- true
+      int buf.[readPos]
+    else -1
 
   let read () =
     let c = current
-    if not eof then
-      current <- stream.ReadByte()
-      eof <- current = -1
+    current <- readByte()
     c
 
   do read() |> ignore
 
   member __.Peek() = current
   member __.Read() = read()
-  member __.EndOfStream = eof
-
+  member __.EndOfStream = eof && readPos = readLen
