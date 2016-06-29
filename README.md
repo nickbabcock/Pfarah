@@ -54,7 +54,7 @@ element as the nth nested element.
 
 Maybe the best question to answer is: why F#?
 
-- F# is fast: creating a DOM structure at 65MB/s
+- F# is fast: creating a DOM structure at 85MB/s
 - F# is flexible: Pfarah uses a mix of functional and imperative code
 - F# has a good package manager (nuget, paket)
 - F# is readable: F# doesn't contain many exotic symbols
