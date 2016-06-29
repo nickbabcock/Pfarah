@@ -35,19 +35,14 @@
         <div class="span9" id="main">
           
 <h1><a name="Introducing-Pfarah" class="anchor" href="#Introducing-Pfarah">Introducing Pfarah</a></h1>
-
 <p>This document is a quick overview of the most important features of Pfarah.
 You can also get this page as an <a href="https://github.com/nickbabcock/Pfarah/blob/master/docs/content/tutorial.fsx">F# script file from GitHub</a> and run
 the samples interactively.</p>
-
 <p>There are two ways to parse data. The first way is to parse a specific file,
 and the second is to parse a given string. The norm should be parsing a file,
 but for the sake of the tutorial it is shown the second way.</p>
-
 <p>If you're familiar with <a href="http://fsharp.github.io/FSharp.Data/library/JsonValue.html">FSharp.Data JSON</a> library, you'll be familiar with this.</p>
-
 <h2><a name="Quickstart" class="anchor" href="#Quickstart">Quickstart</a></h2>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -62,13 +57,10 @@ but for the sake of the tutorial it is shown the second way.</p>
 </code></pre></td>
 </tr>
 </table>
-
 <p><code>obj</code> is a <a href="https://msdn.microsoft.com/en-us/library/dd233226.aspx">discriminated union</a>, and if you're not familiar with
 discriminated unions, it may be best to read up on them because that is how
 one interfaces with the data</p>
-
 <h2><a name="Working-with-the-Data" class="anchor" href="#Working-with-the-Data">Working with the Data</a></h2>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
@@ -107,13 +99,10 @@ one interfaces with the data</p>
 </code></pre></td>
 </tr>
 </table>
-
 <h2><a name="Convenience-Methods" class="anchor" href="#Convenience-Methods">Convenience Methods</a></h2>
-
 <p>The methods shown are very boilerplate heavy and writing this kind of code can
 make a project become bloated very quickly. Hence why Pfarah provides a bit of
 syntactic sugar and helper methods to make dealing with the data easier.</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -130,14 +119,11 @@ syntactic sugar and helper methods to make dealing with the data easier.</p>
 </code></pre></td>
 </tr>
 </table>
-
 <h2><a name="Dealing-with-Multiple-Keys" class="anchor" href="#Dealing-with-Multiple-Keys">Dealing with Multiple Keys</a></h2>
-
 <p>It is often common that the data format will have multiple keys of the same
 name on the same level, but the number of occurrences of the key in an object is
 subject to differ. In cases such as these it is best to use <code>collect</code>, which
 will aggregate values in an object with that particular key.</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
@@ -198,14 +184,11 @@ will aggregate values in an object with that particular key.</p>
 </code></pre></td>
 </tr>
 </table>
-
 <h2><a name="Inconsistent-Data" class="anchor" href="#Inconsistent-Data">Inconsistent Data</a></h2>
-
 <p>Not all objects of a given instance will have the exact same property keys.
 Some may only have a limited subset of the properties wanted. The <code>tryFind</code>
 function will return <code>Some ParaValue</code> if the property exists and <code>None</code> if it
 doesn't.</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
@@ -242,11 +225,9 @@ doesn't.</p>
 </code></pre></td>
 </tr>
 </table>
-
 <p><code>tryFind</code> is also useful when dealing with nested data. If you have <code>A.B.C</code> and
 you aren't sure if <code>A</code>, <code>B</code>, or <code>C</code> exists, you can use <code>tryFind</code> in conjuntion
 with <code>Option.bind</code> to select <code>C</code>'s value or <code>None</code></p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
@@ -283,15 +264,12 @@ with <code>Option.bind</code> to select <code>C</code>'s value or <code>None</co
 </code></pre></td>
 </tr>
 </table>
-
 <h2><a name="Exploring-Data" class="anchor" href="#Exploring-Data">Exploring Data</a></h2>
-
 <p>Knowing the data is the first step to any type of analysis. This is made
 difficult when there can be thousands of objects, each one having a subset of
 the properties available. <code>findOptional</code> fixes this problem by dissecting a
 list of supposedly similar objects and returning the properties that it knows
 are always present and the ones that are optional.</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
@@ -342,11 +320,9 @@ are always present and the ones that are optional.</p>
 </code></pre></td>
 </tr>
 </table>
-
 <p>If the data is in a difficult or hard to read format (eg. thousands of items
 on a single line), call the ToString method, which will print a prettified
 version of the data</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
@@ -373,28 +349,27 @@ version of the data</p>
 </code></pre></td>
 </tr>
 </table>
-
 <h2><a name="Binary-Data" class="anchor" href="#Binary-Data">Binary Data</a></h2>
-
 <p>The examples that we have been working with have been plain text, but
 Clausewitz files can come compressed and in binary form. To parse these files,
 we'll need a few things:</p>
-
 <ul>
 <li>The file path.</li>
-<li>The header if it is binary file. For instance, for EU4, the header is
-"EU4bin".</li>
+<li>
+The header if it is binary file. For instance, for EU4, the header is
+"EU4bin".
+</li>
 <li>The header if it is plain text file. For EU4, the header is "EU4txt".</li>
-<li>Since binary files use two byte tokens instead of strings for identifiers,
+<li>
+Since binary files use two byte tokens instead of strings for identifiers,
 we'll need   a dictionary of two byte tokens to strings so that the binary
 file can be queried exactly   like a plain text file. There are many types of
 tokens that can be encountered, so as not to   impose a memory tax
-unnecessarily if it is a plain text file, the dictionary is <code>lazy</code></li>
+unnecessarily if it is a plain text file, the dictionary is <code>lazy</code>
+</li>
 </ul>
-
 <p>The following code sample will work for a file that is in any format
 (plain text/binary and compressed/uncompressed)</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -494,6 +469,7 @@ unnecessarily if it is a plain text file, the dictionary is <code>lazy</code></l
             <li class="nav-header">Documentation</li>
             <li><a href="/Pfarah/reference/index.html">API Reference</a></li>
             <li><a href="/Pfarah/data-format.html">Data format</a></li>
+            <li><a href="/Pfarah/benchmarks.html">Benchmarks</a></li>
           </ul>
         </div>
       </div>

@@ -35,18 +35,14 @@
         <div class="span9" id="main">
           
 <h1><a name="Data-Format" class="anchor" href="#Data-Format">Data Format</a></h1>
-
 <p>This is not official documentation on the data format used often in Paradox
 Interactive games. There is no specification. What I document here is what I
 have seen in the wild. I have seen the source code for an old version of the
 game and there is manual serialization and deserialization, so there are no
 guarantees.</p>
-
 <p>Here is an example document of all the crazy things you can see. You'll notice
 that the format resembles JSON.</p>
-
 <p>The last time I checked, the files are encoded as Windows 1252.</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
@@ -173,7 +169,6 @@ army={
     }
 }
 </code></pre></td></tr></table>
-
 <p>I recommend parsing the objects as an array of tuples of strings and objects
 because the order of the properties may matter (a map or multi-map doesn't
 necessarily guarantee element order). This also helps with writing the data
@@ -198,6 +193,7 @@ structure back out.</p>
             <li class="nav-header">Documentation</li>
             <li><a href="/Pfarah/reference/index.html">API Reference</a></li>
             <li><a href="/Pfarah/data-format.html">Data format</a></li>
+            <li><a href="/Pfarah/benchmarks.html">Benchmarks</a></li>
           </ul>
         </div>
       </div>
