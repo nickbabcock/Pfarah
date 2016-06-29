@@ -316,6 +316,22 @@ player="RFR" """
   parse data |> shouldEqual [| ("date", ParaValue.Date (new DateTime(1763, 4, 1)));
                                ("player", ParaValue.String "RFR")|]
 
+
+[<Test>]
+let ``collect on a non-iterable returns an empty array`` () =
+  collect "name" (ParaValue.String "hey") |> shouldEqual [| |]
+
+[<Test>]
+let ``collect on a array returns sub-objects`` () =
+  let data =
+    ParaValue.Array [| ParaValue.Record [| ("name", ParaValue.String "bob")
+                                           ("name", ParaValue.String "steve") |]
+                       ParaValue.Record [| |]
+                       ParaValue.Record [| ("name", ParaValue.String "wilson") |] |]
+
+  let expected = [| "bob"; "steve"; "wilson" |] |> Array.map ParaValue.String
+  collect "name" data |> shouldEqual expected
+
 [<Test>]
 let ``parse obj be used in a seq`` () =
   let obj = ParaValue.Parse "ids = {1 2 3 4 5}"

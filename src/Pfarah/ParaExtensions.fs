@@ -63,14 +63,17 @@ module ParaExtensions =
     | x -> failwithf "Not a record: %s" (x.ToString())
 
   /// Finds all the properties of the object with a given key and aggregates
-  /// all the values under a single array.
-  let collect prop obj =
+  /// all the values under a single array. If a given object is an array
+  /// all sub-objects are aggregated. If not an array or object, an empty
+  /// array is returned.
+  let rec collect prop obj =
     match obj with
     | ParaValue.Record properties ->
       properties
       |> Array.filter (fst >> (=) prop)
       |> Array.map snd
-    | _ -> failwithf "Not an object: %A" obj
+    | ParaValue.Array arr -> arr |> Array.collect (collect prop)
+    | _ -> [| |]
 
   /// Tries to find the first property of the object that has the given key.
   /// If a property is found then `Some ParaValue` will be returned else
