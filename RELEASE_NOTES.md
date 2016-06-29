@@ -1,3 +1,6 @@
+### 0.6.5 June 28th 2016
+* Performance increase when reading text files (40% speedup)
+
 ### 0.6.4 May 28th 2016
 * Add parsing of Stellaris variables
 * Add parsing of Stellaris colors
