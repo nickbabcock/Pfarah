@@ -174,15 +174,14 @@ type private ParaParser (stream:PeekingStream) =
       stream.Read() |> ignore
       quotedFillBuffer()
     else
-      let mutable isDone = false
-      while not isDone do
+      let mutable isGood = true
+      while isGood do
         let next = stream.Peek()
 
         // We are done reading the current string if we hit whitespace an equal
         // sign, the end of a buffer, or a left curly (end of an object/list)
-        isDone <- Common.isspace next || (next = 61 && stringBufferCount <> 0) ||
-                  next = -1 || next = 125
-        if not (isDone) then
+        isGood <- not (next < 33 || next = 125 || (next = 61 && stringBufferCount <> 0))
+        if isGood then
           stringBuffer.[stringBufferCount] <- byte (stream.Read())
           stringBufferCount <- stringBufferCount + 1
   
