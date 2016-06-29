@@ -61,6 +61,7 @@ module Frequencies =
 
 module internal Common =
   /// Returns whether a given int is considered whitespace
+  /// Inlining isspace caused a 10% performance increase (cf72dd4)
   let inline isspace (c:int) = c = 10 || c = 13 || c = 9 || c = 32
 
   let internal parseArrayFirst first (fn:ResizeArray<_> -> ParaValue[]) =
