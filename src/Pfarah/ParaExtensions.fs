@@ -1,17 +1,5 @@
 ﻿namespace Pfarah
 
-module Operators =
-  /// Retrieves the property on the ParaValue Record with the given property
-  /// name. If the object is not a Record or the property does not exist on
-  /// the Record, the function will fail
-  let (?) (obj:ParaValue) propertyName =
-    match obj with
-    | ParaValue.Record properties ->
-      match Array.tryFind (fst >> (=) propertyName) properties with
-      | Some (_, value) -> value
-      | None -> failwithf "Didn't find property '%s' in %A" propertyName obj
-    | _ -> failwithf "Not an object: %A" obj
-
 [<AutoOpen>]
 module ParaExtensions =
   /// Get the integer value of an object
@@ -103,3 +91,18 @@ module ParaExtensions =
     /// Assumes the object is an array and returns the value at a given index
     /// in the array
     member x.Item(index) = asArray(x).[index]
+
+module Operators =
+  /// Retrieves the property on the ParaValue Record with the given property
+  /// name. If the object is not a Record or the property does not exist on
+  /// the Record, the function will fail
+  let (?) (obj:ParaValue) propertyName =
+    match obj with
+    | ParaValue.Record properties ->
+      match Array.tryFind (fst >> (=) propertyName) properties with
+      | Some (_, value) -> value
+      | None -> failwithf "Didn't find property '%s' in %A" propertyName obj
+    | _ -> failwithf "Not an object: %A" obj
+
+  /// Slash operator to emulate xpath operations, see collect
+  let (/) (obj:ParaValue) propertyName = collect propertyName obj

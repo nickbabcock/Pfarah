@@ -333,6 +333,11 @@ let ``collect on a array returns sub-objects`` () =
   collect "name" data |> shouldEqual expected
 
 [<Test>]
+let ``collect operator`` () =
+  let data = ParaValue.Record [| ("name", ParaValue.String "steve") |]
+  data / "name" |> shouldEqual [| (ParaValue.String "steve") |]
+
+[<Test>]
 let ``parse obj be used in a seq`` () =
   let obj = ParaValue.Parse "ids = {1 2 3 4 5}"
   let nums = obj?ids |> asArray |> Array.map asInteger
