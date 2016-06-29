@@ -15,6 +15,9 @@ type internal PeekingStream (stream:Stream) =
   let mutable readLen = 0
   let mutable readPos = 0
 
+  /// Reads a single byte from the stream, returning -1 if no more bytes
+  /// are available. 10% improvement to parsing speed when implemented
+  /// rather than using `stream.ReadByte` (5be9cd4)
   let readByte () : int =
     if readPos < readLen then
       readPos <- readPos + 1
