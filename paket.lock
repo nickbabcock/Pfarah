@@ -6,7 +6,7 @@ NUGET
       Microsoft.Diagnostics.Tracing.TraceEvent (>= 1.0.41) - framework: >= net40, dnx451
     coveralls.net (0.6)
     DotNetZip (1.9.7)
-    FAKE (4.25.5)
+    FAKE (4.29.2)
     Farmhash.Sharp (0.2)
     FSharp.Compiler.Service (2.0.0.6)
     FSharp.Formatting (2.14.4)
@@ -30,5 +30,5 @@ NUGET
     SourceLink.Fake (1.1)
 GITHUB
   remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (911c3efbc9127d52b1db0dc0ed6e12aafd23d548)
+    modules/Octokit/Octokit.fsx (c56456abac6b744c3bb95b217687db19fd19b367)
       Octokit (>= 0.20)
