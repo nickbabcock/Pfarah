@@ -60,6 +60,9 @@ module Frequencies =
   let pfalse = ParaValue.Bool false
 
 module internal Common =
+  /// Returns whether a given int is considered whitespace
+  let inline isspace (c:int) = c = 10 || c = 13 || c = 9 || c = 32
+
   let internal parseArrayFirst first (fn:ResizeArray<_> -> ParaValue[]) =
       let values = ResizeArray<_>()
       values.Add(first)
@@ -89,12 +92,9 @@ type private ParaParser (stream:PeekingStream) =
   /// Mutable variable to let us know how much of the string buffer is filled
   let mutable stringBufferCount = 0
 
-  /// Returns whether a given int is considered whitespace
-  let isspace (c:int) = c = 10 || c = 13 || c = 9 || c = 32
-
   /// Advance the stream until a non-whitespace character is encountered
   let skipWhitespace (stream:PeekingStream) =
-    while (isspace (stream.Peek())) do
+    while (Common.isspace (stream.Peek())) do
       stream.Read() |> ignore
 
   /// Trim leading and trailing whitespace from a value
@@ -179,7 +179,7 @@ type private ParaParser (stream:PeekingStream) =
 
         // We are done reading the current string if we hit whitespace an equal
         // sign, the end of a buffer, or a left curly (end of an object/list)
-        isDone <- isspace next || (next = 61 && stringBufferCount <> 0) ||
+        isDone <- Common.isspace next || (next = 61 && stringBufferCount <> 0) ||
                   next = -1 || next = 125
         if not (isDone) then
           stringBuffer.[stringBufferCount] <- byte (stream.Read())
