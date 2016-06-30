@@ -54,14 +54,16 @@ module ParaExtensions =
   /// all the values under a single array. If a given object is an array
   /// all sub-objects are aggregated. If not an array or object, an empty
   /// array is returned.
-  let rec collect prop obj =
-    match obj with
-    | ParaValue.Record properties ->
-      properties
-      |> Array.filter (fst >> (=) prop)
-      |> Array.map snd
-    | ParaValue.Array arr -> arr |> Array.collect (collect prop)
-    | _ -> [| |]
+  let rec collect prop obj : ParaValue =
+    let rec findByName prop obj =
+      match obj with
+      | ParaValue.Record properties ->
+        properties
+        |> Array.filter (fst >> (=) prop)
+        |> Array.map snd
+      | ParaValue.Array arr -> arr |> Array.collect (findByName prop)
+      | _ -> [| |]
+    findByName prop obj |> ParaValue.Array
 
   /// Tries to find the first property of the object that has the given key.
   /// If a property is found then `Some ParaValue` will be returned else

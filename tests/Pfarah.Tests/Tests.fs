@@ -319,7 +319,7 @@ player="RFR" """
 
 [<Test>]
 let ``collect on a non-iterable returns an empty array`` () =
-  collect "name" (ParaValue.String "hey") |> shouldEqual [| |]
+  collect "name" (ParaValue.String "hey") |> shouldEqual (ParaValue.Array [| |])
 
 [<Test>]
 let ``collect on a array returns sub-objects`` () =
@@ -329,13 +329,21 @@ let ``collect on a array returns sub-objects`` () =
                        ParaValue.Record [| |]
                        ParaValue.Record [| ("name", ParaValue.String "wilson") |] |]
 
-  let expected = [| "bob"; "steve"; "wilson" |] |> Array.map ParaValue.String
+  let expected =
+    [| "bob"; "steve"; "wilson" |] |> Array.map ParaValue.String |> ParaValue.Array
   collect "name" data |> shouldEqual expected
 
 [<Test>]
 let ``collect operator`` () =
   let data = ParaValue.Record [| ("name", ParaValue.String "steve") |]
-  data / "name" |> shouldEqual [| (ParaValue.String "steve") |]
+  data / "name" |> shouldEqual (ParaValue.Array [| (ParaValue.String "steve") |])
+
+[<Test>]
+let ``nested collect operator`` () =
+  let data =
+    ParaValue.Record [|
+      "people", ParaValue.Array [| ParaValue.Record [| ("name", ParaValue.String "steve") |] |] |]
+  data / "people" / "name" |> shouldEqual (ParaValue.Array [| (ParaValue.String "steve") |])
 
 [<Test>]
 let ``parse obj be used in a seq`` () =
@@ -388,8 +396,10 @@ let ``parse army and collect`` () =
   let armyData =
     ParaValue.Parse army
     |> collect "army"
+    |> asArray
     |> Array.map (fun x ->
-      let units = x |> collect "unit" |> Array.map (fun u -> u?name |> asString)
+      let units =
+        x |> collect "unit" |> asArray |> Array.map (fun u -> u?name |> asString)
       x?name |> asString, units)
 
   Array.length armyData |> shouldEqual 2
@@ -413,6 +423,7 @@ let ``tryFind patrol`` () =
   let shipData =
     ParaValue.Parse ships
     |> collect "ship"
+    |> asArray
     |> Array.filter (tryFind "patrol" >> Option.isSome)
     |> Array.map (fun x -> x?name |> asString)
 
