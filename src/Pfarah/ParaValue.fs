@@ -663,6 +663,15 @@ module Functional =
   let inline (<!>) f m = map f m
   let inline (!.) key = pget key
 
+  type ParaBuilder () =
+    member __.Bind (m1, m2) : ParaValue<_> = bind m1 m2
+    member __.Combine (m1, m2) : ParaValue<_> = bind m1 (fun () -> m2)
+    member __.Delay (f) : ParaValue<_> = bind (init ()) f
+    member __.Return (x) : ParaValue<_> = init x
+    member __.ReturnFrom (f) : ParaValue<_> = f
+    member __.Zero () : ParaValue<_> = init ()
+  let para = ParaBuilder ()
+
 type ParaValue with
   /// Parses the given stream assuming that it contains strictly plain text.
   static member LoadText (stream:Stream) =

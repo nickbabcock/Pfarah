@@ -778,3 +778,13 @@ let ``fail deserialization because mismatching types`` () =
     ParaValue.Record [| ("label", ParaValue.String "american")
                         ("age", ParaValue.Array [| |]) |]
   fromPara data |> shouldEqual (ParaResult<Cheese>.Error("Expected number but received []"))
+
+[<Test>]
+let ``simple para builder`` () =
+  let value = ParaValue.Record [| ("name", ParaValue.String "bob") |]
+  let b = para {
+    let! c = init "bob"
+    return c
+  }
+
+  b value |> fst |> shouldEqual (ParaResult<String>.Value "bob")
