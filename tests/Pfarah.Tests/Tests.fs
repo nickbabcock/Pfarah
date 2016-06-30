@@ -346,6 +346,34 @@ let ``nested collect operator`` () =
   data / "people" / "name" |> shouldEqual (ParaValue.Array [| (ParaValue.String "steve") |])
 
 [<Test>]
+let ``collectAll on a non-iterable returns an empty array`` () =
+  collectAll "name" (ParaValue.String "hey") |> shouldEqual (ParaValue.Array [| |])
+
+[<Test>]
+let ``collectAll on a array returns sub-objects`` () =
+  let data =
+    ParaValue.Array [| ParaValue.Record [| ("name", ParaValue.String "bob")
+                                           ("name", ParaValue.String "steve") |]
+                       ParaValue.Record [| |]
+                       ParaValue.Record [| ("name", ParaValue.String "wilson") |] |]
+
+  let expected =
+    [| "bob"; "steve"; "wilson" |] |> Array.map ParaValue.String |> ParaValue.Array
+  collectAll "name" data |> shouldEqual expected
+
+[<Test>]
+let ``collectAll operator`` () =
+  let data = ParaValue.Record [| ("name", ParaValue.String "steve") |]
+  data /./ "name" |> shouldEqual (ParaValue.Array [| (ParaValue.String "steve") |])
+
+[<Test>]
+let ``nested collectAll operator`` () =
+  let data =
+    ParaValue.Record [|
+      "people", ParaValue.Array [| ParaValue.Record [| ("name", ParaValue.String "steve") |] |] |]
+  data /./ "name" |> shouldEqual (ParaValue.Array [| (ParaValue.String "steve") |])
+
+[<Test>]
 let ``parse obj be used in a seq`` () =
   let obj = ParaValue.Parse "ids = {1 2 3 4 5}"
   let nums = obj?ids |> asArray |> Array.map asInteger
