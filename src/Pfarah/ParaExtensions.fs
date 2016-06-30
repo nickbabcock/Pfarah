@@ -54,7 +54,7 @@ module ParaExtensions =
   /// all the values under a single array. If a given object is an array
   /// all sub-objects are aggregated. If not an array or object, an empty
   /// array is returned.
-  let rec collect prop obj : ParaValue =
+  let collect prop obj : ParaValue =
     let rec findByName prop obj =
       match obj with
       | ParaValue.Record properties ->
@@ -106,5 +106,6 @@ module Operators =
       | None -> failwithf "Didn't find property '%s' in %A" propertyName obj
     | _ -> failwithf "Not an object: %A" obj
 
-  /// Slash operator to emulate xpath operations, see collect
+  /// Slash operator to emulate xpath operations, see collect.
+  /// Inspired by json4s
   let (/) (obj:ParaValue) propertyName = collect propertyName obj
