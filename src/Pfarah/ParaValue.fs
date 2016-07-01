@@ -559,11 +559,15 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
 module Functional =
   type ParaValue<'a> = ParaValue -> ParaResult<'a> * ParaValue
 
+  /// Represents the deserialized value or an error
   and ParaResult<'a> =
   | Value of 'a
   | Error of string
 
-  let inline error (e: string) : ParaValue<'a> = fun va -> Error e, va
+  let bool = function
+  | ParaValue.Bool b -> Value(b)
+  | ParaValue.Number n -> Value((int n) <> 0)
+  | y -> Error(sprintf "Expected number but received %O" y)
 
   let number = function
   | ParaValue.Number x -> Value(x)
@@ -573,14 +577,17 @@ module Functional =
   | ParaValue.String s -> Value(s)
   | y -> Error(sprintf "Expected string but received %O" y)
 
-  let inline init (a: 'a) : ParaValue<'a> =
-    fun paravalue -> Value a, paravalue
+  /// Wraps a result into a ParaValue<'a>
+  let inline ofResult (result: ParaResult<'a>) : ParaValue<'a> =
+    fun para -> result, para
 
-  let inline bind2 (m: ParaResult<'a>) (f: 'a -> ParaResult<'b>) : ParaResult<'b> =
-    match m with
-    | Value(x) -> f x
-    | Error(x) -> Error(x)
+  /// Creates an error from a given string
+  let inline error (e: string) : ParaValue<'a> = ofResult(Error e)
 
+  /// Creates a ParaValue<'a> from a value
+  let inline init (a: 'a) : ParaValue<'a> = ofResult(Value a)
+
+  /// If a given result has a value, apply another function to the value
   let inline bind (m: ParaValue<'a>) (f: 'a -> ParaValue<'b>) : ParaValue<'b> =
     fun paravalue ->
       match m paravalue with
@@ -591,28 +598,29 @@ module Functional =
     bind f (fun f' ->
       bind m (f' >> init))
 
+  /// Maps the underlying value. If the result is currently an error
+  /// the map does not happen
   let inline map (f: 'a -> 'b) (m: ParaValue<'a>) : ParaValue<'b> =
     bind m (f >> init)
 
-  type FromParaDefaults = FromParaDefaults with
-    static member inline FromPara (_: bool)  =
-      fun x ->
-        match x with
-        | ParaValue.Bool b -> Value(b), x
-        | ParaValue.Number n -> Value((int n) <> 0), x
-        | err -> error "Expected boolean but received something else" x
+  /// Given a function that given a ParaValue will return a ParaResult, wrap
+  /// it into a ParaValue<'a>
+  let wrap (fn:ParaValue -> ParaResult<'a>) =
+    fun paravalue -> fn paravalue, paravalue
 
-    static member inline FromPara (_: int) = map int (fun x -> number x, x)
-    static member inline FromPara (_: uint32) = map uint32 (fun x -> number x, x)
-    static member inline FromPara (_: sbyte) = map sbyte (fun x -> number x, x)
-    static member inline FromPara (_: byte) = map byte (fun x -> number x, x)
-    static member inline FromPara (_: int16) = map int16 (fun x -> number x, x)
-    static member inline FromPara (_: uint16) = map uint16 (fun x -> number x, x)
-    static member inline FromPara (_: int64) = map int64 (fun x -> number x, x)
-    static member inline FromPara (_: uint64) = map uint64 (fun x -> number x, x)
-    static member inline FromPara (_: single) = map single (fun x -> number x, x)
-    static member inline FromPara (_: float) = map float (fun x -> number x, x)
-    static member inline FromPara (_: string) = fun x -> stringify x, x
+  type FromParaDefaults = FromParaDefaults with
+    static member inline FromPara (_: bool)  = wrap bool
+    static member inline FromPara (_: int) = map int (wrap number)
+    static member inline FromPara (_: uint32) = map uint32 (wrap number)
+    static member inline FromPara (_: sbyte) = map sbyte (wrap number)
+    static member inline FromPara (_: byte) = map byte (wrap number)
+    static member inline FromPara (_: int16) = map int16 (wrap number)
+    static member inline FromPara (_: uint16) = map uint16 (wrap number)
+    static member inline FromPara (_: int64) = map int64 (wrap number)
+    static member inline FromPara (_: uint64) = map uint64 (wrap number)
+    static member inline FromPara (_: single) = map single (wrap number)
+    static member inline FromPara (_: float) = map float (wrap number)
+    static member inline FromPara (_: string) = wrap stringify
 
   let inline internal fromParaDefaults (a: ^a, _: ^b) =
     ((^a or ^b) : (static member FromPara: ^a -> ^a ParaValue) a)
