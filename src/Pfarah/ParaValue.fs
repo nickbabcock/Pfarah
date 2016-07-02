@@ -658,6 +658,9 @@ module Functional =
     |> function | Value a -> a
                 | Error e -> failwith e
 
+  /// Given an object and a property name, find the value with the
+  /// given property name and deserialize it. If not given an object,
+  /// and error will be returned.
   let inline pget (o:ParaValue) (key:string) : ParaResult<'a> =
     match o with
     | ParaValue.Record(props) ->

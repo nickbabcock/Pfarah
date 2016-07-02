@@ -805,3 +805,12 @@ let ``pget operator should work with the para builder`` () =
   }
   
   b |> shouldEqual (ParaResult<String>.Value "bob")
+
+//[<Test>]
+//let ``pget should work with optionals`` () =
+//  let value = ParaValue.Record [| "name", ParaValue.String "bob" |]
+//  let b = para {
+//    return! pget value "age"
+//  }
+//
+//  b |> shouldEqual (ParaResult<Option<int>>.Value None)
