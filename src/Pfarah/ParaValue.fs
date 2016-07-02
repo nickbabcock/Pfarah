@@ -658,18 +658,17 @@ module Functional =
     |> function | Value a -> a
                 | Error e -> failwith e
 
-  let inline pget (key:string) : ParaValue<'a> =
-    fun o ->
-      match o with
-      | ParaValue.Record(props) ->
-        match Array.filter (fst >> (=) key) props with
-        | [| x |] -> fromPara (snd x), o
-        | x -> Error(sprintf "Found not 1 but %d of %s" (Array.length x) key), o
-      | typ -> Error(sprintf "Unable to extract properties from a %O" typ), o
+  let inline pget (o:ParaValue) (key:string) : ParaResult<'a> =
+    match o with
+    | ParaValue.Record(props) ->
+      match Array.filter (fst >> (=) key) props with
+      | [| x |] -> fromPara (snd x)
+      | x -> Error(sprintf "Found not 1 but %d of %s" (Array.length x) key)
+    | typ -> Error(sprintf "Unable to extract properties from a %O" typ)
 
-  let inline (<*>) f m = apply f m
-  let inline (<!>) f m = map f m
-  let inline (!.) key = pget key
+  let inline (<*>) f m : ParaValue<'a> = apply f m
+  let inline (<!>) f m : ParaValue<'a> = map f m
+  let inline (!.) key : ParaValue<'a> = fun o -> pget o key, o
 
   type ParaBuilder () =
     let bind (m: ParaResult<'a>) (fn: 'a -> ParaResult<'b>) : ParaResult<'b> =

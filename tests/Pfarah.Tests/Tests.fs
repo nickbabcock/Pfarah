@@ -787,3 +787,12 @@ let ``simple para builder`` () =
   }
 
   b |> shouldEqual (ParaResult<String>.Value "bob")
+
+[<Test>]
+let ``pget should work with the para builder`` () =
+  let value = ParaValue.Record [| "name", ParaValue.String "bob" |]
+  let b = para {
+    return! pget value "name"
+  }
+  
+  b |> shouldEqual (ParaResult<String>.Value "bob")
