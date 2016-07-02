@@ -672,12 +672,17 @@ module Functional =
   let inline (!.) key = pget key
 
   type ParaBuilder () =
-    member __.Bind (m1, m2) : ParaValue<_> = bind m1 m2
-    member __.Combine (m1, m2) : ParaValue<_> = bind m1 (fun () -> m2)
-    member __.Delay (f) : ParaValue<_> = bind (init ()) f
-    member __.Return (x) : ParaValue<_> = init x
-    member __.ReturnFrom (f) : ParaValue<_> = f
-    member __.Zero () : ParaValue<_> = init ()
+    let bind (m: ParaResult<'a>) (fn: 'a -> ParaResult<'b>) : ParaResult<'b> =
+      match m with
+      | Value(x) -> fn x
+      | Error(x) -> Error(x)
+
+    member __.Bind (m1, m2) : ParaResult<_> = bind m1 m2
+    member __.Combine (m1, m2) : ParaResult<_> = bind m1 (fun () -> m2)
+    member __.Delay (f) : ParaResult<_> = bind (Value ()) f
+    member __.Return (x) : ParaResult<_> = Value x
+    member __.ReturnFrom (f) : ParaResult<_> = f
+    member __.Zero () : ParaResult<_> = Value ()
   let para = ParaBuilder ()
 
 type ParaValue with

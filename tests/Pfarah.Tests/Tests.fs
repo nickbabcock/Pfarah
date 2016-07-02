@@ -781,10 +781,9 @@ let ``fail deserialization because mismatching types`` () =
 
 [<Test>]
 let ``simple para builder`` () =
-  let value = ParaValue.Record [| ("name", ParaValue.String "bob") |]
+  let value = ParaValue.String "bob"
   let b = para {
-    let! c = init "bob"
-    return c
+    return! stringify value
   }
 
-  b value |> fst |> shouldEqual (ParaResult<String>.Value "bob")
+  b |> shouldEqual (ParaResult<String>.Value "bob")
