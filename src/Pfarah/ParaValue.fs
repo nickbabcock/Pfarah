@@ -669,6 +669,7 @@ module Functional =
   let inline (<*>) f m : ParaValue<'a> = apply f m
   let inline (<!>) f m : ParaValue<'a> = map f m
   let inline (!.) key : ParaValue<'a> = fun o -> pget o key, o
+  let inline (.@) obj key = pget obj key
 
   type ParaBuilder () =
     let bind (m: ParaResult<'a>) (fn: 'a -> ParaResult<'b>) : ParaResult<'b> =
