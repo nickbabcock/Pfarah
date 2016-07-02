@@ -628,11 +628,11 @@ module Functional =
   let inline fromPara x =
     fst (fromParaDefaults (Unchecked.defaultof<'a>, FromParaDefaults) x)
 
-  let inline paraFold arr =
+  let inline paraFold fn arr =
     let ls = ResizeArray<'a>()
     let mutable err = None
     for i in arr do
-      match fromPara i with
+      match fn i with
       | Value(x) -> ls.Add(x)
       | Error(y) as z -> err <- Some(y)
 
@@ -643,7 +643,7 @@ module Functional =
   let inline lister fn =
     map fn (fun x ->
         (match x with
-        | ParaValue.Array arr -> paraFold arr
+        | ParaValue.Array arr -> paraFold fromPara arr
         | y -> Error(sprintf "Expected list of values but received %O" y)), x)
 
   type FromParaDefaults with
@@ -669,15 +669,29 @@ module Functional =
       | x -> Error(sprintf "Found not 1 but %d of %s" (Array.length x) key)
     | typ -> Error(sprintf "Unable to extract properties from a %O" typ)
 
-  type ParaBuilder () =
-    let bind (m: ParaResult<'a>) (fn: 'a -> ParaResult<'b>) : ParaResult<'b> =
-      match m with
-      | Value(x) -> fn x
-      | Error(x) -> Error(x)
+  let bind' (m: ParaResult<'a>) (fn: 'a -> ParaResult<'b>) : ParaResult<'b> =
+    match m with
+    | Value(x) -> fn x
+    | Error(x) -> Error(x)
 
-    member __.Bind (m1, m2) : ParaResult<_> = bind m1 m2
-    member __.Combine (m1, m2) : ParaResult<_> = bind m1 (fun () -> m2)
-    member __.Delay (f) : ParaResult<_> = bind (Value ()) f
+  let inline map' (f: 'a -> 'b) (m: ParaResult<'a>) : ParaResult<'b> =
+    bind' m (f >> Value)
+
+  let inline flatMap (fn:ParaValue -> ParaResult<'a>) (o:ParaValue) : ParaResult<'a[]> =
+    let lst =
+      match o with
+      | ParaValue.Array arr -> paraFold fn arr
+      | ParaValue.Record props -> Value(ResizeArray())
+      | x ->
+        match fn x with
+        | Value(y) -> Value(ResizeArray([| y |]))
+        | Error(y) -> Error(y)
+    map' (fun (x: List<'a>) -> x.ToArray()) lst
+
+  type ParaBuilder () =
+    member __.Bind (m1, m2) : ParaResult<_> = bind' m1 m2
+    member __.Combine (m1, m2) : ParaResult<_> = bind' m1 (fun () -> m2)
+    member __.Delay (f) : ParaResult<_> = bind' (Value ()) f
     member __.Return (x) : ParaResult<_> = Value x
     member __.ReturnFrom (f) : ParaResult<_> = f
     member __.Zero () : ParaResult<_> = Value ()

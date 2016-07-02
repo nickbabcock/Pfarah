@@ -806,6 +806,31 @@ let ``pget operator should work with the para builder`` () =
   
   b |> shouldEqual (ParaResult<String>.Value "bob")
 
+[<Test>]
+let ``para builder should work with army data`` () =
+  let obj = ParaValue.Parse army
+
+  let unitDes o : ParaResult<string> = para {
+    return! o .@ "name"
+  }
+
+  let armyDes o : ParaResult<string * string list> = para {
+    let! armyName = o .@ "name"
+    let! units = flatMap unitDes (o / "unit")
+    return armyName, List.ofArray units
+  }
+
+  let actual = para {
+    let! armies = flatMap armyDes (obj / "army")
+    return List.ofArray armies
+  }
+
+  let expected = [ ("1st army", ["1st unit"])
+                   ("2nd army", ["1st unit"; "2nd unit"]) ]
+
+  actual |> shouldEqual (ParaResult.Value(expected))
+
+
 //[<Test>]
 //let ``pget should work with optionals`` () =
 //  let value = ParaValue.Record [| "name", ParaValue.String "bob" |]
