@@ -666,11 +666,6 @@ module Functional =
       | x -> Error(sprintf "Found not 1 but %d of %s" (Array.length x) key)
     | typ -> Error(sprintf "Unable to extract properties from a %O" typ)
 
-  let inline (<*>) f m : ParaValue<'a> = apply f m
-  let inline (<!>) f m : ParaValue<'a> = map f m
-  let inline (!.) key : ParaValue<'a> = fun o -> pget o key, o
-  let inline (.@) obj key = pget obj key
-
   type ParaBuilder () =
     let bind (m: ParaResult<'a>) (fn: 'a -> ParaResult<'b>) : ParaResult<'b> =
       match m with

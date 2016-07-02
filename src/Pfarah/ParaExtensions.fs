@@ -130,3 +130,16 @@ module Operators =
   /// Inspired by json4s. The ideal operator would be `//` but `//`
   /// is interpreted as a comment
   let (/./) (obj:ParaValue) propertyName = collectAll propertyName obj
+
+  open Pfarah.Functional
+  /// Apply operator adopted from the chiron project
+  let inline (<*>) f m : ParaValue<'a> = apply f m
+
+  /// Lift operator adopted from the chiron project
+  let inline (<!>) f m : ParaValue<'a> = map f m
+
+  /// Prefix operator that delegates pget and sweetens the deal
+  let inline (!.) key : ParaValue<'a> = fun o -> pget o key, o
+
+  /// Operator inspired from the fleece project -- delegates to pget
+  let inline (.@) obj key = pget obj key
