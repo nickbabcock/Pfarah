@@ -727,6 +727,11 @@ let ``deserialize a string into an option`` () =
   deserialize (ParaValue.String "hello") |> shouldEqual (Some "hello")
 
 [<Test>]
+let ``deserialize a single instance array into string`` () =
+  deserialize (ParaValue.Array [| ParaValue.String "bob" |])
+  |> shouldEqual "bob"
+
+[<Test>]
 let ``deserialize an array into an array`` () =
   deserialize (ParaValue.Array [| ParaValue.String "a"; ParaValue.String "b" |])
   |> shouldEqual ([| "a"; "b"; |])

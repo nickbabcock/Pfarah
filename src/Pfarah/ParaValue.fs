@@ -608,19 +608,26 @@ module Functional =
   let wrap (fn:ParaValue -> ParaResult<'a>) =
     fun paravalue -> fn paravalue, paravalue
 
+  /// When given an array that contains only a single instance. Run the
+  /// deserialization function against that single element.
+  let arf fn p =
+    match p with
+    | ParaValue.Array [| x |] -> fn x
+    | x -> fn x
+
   type FromParaDefaults = FromParaDefaults with
-    static member inline FromPara (_: bool)  = wrap bool
-    static member inline FromPara (_: int) = map int (wrap number)
-    static member inline FromPara (_: uint32) = map uint32 (wrap number)
-    static member inline FromPara (_: sbyte) = map sbyte (wrap number)
-    static member inline FromPara (_: byte) = map byte (wrap number)
-    static member inline FromPara (_: int16) = map int16 (wrap number)
-    static member inline FromPara (_: uint16) = map uint16 (wrap number)
-    static member inline FromPara (_: int64) = map int64 (wrap number)
-    static member inline FromPara (_: uint64) = map uint64 (wrap number)
-    static member inline FromPara (_: single) = map single (wrap number)
-    static member inline FromPara (_: float) = map float (wrap number)
-    static member inline FromPara (_: string) = wrap stringify
+    static member inline FromPara (_: bool)  = wrap (arf bool)
+    static member inline FromPara (_: int) = map int (wrap (arf number))
+    static member inline FromPara (_: uint32) = map uint32 (wrap (arf number))
+    static member inline FromPara (_: sbyte) = map sbyte (wrap (arf number))
+    static member inline FromPara (_: byte) = map byte (wrap (arf number))
+    static member inline FromPara (_: int16) = map int16 (wrap (arf number))
+    static member inline FromPara (_: uint16) = map uint16 (wrap (arf number))
+    static member inline FromPara (_: int64) = map int64 (wrap (arf number))
+    static member inline FromPara (_: uint64) = map uint64 (wrap (arf number))
+    static member inline FromPara (_: single) = map single (wrap (arf number))
+    static member inline FromPara (_: float) = map float (wrap (arf number))
+    static member inline FromPara (_: string) = wrap (arf stringify)
 
   let inline internal fromParaDefaults (a: ^a, _: ^b) =
     ((^a or ^b) : (static member FromPara: ^a -> ^a ParaValue) a)
