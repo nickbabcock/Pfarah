@@ -594,6 +594,9 @@ module Functional =
       | Value a, paravalue -> (f a) paravalue
       | Error e, paravalue -> Error e, paravalue
 
+  /// If the wrapped function is a success and the given result is a success
+  /// the function is applied on the value. Otherwise the exisiting error
+  /// messages are propagated.
   let inline apply (f: ParaValue<'a -> 'b>) (m: ParaValue<'a>) : ParaValue<'b> =
     bind f (fun f' ->
       bind m (f' >> init))
