@@ -835,6 +835,13 @@ let ``para builder should work with army data`` () =
 
   actual |> shouldEqual (ParaResult.Value(expected))
 
+[<Test>]
+let ``flatMap works with objects`` () =
+  let data = ParaValue.Parse "a=1 b=2 c=3 d=4"
+  let actual = flatMap (function | ParaValue.Number x -> Value(x + 1.) 
+                                 | _ -> Error "Unexpected") data
+
+  actual |> shouldEqual (ParaResult.Value([| 2.0; 3.0; 4.0; 5.0; |]))
 
 //[<Test>]
 //let ``pget should work with optionals`` () =

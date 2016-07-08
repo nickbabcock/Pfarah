@@ -688,7 +688,7 @@ module Functional =
     let lst =
       match o with
       | ParaValue.Array arr -> paraFold fn arr
-      | ParaValue.Record props -> Value(ResizeArray())
+      | ParaValue.Record props -> paraFold fn (props |> Array.map snd)
       | x ->
         match fn x with
         | Value(y) -> Value(ResizeArray([| y |]))
