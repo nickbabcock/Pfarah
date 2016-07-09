@@ -732,6 +732,11 @@ let ``deserialize a single instance array into string`` () =
   |> shouldEqual "bob"
 
 [<Test>]
+let ``deserialize a single instance record into string`` () =
+  deserialize (ParaValue.Record [| "name", ParaValue.String "bob" |])
+  |> shouldEqual "bob"
+
+[<Test>]
 let ``deserialize an array into an array`` () =
   deserialize (ParaValue.Array [| ParaValue.String "a"; ParaValue.String "b" |])
   |> shouldEqual ([| "a"; "b"; |])

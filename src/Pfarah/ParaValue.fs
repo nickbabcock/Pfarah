@@ -611,11 +611,12 @@ module Functional =
   let wrap (fn:ParaValue -> ParaResult<'a>) =
     fun paravalue -> fn paravalue, paravalue
 
-  /// When given an array that contains only a single instance. Run the
+  /// When given an array/record that contains only a single instance. Run the
   /// deserialization function against that single element.
   let arf fn p =
     match p with
     | ParaValue.Array [| x |] -> fn x
+    | ParaValue.Record [| key, value |] -> fn value
     | x -> fn x
 
   type FromParaDefaults = FromParaDefaults with
