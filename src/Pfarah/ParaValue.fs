@@ -613,25 +613,24 @@ module Functional =
 
   /// When given an array/record that contains only a single instance. Run the
   /// deserialization function against that single element.
-  let arf fn p =
-    match p with
+  let unfold fn = function
     | ParaValue.Array [| x |] -> fn x
     | ParaValue.Record [| key, value |] -> fn value
     | x -> fn x
 
   type FromParaDefaults = FromParaDefaults with
-    static member inline FromPara (_: bool)  = wrap (arf bool)
-    static member inline FromPara (_: int) = map int (wrap (arf number))
-    static member inline FromPara (_: uint32) = map uint32 (wrap (arf number))
-    static member inline FromPara (_: sbyte) = map sbyte (wrap (arf number))
-    static member inline FromPara (_: byte) = map byte (wrap (arf number))
-    static member inline FromPara (_: int16) = map int16 (wrap (arf number))
-    static member inline FromPara (_: uint16) = map uint16 (wrap (arf number))
-    static member inline FromPara (_: int64) = map int64 (wrap (arf number))
-    static member inline FromPara (_: uint64) = map uint64 (wrap (arf number))
-    static member inline FromPara (_: single) = map single (wrap (arf number))
-    static member inline FromPara (_: float) = map float (wrap (arf number))
-    static member inline FromPara (_: string) = wrap (arf stringify)
+    static member inline FromPara (_: bool)  = wrap (unfold bool)
+    static member inline FromPara (_: int) = map int (wrap (unfold number))
+    static member inline FromPara (_: uint32) = map uint32 (wrap (unfold number))
+    static member inline FromPara (_: sbyte) = map sbyte (wrap (unfold number))
+    static member inline FromPara (_: byte) = map byte (wrap (unfold number))
+    static member inline FromPara (_: int16) = map int16 (wrap (unfold number))
+    static member inline FromPara (_: uint16) = map uint16 (wrap (unfold number))
+    static member inline FromPara (_: int64) = map int64 (wrap (unfold number))
+    static member inline FromPara (_: uint64) = map uint64 (wrap (unfold number))
+    static member inline FromPara (_: single) = map single (wrap (unfold number))
+    static member inline FromPara (_: float) = map float (wrap (unfold number))
+    static member inline FromPara (_: string) = wrap (unfold stringify)
 
   let inline internal fromParaDefaults (a: ^a, _: ^b) =
     ((^a or ^b) : (static member FromPara: ^a -> ^a ParaValue) a)
