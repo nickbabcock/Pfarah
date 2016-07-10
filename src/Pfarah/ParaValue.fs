@@ -99,10 +99,19 @@ type private ParaParser (stream:PeekingStream) =
       stream.Read() |> ignore
 
   /// Trim comments from stream
-  let skipComments fn =
+  let rec skipComments () =
     if (stream.Peek() = 35) then
-      while (match stream.Read() with | -1 | 13 -> false | _ -> true) do
-        ()
+      let mutable don = false
+      while not don do
+        let next = stream.Read()
+        don <-
+          match next with
+          | -1 -> true
+          | 13 ->
+            skipWhitespace stream
+            skipComments()
+            true
+          | _ -> false
 
   /// Trim leading and trailing whitespace from a value
   let trim fn =
@@ -327,7 +336,7 @@ type private ParaParser (stream:PeekingStream) =
 
     skipWhitespace stream
     while (stream.Peek() = 35) do
-      skipComments stream
+      skipComments ()
       skipWhitespace stream
 
     let first = readString()

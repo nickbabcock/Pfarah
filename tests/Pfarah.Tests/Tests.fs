@@ -159,6 +159,16 @@ let ``parse comments in arrays`` () =
                       ([|ParaValue.Number 1.0; ParaValue.Number 2.0|]))|]
 
 [<Test>]
+let ``parse the triple comment threat`` () =
+  parse """
+	id = 7
+#############################
+# 11 EASY ACHIEVEMENTS
+#############################
+"""
+  |> shouldEqual [| ("id", ParaValue.Number 7.0)|]
+
+[<Test>]
 let ``ignore empty objects`` () =
   parse "foo={1} {} church=yes"
   |> shouldEqual [| ("foo", ParaValue.Array ([|ParaValue.Number 1.0|]));
