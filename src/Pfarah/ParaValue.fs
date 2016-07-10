@@ -559,22 +559,28 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
 module Functional =
   type ParaValue<'a> = ParaValue -> ParaResult<'a> * ParaValue
 
-  /// Represents the deserialized value or an error
-  and ParaResult<'a> =
-  | Value of 'a
-  | Error of string
+  /// Represents the deserialized value or an error. Adapted from Don Syme's
+  /// Github comment on a result type in F#:
+  /// https://github.com/fsharp/FSharpLangDesign/issues/49#issuecomment-193795013
+  and ParaResult<'a> = Choice<'a,string>
+  let inline Ok x : ParaResult<'a> = Choice1Of2 x
+  let inline Error<'a> x : ParaResult<'a> = Choice2Of2 x
+  type Choice<'a, 'b> with
+    static member Error<'a> (x:string) : ParaResult<'a> = Error<'a> x
+    static member Value<'a> (x:'a) : ParaResult<'a> = Ok x
+  let  (|Value|Error|) (result: ParaResult<'Ok>) = result
 
   let bool = function
-  | ParaValue.Bool b -> Value(b)
-  | ParaValue.Number n -> Value((int n) <> 0)
+  | ParaValue.Bool b -> Ok(b)
+  | ParaValue.Number n -> Ok((int n) <> 0)
   | y -> Error(sprintf "Expected number but received %O" y)
 
   let number = function
-  | ParaValue.Number x -> Value(x)
+  | ParaValue.Number x -> Ok(x)
   | y -> Error(sprintf "Expected number but received %O" y)
 
   let stringify = function
-  | ParaValue.String s -> Value(s)
+  | ParaValue.String s -> Ok(s)
   | y -> Error(sprintf "Expected string but received %O" y)
 
   /// Wraps a result into a ParaValue<'a>
@@ -585,7 +591,7 @@ module Functional =
   let inline error (e: string) : ParaValue<'a> = ofResult(Error e)
 
   /// Creates a ParaValue<'a> from a value
-  let inline init (a: 'a) : ParaValue<'a> = ofResult(Value a)
+  let inline init (a: 'a) : ParaValue<'a> = ofResult(Ok a)
 
   /// If a given result has a value, apply another function to the value
   let inline bind (m: ParaValue<'a>) (f: 'a -> ParaValue<'b>) : ParaValue<'b> =
@@ -648,7 +654,7 @@ module Functional =
 
     match err with
     | Some(x) -> Error(x)
-    | None -> Value(ls)
+    | None -> Ok(ls)
 
   let inline lister fn =
     map fn (fun x ->
@@ -685,7 +691,7 @@ module Functional =
     | Error(x) -> Error(x)
 
   let inline map' (f: 'a -> 'b) (m: ParaResult<'a>) : ParaResult<'b> =
-    bind' m (f >> Value)
+    bind' m (f >> Ok)
 
   let inline flatMap (fn:ParaValue -> ParaResult<'a>) (o:ParaValue) : ParaResult<'a[]> =
     let lst =
@@ -694,17 +700,17 @@ module Functional =
       | ParaValue.Record props -> paraFold fn (props |> Array.map snd)
       | x ->
         match fn x with
-        | Value(y) -> Value(ResizeArray([| y |]))
+        | Value(y) -> Ok(ResizeArray([| y |]))
         | Error(y) -> Error(y)
     map' (fun (x: List<'a>) -> x.ToArray()) lst
 
   type ParaBuilder () =
     member __.Bind (m1, m2) : ParaResult<_> = bind' m1 m2
     member __.Combine (m1, m2) : ParaResult<_> = bind' m1 (fun () -> m2)
-    member __.Delay (f) : ParaResult<_> = bind' (Value ()) f
-    member __.Return (x) : ParaResult<_> = Value x
+    member __.Delay (f) : ParaResult<_> = bind' (Ok ()) f
+    member __.Return (x) : ParaResult<_> = Ok x
     member __.ReturnFrom (f) : ParaResult<_> = f
-    member __.Zero () : ParaResult<_> = Value ()
+    member __.Zero () : ParaResult<_> = Ok ()
   let para = ParaBuilder ()
 
 type ParaValue with

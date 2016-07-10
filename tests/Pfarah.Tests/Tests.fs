@@ -744,12 +744,14 @@ let ``deserialize an array into an array`` () =
 [<Test>]
 let ``fail deserialize an string into an array`` () =
   let data = ParaValue.String "hello"
-  fromPara data |> shouldEqual (ParaResult<int[]>.Error("Expected list of values but received hello"))
+  let expected = ParaResult<int[]>.Error<int[]> "Expected list of values but received hello"
+  fromPara data |> shouldEqual expected
 
 [<Test>]
 let ``fail deserialize a string array into an int array`` () =
   let data = ParaValue.Array [| ParaValue.String "hello" |]
-  fromPara data |> shouldEqual (ParaResult<int[]>.Error("Expected number but received hello"))
+  let expected : ParaResult<int[]> = Error "Expected number but received hello"
+  fromPara data |> shouldEqual expected
 
 [<Test>]
 let ``deserialize an array into list`` () =
@@ -775,19 +777,22 @@ let ``deserialize a record`` () =
 let ``fail deserialization without property`` () =
   let data =
     ParaValue.Record [| ("label", ParaValue.String "american") |]
-  fromPara data |> shouldEqual (ParaResult<Cheese>.Error("Found not 1 but 0 of age"))
+  let expected : ParaResult<Cheese> = Error "Found not 1 but 0 of age"
+  fromPara data |> shouldEqual expected
 
 [<Test>]
 let ``fail deserialization because not a record`` () =
   let data = ParaValue.String "hello"
-  fromPara data |> shouldEqual (ParaResult<Cheese>.Error("Unable to extract properties from a hello"))
+  let expected : ParaResult<Cheese> = Error "Unable to extract properties from a hello"
+  fromPara data |> shouldEqual expected
 
 [<Test>]
 let ``fail deserialization because mismatching types`` () =
   let data =
     ParaValue.Record [| ("label", ParaValue.String "american")
                         ("age", ParaValue.Array [| |]) |]
-  fromPara data |> shouldEqual (ParaResult<Cheese>.Error("Expected number but received []"))
+  let expected : ParaResult<Cheese> = Error "Expected number but received []"
+  fromPara data |> shouldEqual expected
 
 [<Test>]
 let ``simple para builder`` () =
@@ -843,7 +848,7 @@ let ``para builder should work with army data`` () =
 [<Test>]
 let ``flatMap works with objects`` () =
   let data = ParaValue.Parse "a=1 b=2 c=3 d=4"
-  let actual = flatMap (function | ParaValue.Number x -> Value(x + 1.) 
+  let actual = flatMap (function | ParaValue.Number x -> Ok(x + 1.) 
                                  | _ -> Error "Unexpected") data
 
   actual |> shouldEqual (ParaResult.Value([| 2.0; 3.0; 4.0; 5.0; |]))
