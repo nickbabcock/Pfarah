@@ -556,6 +556,7 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       ParaValue.Record(parseTopObject())
     | None -> ParaValue.Record(parseTopObject())
 
+[<AutoOpen>]
 module Functional =
   type ParaValue<'a> = ParaValue -> ParaResult<'a> * ParaValue
 

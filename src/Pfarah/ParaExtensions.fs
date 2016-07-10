@@ -131,7 +131,6 @@ module Operators =
   /// is interpreted as a comment
   let (/./) (obj:ParaValue) propertyName = collectAll propertyName obj
 
-  open Pfarah.Functional
   /// Apply operator adopted from the chiron project
   let inline (<*>) f m : ParaValue<'a> = apply f m
 
