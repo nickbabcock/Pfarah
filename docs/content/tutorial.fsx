@@ -110,8 +110,11 @@ army=
 let armyData =
   ParaValue.Parse army
   |> collect "army"
+  |> asArray
   |> Array.map (fun x ->
-    let units = x |> collect "unit" |> Array.map (fun u -> u?name |> asString)
+    let units = x |> collect "unit" 
+                  |> asArray 
+                  |> Array.map (fun u -> u?name |> asString)
     x?name |> asString, units)
 printfn "%A" armyData
 
@@ -139,6 +142,7 @@ ship={
 let shipData =
   ParaValue.Parse ships
   |> collect "ship"
+  |> asArray
   |> Array.filter (tryFind "patrol" >> Option.isSome)
   |> Array.map (fun x -> x?name |> asString)
 printfn "%A" armyData
@@ -195,6 +199,7 @@ node={
 let required, optional =
   ParaValue.Parse nodes
   |> collect "node"
+  |> asArray
   |> findOptional
 
 required |> Seq.iter (printfn "%s")
