@@ -193,3 +193,4 @@ report/
 .fake/
 *.svclog
 *TraceEvent*
+Settings.FSharpLint
