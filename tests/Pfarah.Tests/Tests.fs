@@ -801,7 +801,7 @@ let ``simple para builder`` () =
     return! stringify value
   }
 
-  b |> shouldEqual (ParaResult<String>.Value "bob")
+  b |> shouldEqual (ParaResult<String>.Ok "bob")
 
 [<Test>]
 let ``pget should work with the para builder`` () =
@@ -810,7 +810,7 @@ let ``pget should work with the para builder`` () =
     return! pget value "name"
   }
   
-  b |> shouldEqual (ParaResult<String>.Value "bob")
+  b |> shouldEqual (ParaResult<String>.Ok "bob")
 
 [<Test>]
 let ``pget operator should work with the para builder`` () =
@@ -819,7 +819,7 @@ let ``pget operator should work with the para builder`` () =
     return! value .@ "name"
   }
   
-  b |> shouldEqual (ParaResult<String>.Value "bob")
+  b |> shouldEqual (ParaResult<String>.Ok "bob")
 
 [<Test>]
 let ``para builder should work with army data`` () =
@@ -843,7 +843,7 @@ let ``para builder should work with army data`` () =
   let expected = [ ("1st army", ["1st unit"])
                    ("2nd army", ["1st unit"; "2nd unit"]) ]
 
-  actual |> shouldEqual (ParaResult.Value(expected))
+  actual |> shouldEqual (ParaResult.Ok(expected))
 
 [<Test>]
 let ``flatMap works with objects`` () =
@@ -851,7 +851,7 @@ let ``flatMap works with objects`` () =
   let actual = flatMap (function | ParaValue.Number x -> Ok(x + 1.) 
                                  | _ -> Error "Unexpected") data
 
-  actual |> shouldEqual (ParaResult.Value([| 2.0; 3.0; 4.0; 5.0; |]))
+  actual |> shouldEqual (ParaResult.Ok([| 2.0; 3.0; 4.0; 5.0; |]))
 
 //[<Test>]
 //let ``pget should work with optionals`` () =

@@ -567,8 +567,8 @@ module Functional =
   let inline Error<'a> x : ParaResult<'a> = Choice2Of2 x
   type Choice<'a, 'b> with
     static member Error<'a> (x:string) : ParaResult<'a> = Error<'a> x
-    static member Value<'a> (x:'a) : ParaResult<'a> = Ok x
-  let  (|Value|Error|) (result: ParaResult<'Ok>) = result
+    static member Ok<'a> (x:'a) : ParaResult<'a> = Ok x
+  let  (|Ok|Error|) (result: ParaResult<'Ok>) = result
 
   let bool = function
   | ParaValue.Bool b -> Ok(b)
@@ -597,7 +597,7 @@ module Functional =
   let inline bind (m: ParaValue<'a>) (f: 'a -> ParaValue<'b>) : ParaValue<'b> =
     fun paravalue ->
       match m paravalue with
-      | Value a, paravalue -> (f a) paravalue
+      | Ok a, paravalue -> (f a) paravalue
       | Error e, paravalue -> Error e, paravalue
 
   /// If the wrapped function is a success and the given result is a success
@@ -649,7 +649,7 @@ module Functional =
     let mutable err = None
     for i in arr do
       match fn i with
-      | Value(x) -> ls.Add(x)
+      | Ok(x) -> ls.Add(x)
       | Error(y) as z -> err <- Some(y)
 
     match err with
@@ -671,7 +671,7 @@ module Functional =
 
   let inline deserialize paraValue =
     fromPara paraValue
-    |> function | Value a -> a
+    |> function | Ok a -> a
                 | Error e -> failwith e
 
   /// Given an object and a property name, find the value with the
@@ -687,7 +687,7 @@ module Functional =
 
   let bind' (m: ParaResult<'a>) (fn: 'a -> ParaResult<'b>) : ParaResult<'b> =
     match m with
-    | Value(x) -> fn x
+    | Ok(x) -> fn x
     | Error(x) -> Error(x)
 
   let inline map' (f: 'a -> 'b) (m: ParaResult<'a>) : ParaResult<'b> =
@@ -700,7 +700,7 @@ module Functional =
       | ParaValue.Record props -> paraFold fn (props |> Array.map snd)
       | x ->
         match fn x with
-        | Value(y) -> Ok(ResizeArray([| y |]))
+        | Ok(y) -> Ok(ResizeArray([| y |]))
         | Error(y) -> Error(y)
     map' (fun (x: List<'a>) -> x.ToArray()) lst
 
