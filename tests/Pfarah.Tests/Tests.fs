@@ -148,6 +148,17 @@ let ``parse list of two quoted`` () =
                          ParaValue.String "biz baz"|]))|]
 
 [<Test>]
+let ``parse comments in objects`` () =
+  parse "# I'm a comment\r\nfoo=bar\r\n# I'm another comment"
+  |> shouldEqual [| ("foo", ParaValue.String "bar")|]
+
+[<Test>]
+let ``parse comments in arrays`` () =
+  parse "# I'm a comment\r\nfoo={1\r\n#comment\r\n2}\r\n# I'm another comment"
+  |> shouldEqual [| ("foo", ParaValue.Array
+                      ([|ParaValue.Number 1.0; ParaValue.Number 2.0|]))|]
+
+[<Test>]
 let ``ignore empty objects`` () =
   parse "foo={1} {} church=yes"
   |> shouldEqual [| ("foo", ParaValue.Array ([|ParaValue.Number 1.0|]));

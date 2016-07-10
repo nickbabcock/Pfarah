@@ -98,11 +98,23 @@ type private ParaParser (stream:PeekingStream) =
     while (Common.isspace (stream.Peek())) do
       stream.Read() |> ignore
 
+  /// Trim comments from stream
+  let skipComments fn =
+    if (stream.Peek() = 35) then
+      while (match stream.Read() with | -1 | 13 -> false | _ -> true) do
+        ()
+
   /// Trim leading and trailing whitespace from a value
   let trim fn =
     skipWhitespace(stream)
     let result = fn()
     skipWhitespace(stream)
+    result
+
+  let advance fn =
+    trim skipComments
+    let result = fn()
+    trim skipComments
     result
 
   let rec parseValue () =
@@ -118,7 +130,7 @@ type private ParaParser (stream:PeekingStream) =
       stream.Read() |> ignore
       result
     | _ -> narrow ()
-  
+
   and narrowBuffer() =
     // Now that we have a filled buffer, we have to determine what value it
     // holds. We first try the fast path of hashing the buffer and seeing if
@@ -157,13 +169,13 @@ type private ParaParser (stream:PeekingStream) =
     if stringBufferCount = 3 && stringBuffer.[0] = 104uy &&
       stringBuffer.[1] = 115uy && stringBuffer.[2] = 118uy then
       stringBufferCount <- 0
-      match (trim parseValue) with
+      match (advance parseValue) with
       | ParaValue.Array [| h; s; v |] -> ParaValue.Hsv(h |> asFloat, s |> asFloat, v |> asFloat)
       | _ -> failwith "Expected an array with three elements for hsv"
     else if stringBufferCount = 3 && stringBuffer.[0] = 114uy &&
       stringBuffer.[1] = 103uy && stringBuffer.[2] = 98uy then
       stringBufferCount <- 0
-      match (trim parseValue) with
+      match (advance parseValue) with
       | ParaValue.Array [| r; g; b |] -> ParaValue.Rgb(r |> asByte, g |> asByte, b |> asByte)
       | _ -> failwith "Expected an array with three elements for hsv"
     else
@@ -215,7 +227,7 @@ type private ParaParser (stream:PeekingStream) =
 
   and parseArray (vals:ResizeArray<_>) =
     while (stream.Peek() <> 125) do
-      vals.Add(trim parseValue)
+      vals.Add(advance parseValue)
     vals.ToArray()
 
   and parseArrayElem firstElem =
@@ -253,7 +265,7 @@ type private ParaParser (stream:PeekingStream) =
         stream.Read() |> ignore
         parseContainer()
       else
-        trim fillBuffer
+        advance fillBuffer
         match (stream.Peek()) with
         | 125 -> parseArrayElem (ParaValue.Array ([| narrowBuffer() |]))
 
@@ -275,7 +287,7 @@ type private ParaParser (stream:PeekingStream) =
     // Read through the '='
     stream.Read() |> ignore
     let pairs = ResizeArray<_>()
-    pairs.Add(key, trim parseValue)
+    pairs.Add(key, advance parseValue)
     while not(stopFn stream) do
       // Beware of empty objects "{}" that don't have a key. If we encounter
       // them, just blow right by them.
@@ -303,16 +315,21 @@ type private ParaParser (stream:PeekingStream) =
     result
 
   and parsePair () =
-    let key = trim readString
+    let key = advance readString
     assert (stream.Peek() = 61)
     stream.Read() |> ignore
-    key, trim parseValue
+    key, advance parseValue
 
   member x.Parse () =
     // Before we too far into parsing the stream we need to check if we have a
     // header. If we do see a header, ignore it.
     let pairs = ResizeArray<_>()
+
     skipWhitespace stream
+    while (stream.Peek() = 35) do
+      skipComments stream
+      skipWhitespace stream
+
     let first = readString()
     let result =
       match (stream.Peek()) with
