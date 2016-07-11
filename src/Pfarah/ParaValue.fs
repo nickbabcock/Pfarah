@@ -705,6 +705,15 @@ module ParaValue =
         | [| |] -> Ok None
         | x -> Error(sprintf "Found not 1 but %d of %s" (Array.length x) key))
 
+  /// Return a new ParaValue resulting from applying the given function
+  /// to each value in the data. Adapted from json4s.
+  let map (fn:ParaValue -> ParaValue) (obj:ParaValue) : ParaValue =
+    match obj with
+    | ParaValue.Record props ->
+      props |> Array.map (fun (k, v) -> (k, fn v)) |> ParaValue.Record
+    | ParaValue.Array arr -> arr |> Array.map fn |> ParaValue.Array
+    | x -> fn x
+
 module ApplicativeParaValue =
 
   /// Wraps a result into a ParaValue<'a>
