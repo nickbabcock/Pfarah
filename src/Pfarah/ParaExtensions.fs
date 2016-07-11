@@ -81,6 +81,15 @@ module ParaExtensions =
 
     ParaValue.Array (findAllByName prop obj |> Seq.toArray)
 
+  /// Return a new ParaValue resulting from applying the given function
+  /// to each value in the data. Adapted from json4s.
+  let fmap (fn:ParaValue -> ParaValue) (obj:ParaValue) : ParaValue =
+    match obj with
+    | ParaValue.Record props ->
+      props |> Array.map (fun (k, v) -> (k, fn v)) |> ParaValue.Record
+    | ParaValue.Array arr -> arr |> Array.map fn |> ParaValue.Array
+    | x -> fn x
+
   /// Tries to find the first property of the object that has the given key.
   /// If a property is found then `Some ParaValue` will be returned else
   /// `None`

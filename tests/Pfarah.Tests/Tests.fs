@@ -394,6 +394,27 @@ let ``nested collectAll operator`` () =
   data /./ "name" |> shouldEqual (ParaValue.Array [| (ParaValue.String "steve") |])
 
 [<Test>]
+let ``mapping an objects results in mapping the values`` () =
+  let data = ParaValue.Record [| "people", ParaValue.Number 2.0 |]
+  let fn = function | ParaValue.Number x -> ParaValue.Number (x + 1.)
+                    | x -> x
+  fmap fn data |> shouldEqual (ParaValue.Record [| "people", ParaValue.Number 3.0 |])
+
+[<Test>]
+let ``mapping an array results in mapping the values`` () =
+  let data = ParaValue.Array [| (ParaValue.Number 1.0); (ParaValue.Number 2.0) |]
+  let fn = function | ParaValue.Number x -> ParaValue.Number (x + 1.)
+                    | x -> x
+  fmap fn data |> shouldEqual (ParaValue.Array [| (ParaValue.Number 2.0); (ParaValue.Number 3.0) |])
+
+[<Test>]
+let ``mapping a non-iterable results in mapping itself`` () =
+  let data = ParaValue.String "bob"
+  let fn = function | ParaValue.String x -> ParaValue.String (x + "by")
+                    | x -> x
+  fmap fn data |> shouldEqual (ParaValue.String "bobby")
+
+[<Test>]
 let ``parse obj be used in a seq`` () =
   let obj = ParaValue.Parse "ids = {1 2 3 4 5}"
   let nums = obj?ids |> asArray |> Array.map asInteger
