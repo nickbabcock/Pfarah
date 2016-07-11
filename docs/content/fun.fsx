@@ -12,11 +12,12 @@ Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 
 let data = ParaValue.LoadText("../../src/Pfarah.Benchmarks/achievements.txt")
 let trans obj = obj / "possible" / "ironman"
-let ironmen = fmap trans data
+let ironmen = fmap trans data |> ParaValue.asRecord
+let req = map' (Array.map (fun (k, v) ->  (k, deserialize v))) ironmen 
+
 let requireIroman : (string * bool)[] =
-  match ironmen with
-  | ParaValue.Record props ->
-    props |> Array.map (fun (k, v) -> (k, deserialize v))
+  match req with
+  | Ok d -> d
   | x -> failwith "Unexpected"
 
 let tags : string[] = deserialize (data /./ "possible" / "tag")

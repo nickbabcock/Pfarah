@@ -740,6 +740,16 @@ module Functional =
     member __.Zero () : ParaResult<_> = Ok ()
   let para = ParaBuilder ()
 
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module ParaValue =
+  let asArray = function
+    | ParaValue.Array arr -> Ok arr
+    | x -> Error "Not an array"
+
+  let asRecord = function
+    | ParaValue.Record props -> Ok props
+    | x -> Error "Not an object"
+
 type ParaValue with
   /// Parses the given stream assuming that it contains strictly plain text.
   static member LoadText (stream:Stream) =
