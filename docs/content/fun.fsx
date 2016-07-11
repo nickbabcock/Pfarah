@@ -18,3 +18,10 @@ let requireIroman : (string * bool)[] =
   | ParaValue.Record props ->
     props |> Array.map (fun (k, v) -> (k, deserialize v))
   | x -> failwith "Unexpected"
+
+let tags : string[] = deserialize (data /./ "possible" / "tag")
+tags
+|> Seq.groupBy id
+|> Seq.map (fun (k, grp) -> (k, Seq.length grp))
+|> Seq.sortByDescending snd
+|> Seq.iter (fun (tag, length) -> printfn "%s: %d" tag length)
