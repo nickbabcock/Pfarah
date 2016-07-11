@@ -607,27 +607,26 @@ module ParaResult =
   let map (f: 'a -> 'b) (m: ParaResult<'a>) : ParaResult<'b> =
     bind (f >> Ok) m 
 
-  let inline paraFold fn arr =
-    let ls = ResizeArray<'a>()
-    let mutable err = None
-    for i in arr do
-      match fn i with
-      | Ok(x) -> ls.Add(x)
-      | Error(y) as z -> err <- Some(y)
+  /// Apply a function that returns a result to each element of an array.
+  /// Aggregate the results into a vector and return the resulting vector
+  /// or the error that occurred on one of the elements in the array
+  let inline paraFold fn arr : ParaResult<ResizeArray<'a>> =
+    let addElem (vec:List<'a>) elem = vec.Add(elem); Ok(vec)
 
-    match err with
-    | Some(x) -> Error(x)
-    | None -> Ok(ls)
+    Array.map fn arr
+    |> Array.fold(fun state x ->
+      state |> bind (fun vec -> bind (addElem vec) x))
+      (Ok (ResizeArray<'a>()))
 
+  /// Given a function to map a value to a result, apply this function on every
+  /// value of a record, or array, or any other element (and the result would be
+  /// an a single element array)
   let inline flatMap (fn:ParaValue -> ParaResult<'a>) (o:ParaValue) : ParaResult<'a[]> =
     let lst =
       match o with
       | ParaValue.Array arr -> paraFold fn arr
       | ParaValue.Record props -> paraFold fn (props |> Array.map snd)
-      | x ->
-        match fn x with
-        | Ok(y) -> Ok(ResizeArray([| y |]))
-        | Error(y) -> Error(y)
+      | x -> fn x |> map (fun y -> ResizeArray([| y |]))
     map (fun (x: List<'a>) -> x.ToArray()) lst
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
