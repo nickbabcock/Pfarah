@@ -582,14 +582,14 @@ type private BinaryParaParser (stream:BinaryReader, lookup:IDictionary<int16, st
       ParaValue.Record(parseTopObject())
     | None -> ParaValue.Record(parseTopObject())
 
-[<AutoOpen>]
-module Functional =
-  type ParaValue<'a> = ParaValue -> ParaResult<'a> * ParaValue
+type ParaResult<'a> = Choice<'a,string>
+type ParaValue<'a> = ParaValue -> ParaResult<'a> * ParaValue
 
+[<AutoOpen>]
+module ParaResultImpl =
   /// Represents the deserialized value or an error. Adapted from Don Syme's
   /// Github comment on a result type in F#:
   /// https://github.com/fsharp/FSharpLangDesign/issues/49#issuecomment-193795013
-  and ParaResult<'a> = Choice<'a,string>
   let inline Ok x : ParaResult<'a> = Choice1Of2 x
   let inline Error<'a> x : ParaResult<'a> = Choice2Of2 x
   type Choice<'a, 'b> with
@@ -597,18 +597,115 @@ module Functional =
     static member Ok<'a> (x:'a) : ParaResult<'a> = Ok x
   let  (|Ok|Error|) (result: ParaResult<'Ok>) = result
 
-  let bool = function
-  | ParaValue.Bool b -> Ok(b)
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module ParaResult =
+  let bind (fn: 'a -> ParaResult<'b>) (m: ParaResult<'a>) : ParaResult<'b> =
+    match m with
+    | Ok(x) -> fn x
+    | Error(x) -> Error(x)
+
+  let map (f: 'a -> 'b) (m: ParaResult<'a>) : ParaResult<'b> =
+    bind (f >> Ok) m 
+
+  let inline paraFold fn arr =
+    let ls = ResizeArray<'a>()
+    let mutable err = None
+    for i in arr do
+      match fn i with
+      | Ok(x) -> ls.Add(x)
+      | Error(y) as z -> err <- Some(y)
+
+    match err with
+    | Some(x) -> Error(x)
+    | None -> Ok(ls)
+
+  let inline flatMap (fn:ParaValue -> ParaResult<'a>) (o:ParaValue) : ParaResult<'a[]> =
+    let lst =
+      match o with
+      | ParaValue.Array arr -> paraFold fn arr
+      | ParaValue.Record props -> paraFold fn (props |> Array.map snd)
+      | x ->
+        match fn x with
+        | Ok(y) -> Ok(ResizeArray([| y |]))
+        | Error(y) -> Error(y)
+    map (fun (x: List<'a>) -> x.ToArray()) lst
+
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module ParaValue =
+  /// Extracts inner array or reports an error
+  let asArray = function
+  | ParaValue.Array arr -> Ok arr
+  | x -> Error(sprintf "Expected array but received %O" x)
+
+  /// Extracts inner key value array or reports an error
+  let asRecord = function
+  | ParaValue.Record props -> Ok props
+  | x -> Error(sprintf "Expected record but received %O" x)
+
+  /// Extracts inner boolean or reports an error. A boolean value is sometimes
+  /// written as a number, so if a number is non-zero, it is considered true
+  /// (think C)
+  let asBool = function
+  | ParaValue.Bool b -> Ok b
   | ParaValue.Number n -> Ok((int n) <> 0)
-  | y -> Error(sprintf "Expected number but received %O" y)
+  | x -> Error(sprintf "Expected number but received %O" x)
 
-  let number = function
-  | ParaValue.Number x -> Ok(x)
-  | y -> Error(sprintf "Expected number but received %O" y)
+  /// Extracts inner number or reports an error
+  let asNumber = function
+  | ParaValue.Number x -> Ok x 
+  | x -> Error(sprintf "Expected number but received %O" x)
 
-  let stringify = function
-  | ParaValue.String s -> Ok(s)
-  | y -> Error(sprintf "Expected string but received %O" y)
+  /// Extracts inner string or reports an error
+  let asString = function
+  | ParaValue.String s -> Ok s
+  | x -> Error(sprintf "Expected string but received %O" x)
+
+  /// Extracts inner date or reports an error
+  let asDate = function
+  | ParaValue.Date s -> Ok s
+  | x -> Error(sprintf "Expected date but received %O" x)
+
+  /// Extracts inner hsv or reports an error
+  let asHsv = function
+  | ParaValue.Hsv (h, s, v) -> Ok (h, s, v)
+  | x -> Error(sprintf "Expected hsv but received %O" x)
+
+  /// Extracts inner rgb or reports an error
+  let asRgb = function
+  | ParaValue.Rgb (r, g, b) -> Ok (r, g, b)
+  | x -> Error(sprintf "Expected rgb but received %O" x)
+
+  /// When given an array/record that contains only a single instance. Run the
+  /// deserialization function against that single element.
+  let unfold fn = function
+  | ParaValue.Array [| x |] -> fn x
+  | ParaValue.Record [| key, value |] -> fn value
+  | x -> fn x
+  
+  /// Assumes the passed in value is a record and attempts to search
+  /// the record's properties for the given key. If a single value exists
+  /// return the value else there is an error
+  let get (key:string) (o:ParaValue) : ParaResult<ParaValue> =
+    asRecord o
+    |> ParaResult.bind (
+      fun props ->
+        match Array.filter (fst >> (=) key) props with
+        | [| key, value |] -> Ok value
+        | x -> Error(sprintf "Found not 1 but %d of %s" (Array.length x) key))
+
+  /// Assumes the passed in value is a record and attempts to search
+  /// the record's properties for the given key. If a single value exists
+  /// return some value, if no properties were found, return None
+  let tryGet (key:string) (o:ParaValue) : ParaResult<ParaValue option> =
+    asRecord o
+    |> ParaResult.bind (
+      fun props ->
+        match Array.filter (fst >> (=) key) props with
+        | [| key, value |] -> Ok (Some value)
+        | [| |] -> Ok None
+        | x -> Error(sprintf "Found not 1 but %d of %s" (Array.length x) key))
+
+module ApplicativeParaValue =
 
   /// Wraps a result into a ParaValue<'a>
   let inline ofResult (result: ParaResult<'a>) : ParaValue<'a> =
@@ -644,26 +741,24 @@ module Functional =
   let wrap (fn:ParaValue -> ParaResult<'a>) =
     fun paravalue -> fn paravalue, paravalue
 
-  /// When given an array/record that contains only a single instance. Run the
-  /// deserialization function against that single element.
-  let unfold fn = function
-    | ParaValue.Array [| x |] -> fn x
-    | ParaValue.Record [| key, value |] -> fn value
-    | x -> fn x
+[<AutoOpen>]
+module Functional =
+  open ParaValue
+  open ApplicativeParaValue
 
   type FromParaDefaults = FromParaDefaults with
-    static member inline FromPara (_: bool)  = wrap (unfold bool)
-    static member inline FromPara (_: int) = map int (wrap (unfold number))
-    static member inline FromPara (_: uint32) = map uint32 (wrap (unfold number))
-    static member inline FromPara (_: sbyte) = map sbyte (wrap (unfold number))
-    static member inline FromPara (_: byte) = map byte (wrap (unfold number))
-    static member inline FromPara (_: int16) = map int16 (wrap (unfold number))
-    static member inline FromPara (_: uint16) = map uint16 (wrap (unfold number))
-    static member inline FromPara (_: int64) = map int64 (wrap (unfold number))
-    static member inline FromPara (_: uint64) = map uint64 (wrap (unfold number))
-    static member inline FromPara (_: single) = map single (wrap (unfold number))
-    static member inline FromPara (_: float) = map float (wrap (unfold number))
-    static member inline FromPara (_: string) = wrap (unfold stringify)
+    static member inline FromPara (_: bool)  = wrap (unfold asBool)
+    static member inline FromPara (_: int) = map int (wrap (unfold asNumber))
+    static member inline FromPara (_: uint32) = map uint32 (wrap (unfold asNumber))
+    static member inline FromPara (_: sbyte) = map sbyte (wrap (unfold asNumber))
+    static member inline FromPara (_: byte) = map byte (wrap (unfold asNumber))
+    static member inline FromPara (_: int16) = map int16 (wrap (unfold asNumber))
+    static member inline FromPara (_: uint16) = map uint16 (wrap (unfold asNumber))
+    static member inline FromPara (_: int64) = map int64 (wrap (unfold asNumber))
+    static member inline FromPara (_: uint64) = map uint64 (wrap (unfold asNumber))
+    static member inline FromPara (_: single) = map single (wrap (unfold asNumber))
+    static member inline FromPara (_: float) = map float (wrap (unfold asNumber))
+    static member inline FromPara (_: string) = wrap (unfold asString)
 
   let inline internal fromParaDefaults (a: ^a, _: ^b) =
     ((^a or ^b) : (static member FromPara: ^a -> ^a ParaValue) a)
@@ -671,23 +766,8 @@ module Functional =
   let inline fromPara x =
     fst (fromParaDefaults (Unchecked.defaultof<'a>, FromParaDefaults) x)
 
-  let inline paraFold fn arr =
-    let ls = ResizeArray<'a>()
-    let mutable err = None
-    for i in arr do
-      match fn i with
-      | Ok(x) -> ls.Add(x)
-      | Error(y) as z -> err <- Some(y)
-
-    match err with
-    | Some(x) -> Error(x)
-    | None -> Ok(ls)
-
   let inline lister fn =
-    map fn (fun x ->
-        (match x with
-        | ParaValue.Array arr -> paraFold fromPara arr
-        | y -> Error(sprintf "Expected list of values but received %O" y)), x)
+    map fn (wrap (ParaValue.asArray >> ParaResult.bind (ParaResult.paraFold fromPara)))
 
   type FromParaDefaults with
     static member inline FromPara (_: 'a option) = map Some (fun b -> fromPara b, b)
@@ -704,51 +784,20 @@ module Functional =
   /// Given an object and a property name, find the value with the
   /// given property name and deserialize it. If not given an object,
   /// and error will be returned.
-  let inline pget (o:ParaValue) (key:string) : ParaResult<'a> =
-    match o with
-    | ParaValue.Record(props) ->
-      match Array.filter (fst >> (=) key) props with
-      | [| x |] -> fromPara (snd x)
-      | x -> Error(sprintf "Found not 1 but %d of %s" (Array.length x) key)
-    | typ -> Error(sprintf "Unable to extract properties from a %O" typ)
+  let inline pget (key:string) (o:ParaValue) : ParaResult<'a> =
+    ParaValue.get key o |> ParaResult.bind fromPara
 
-  let bind' (m: ParaResult<'a>) (fn: 'a -> ParaResult<'b>) : ParaResult<'b> =
-    match m with
-    | Ok(x) -> fn x
-    | Error(x) -> Error(x)
-
-  let inline map' (f: 'a -> 'b) (m: ParaResult<'a>) : ParaResult<'b> =
-    bind' m (f >> Ok)
-
-  let inline flatMap (fn:ParaValue -> ParaResult<'a>) (o:ParaValue) : ParaResult<'a[]> =
-    let lst =
-      match o with
-      | ParaValue.Array arr -> paraFold fn arr
-      | ParaValue.Record props -> paraFold fn (props |> Array.map snd)
-      | x ->
-        match fn x with
-        | Ok(y) -> Ok(ResizeArray([| y |]))
-        | Error(y) -> Error(y)
-    map' (fun (x: List<'a>) -> x.ToArray()) lst
-
+[<AutoOpen>]
+module ParaBuilder =
+  open ParaResult
   type ParaBuilder () =
-    member __.Bind (m1, m2) : ParaResult<_> = bind' m1 m2
-    member __.Combine (m1, m2) : ParaResult<_> = bind' m1 (fun () -> m2)
-    member __.Delay (f) : ParaResult<_> = bind' (Ok ()) f
+    member __.Bind (m1, m2) : ParaResult<_> = bind m2 m1
+    member __.Combine (m1, m2) : ParaResult<_> = bind (fun () -> m2) m1
+    member __.Delay (f) : ParaResult<_> = bind f (Ok ())
     member __.Return (x) : ParaResult<_> = Ok x
     member __.ReturnFrom (f) : ParaResult<_> = f
     member __.Zero () : ParaResult<_> = Ok ()
   let para = ParaBuilder ()
-
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-module ParaValue =
-  let asArray = function
-    | ParaValue.Array arr -> Ok arr
-    | x -> Error "Not an array"
-
-  let asRecord = function
-    | ParaValue.Record props -> Ok props
-    | x -> Error "Not an object"
 
 type ParaValue with
   /// Parses the given stream assuming that it contains strictly plain text.

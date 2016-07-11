@@ -141,13 +141,13 @@ module Operators =
   let (/./) (obj:ParaValue) propertyName = collectAll propertyName obj
 
   /// Apply operator adopted from the chiron project
-  let inline (<*>) f m : ParaValue<'a> = apply f m
+  let inline (<*>) f m : ParaValue<'a> = ApplicativeParaValue.apply f m
 
   /// Lift operator adopted from the chiron project
-  let inline (<!>) f m : ParaValue<'a> = map f m
+  let inline (<!>) f m : ParaValue<'a> = ApplicativeParaValue.map f m
 
   /// Prefix operator that delegates pget and sweetens the deal
-  let inline (!.) key : ParaValue<'a> = fun o -> pget o key, o
+  let inline (!.) key : ParaValue<'a> = ApplicativeParaValue.wrap (pget key)
 
   /// Operator inspired from the fleece project -- delegates to pget
-  let inline (.@) obj key = pget obj key
+  let inline (.@) obj key = pget key obj

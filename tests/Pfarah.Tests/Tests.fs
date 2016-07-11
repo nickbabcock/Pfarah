@@ -2,6 +2,7 @@ module Pfarah.Tests
 
 open Pfarah
 open Pfarah.Operators
+open Pfarah.ParaResult
 open Utils
 open NUnit.Framework
 open System
@@ -785,7 +786,7 @@ let ``deserialize an array into an array`` () =
 [<Test>]
 let ``fail deserialize an string into an array`` () =
   let data = ParaValue.String "hello"
-  let expected = ParaResult<int[]>.Error<int[]> "Expected list of values but received hello"
+  let expected = ParaResult<int[]>.Error<int[]> "Expected array but received hello"
   fromPara data |> shouldEqual expected
 
 [<Test>]
@@ -824,7 +825,7 @@ let ``fail deserialization without property`` () =
 [<Test>]
 let ``fail deserialization because not a record`` () =
   let data = ParaValue.String "hello"
-  let expected : ParaResult<Cheese> = Error "Unable to extract properties from a hello"
+  let expected : ParaResult<Cheese> = Error "Expected record but received hello"
   fromPara data |> shouldEqual expected
 
 [<Test>]
@@ -839,7 +840,7 @@ let ``fail deserialization because mismatching types`` () =
 let ``simple para builder`` () =
   let value = ParaValue.String "bob"
   let b = para {
-    return! stringify value
+    return! ParaValue.asString value
   }
 
   b |> shouldEqual (ParaResult<String>.Ok "bob")
@@ -848,7 +849,7 @@ let ``simple para builder`` () =
 let ``pget should work with the para builder`` () =
   let value = ParaValue.Record [| "name", ParaValue.String "bob" |]
   let b = para {
-    return! pget value "name"
+    return! pget "name" value
   }
   
   b |> shouldEqual (ParaResult<String>.Ok "bob")
