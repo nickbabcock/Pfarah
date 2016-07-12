@@ -599,11 +599,15 @@ module ParaResultImpl =
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module ParaResult =
+  /// If the result is ok, extract the value and return the given function
+  /// applied with the value, else continue propogating error 
   let bind (fn: 'a -> ParaResult<'b>) (m: ParaResult<'a>) : ParaResult<'b> =
     match m with
     | Ok(x) -> fn x
     | Error(x) -> Error(x)
 
+  /// If the result is ok, extract the value and apply the given function
+  /// on the value and wrap it in an result, else continue propogating error
   let map (f: 'a -> 'b) (m: ParaResult<'a>) : ParaResult<'b> =
     bind (f >> Ok) m 
 
