@@ -607,6 +607,11 @@ module ParaResult =
   let map (f: 'a -> 'b) (m: ParaResult<'a>) : ParaResult<'b> =
     bind (f >> Ok) m 
 
+  /// Get the underlying value or throw an exception
+  let get = function
+  | Ok(x) -> x
+  | Error(x) -> failwith x
+
   /// Apply a function that returns a result to each element of an array.
   /// Aggregate the results into a vector and return the resulting vector
   /// or the error that occurred on one of the elements in the array

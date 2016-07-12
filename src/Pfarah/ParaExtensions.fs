@@ -3,30 +3,19 @@
 [<AutoOpen>]
 module ParaExtensions =
   /// Get the integer value of an object
-  let asInteger = function
-    | ParaValue.Number n -> int n
-    | x -> failwithf "Not an integer: %s" (x.ToString())
+  let asInteger = ParaValue.asNumber >> ParaResult.map int >> ParaResult.get
 
   /// Get the string value of an object
-  let asString = function
-    | ParaValue.String s -> s
-    | x -> x.ToString()
+  let asString = ParaValue.asString >> ParaResult.get
 
   /// Get the floating point precision value of an object
-  let asFloat = function
-    | ParaValue.Number n -> n
-    | x -> failwithf "Not a float: %s" (x.ToString())
+  let asFloat = ParaValue.asNumber >> ParaResult.get
 
   /// Get the boolean value of an object
-  let asBool = function
-    | ParaValue.Bool b -> b
-    | ParaValue.Number n -> (int n) <> 0
-    | x -> failwithf "Not a bool: %s" (x.ToString())
+  let asBool = ParaValue.asBool >> ParaResult.get
 
   /// Get the date value of an object
-  let asDate = function
-    | ParaValue.Date d -> d
-    | x -> failwithf "Not a date: %s" (x.ToString())
+  let asDate = ParaValue.asDate >> ParaResult.get
 
   /// Returns the integer value if it exists else 0
   let integerDefault = function Some(x) -> x |> asInteger | None -> 0
@@ -41,14 +30,10 @@ module ParaExtensions =
   let boolDefault = function Some(x) -> x |> asBool | None -> false
 
   /// Get the array value of an object
-  let asArray = function
-    | ParaValue.Array elements -> elements
-    | x -> failwithf "Not an array: %s" (x.ToString())
+  let asArray = ParaValue.asArray >> ParaResult.get
 
   /// Get the record value of the object
-  let asRecord = function
-    | ParaValue.Record properties -> properties
-    | x -> failwithf "Not a record: %s" (x.ToString())
+  let asRecord = ParaValue.asRecord >> ParaResult.get
 
   /// Finds all the properties of the object with a given key and aggregates
   /// all the values under a single array. If a given object is an array
