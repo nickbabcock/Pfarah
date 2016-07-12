@@ -395,6 +395,96 @@ let ``nested collectAll operator`` () =
   data /./ "name" |> shouldEqual (ParaValue.Array [| (ParaValue.String "steve") |])
 
 [<Test>]
+let ``ParaValue asArray happy path`` () =
+  let data = ParaValue.Array [| ParaValue.Bool true |]
+  ParaValue.asArray data |> shouldEqual (Ok [| ParaValue.Bool true |])
+
+[<Test>]
+let ``ParaValue asArray sad path`` () =
+  let data = ParaValue.Bool true
+  ParaValue.asArray data |> shouldEqual (Error "Expected array but received true")
+
+[<Test>]
+let ``ParaValue asRecord happy path`` () =
+  let data = ParaValue.Record [| "young", ParaValue.Bool true |]
+  ParaValue.asRecord data |> shouldEqual (Ok [| "young", ParaValue.Bool true |])
+
+[<Test>]
+let ``ParaValue asRecord sad path`` () =
+  let data = ParaValue.Bool true
+  ParaValue.asRecord data |> shouldEqual (Error "Expected record but received true")
+
+[<Test>]
+let ``ParaValue asBool happy path`` () =
+  let data = ParaValue.Bool true
+  ParaValue.asBool data |> shouldEqual (Ok true)
+
+[<Test>]
+let ``ParaValue asBool is true for non-zero numbers`` () =
+  let data = ParaValue.Number 1.0
+  ParaValue.asBool data |> shouldEqual (Ok true)
+
+[<Test>]
+let ``ParaValue asBool is false for zero`` () =
+  let data = ParaValue.Number 0.0
+  ParaValue.asBool data |> shouldEqual (Ok false)
+
+[<Test>]
+let ``ParaValue asBool sad path`` () =
+  let data = ParaValue.String "Ha"
+  ParaValue.asBool data |> shouldEqual (Error "Expected boolean but received Ha")
+
+[<Test>]
+let ``ParaValue asNumber happy path`` () =
+  let data = ParaValue.Number 1.0
+  ParaValue.asNumber data |> shouldEqual (Ok 1.0)
+
+[<Test>]
+let ``ParaValue asNumber sad path`` () =
+  let data = ParaValue.String "NaN"
+  ParaValue.asNumber data |> shouldEqual (Error "Expected number but received NaN")
+
+[<Test>]
+let ``ParaValue asString happy path`` () =
+  let data = ParaValue.String "NaN"
+  ParaValue.asString data |> shouldEqual (Ok "NaN")
+
+[<Test>]
+let ``ParaValue asString sad path`` () =
+  let data = ParaValue.Array [| ParaValue.String "NaN" |]
+  ParaValue.asString data |> shouldEqual (Error "Expected string but received [\n  NaN\n]")
+
+[<Test>]
+let ``ParaValue asDate happy path`` () =
+  let data = ParaValue.Date (DateTime(1, 1, 1))
+  ParaValue.asDate data |> shouldEqual (Ok (DateTime(1, 1, 1)))
+
+[<Test>]
+let ``ParaValue asDate sad path`` () =
+  let data = ParaValue.Bool true
+  ParaValue.asDate data |> shouldEqual (Error "Expected date but received true")
+
+[<Test>]
+let ``ParaValue asHsv happy path`` () =
+  let data = ParaValue.Hsv (1.0, 0.5, 0.1)
+  ParaValue.asHsv data |> shouldEqual (Ok (1.0, 0.5, 0.1))
+
+[<Test>]
+let ``ParaValue asHsv sad path`` () =
+  let data = ParaValue.Bool true
+  ParaValue.asHsv data |> shouldEqual (Error "Expected hsv but received true")
+
+[<Test>]
+let ``ParaValue asRgb happy path`` () =
+  let data = ParaValue.Rgb (100uy, 50uy, 20uy)
+  ParaValue.asRgb data |> shouldEqual (Ok (100uy, 50uy, 20uy))
+
+[<Test>]
+let ``ParaValue asRgb sad path`` () =
+  let data = ParaValue.Bool true
+  ParaValue.asRgb data |> shouldEqual (Error "Expected rgb but received true")
+
+[<Test>]
 let ``mapping an objects results in mapping the values`` () =
   let data = ParaValue.Record [| "people", ParaValue.Number 2.0 |]
   let fn = function | ParaValue.Number x -> ParaValue.Number (x + 1.)

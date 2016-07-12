@@ -647,7 +647,7 @@ module ParaValue =
   let asBool = function
   | ParaValue.Bool b -> Ok b
   | ParaValue.Number n -> Ok((int n) <> 0)
-  | x -> Error(sprintf "Expected number but received %O" x)
+  | x -> Error(sprintf "Expected boolean but received %O" x)
 
   /// Extracts inner number or reports an error
   let asNumber = function
