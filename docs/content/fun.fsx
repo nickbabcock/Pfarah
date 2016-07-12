@@ -14,11 +14,7 @@ let data = ParaValue.LoadText("../../src/Pfarah.Benchmarks/achievements.txt")
 let trans obj = obj / "possible" / "ironman"
 let ironmen = ParaValue.map trans data |> ParaValue.asRecord
 let req = ParaResult.map (Array.map (fun (k, v) ->  (k, deserialize v))) ironmen
-
-let requireIroman : (string * bool)[] =
-  match req with
-  | Ok d -> d
-  | x -> failwith "Unexpected"
+let requireIroman : (string * bool)[] = ParaResult.get req
 
 let tags : string[] = deserialize (data /./ "possible" / "tag")
 tags
