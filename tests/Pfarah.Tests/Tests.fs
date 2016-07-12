@@ -963,12 +963,12 @@ let ``para builder should work with army data`` () =
 
   let armyDes o : ParaResult<string * string list> = para {
     let! armyName = o .@ "name"
-    let! units = flatMap unitDes (o / "unit")
+    let! units = ParaValue.flatMap unitDes (o / "unit")
     return armyName, List.ofArray units
   }
 
   let actual = para {
-    let! armies = flatMap armyDes (obj / "army")
+    let! armies = ParaValue.flatMap armyDes (obj / "army")
     return List.ofArray armies
   }
 
@@ -980,8 +980,8 @@ let ``para builder should work with army data`` () =
 [<Test>]
 let ``flatMap works with objects`` () =
   let data = ParaValue.Parse "a=1 b=2 c=3 d=4"
-  let actual = flatMap (function | ParaValue.Number x -> Ok(x + 1.) 
-                                 | _ -> Error "Unexpected") data
+  let actual = ParaValue.flatMap (function | ParaValue.Number x -> Ok(x + 1.) 
+                                           | _ -> Error "Unexpected") data
 
   actual |> shouldEqual (ParaResult.Ok([| 2.0; 3.0; 4.0; 5.0; |]))
 

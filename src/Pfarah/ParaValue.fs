@@ -623,17 +623,6 @@ module ParaResult =
       state |> bind (fun vec -> bind (addElem vec) x))
       (Ok (ResizeArray<'a>()))
 
-  /// Given a function to map a value to a result, apply this function on every
-  /// value of a record, or array, or any other element (and the result would be
-  /// an a single element array)
-  let inline flatMap (fn:ParaValue -> ParaResult<'a>) (o:ParaValue) : ParaResult<'a[]> =
-    let lst =
-      match o with
-      | ParaValue.Array arr -> paraFold fn arr
-      | ParaValue.Record props -> paraFold fn (props |> Array.map snd)
-      | x -> fn x |> map (fun y -> ResizeArray([| y |]))
-    map (fun (x: List<'a>) -> x.ToArray()) lst
-
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module ParaValue =
   /// Extracts inner array or reports an error
@@ -717,6 +706,17 @@ module ParaValue =
       props |> Array.map (fun (k, v) -> (k, fn v)) |> ParaValue.Record
     | ParaValue.Array arr -> arr |> Array.map fn |> ParaValue.Array
     | x -> fn x
+
+  /// Given a function to map a value to a result, apply this function on every
+  /// value of a record, or array, or any other element (and the result would be
+  /// an a single element array)
+  let inline flatMap (fn:ParaValue -> ParaResult<'a>) (o:ParaValue) : ParaResult<'a[]> =
+    let lst =
+      match o with
+      | ParaValue.Array arr -> ParaResult.paraFold fn arr
+      | ParaValue.Record props -> ParaResult.paraFold fn (props |> Array.map snd)
+      | x -> fn x |> ParaResult.map (fun y -> ResizeArray([| y |]))
+    ParaResult.map (fun (x: List<'a>) -> x.ToArray()) lst
 
 module ApplicativeParaValue =
 
