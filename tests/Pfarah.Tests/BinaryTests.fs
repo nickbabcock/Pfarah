@@ -431,19 +431,19 @@ let ``binary parse double`` () =
 
 [<Test>]
 let ``load plain binary file`` () =
-  let path = Path.Combine("data", "eu4bin.eu4")
+  let path = Path.Combine(TestContext.CurrentContext.TestDirectory, "data", "eu4bin.eu4")
   ParaValue.Load(path, "EU4bin", "EU4txt", lazy(dict([(0x284ds, "date")])))
   |> shouldEqual (ParaValue.Record([| ("date", ParaValue.Date (DateTime(1757, 8, 12)))|]))
 
 [<Test>]
 let ``load zip binary file`` () =
-  let path = Path.Combine("data", "eu4bin-zip.eu4")
+  let path = Path.Combine(TestContext.CurrentContext.TestDirectory, "data", "eu4bin-zip.eu4")
   ParaValue.Load(path, "EU4bin", "EU4txt", lazy(dict([(0x284ds, "date")])))
   |> shouldEqual (ParaValue.Record([| ("date", ParaValue.Date (DateTime(1757, 8, 12)))|]))
 
 [<Test>]
 let ``load zip binary file big`` () =
-  let path = Path.Combine("data", "eu4bin-zip-big.eu4")
+  let path = Path.Combine(TestContext.CurrentContext.TestDirectory, "data", "eu4bin-zip-big.eu4")
   ParaValue.Load(path, "EU4bin", "EU4txt", lazy(dict([(0x284ds, "date")])))
   |> tryFind "date"
   |> Option.map ParaValue.asDate

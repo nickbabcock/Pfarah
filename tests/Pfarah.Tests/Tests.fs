@@ -794,13 +794,13 @@ let ``load with unknown header`` () =
 
 [<Test>]
 let ``load plain text file`` () =
-  let path = Path.Combine("data", "eu4txt.eu4")
+  let path = Path.Combine(TestContext.CurrentContext.TestDirectory, "data", "eu4txt.eu4")
   ParaValue.Load(path, "EU4bin", "EU4txt", lazy(dict([])))
   |> shouldEqual (ParaValue.Record([| ("date", ParaValue.Date (DateTime(1821, 1, 1)))|]))
 
 [<Test>]
 let ``load zip text file`` () =
-  let path = Path.Combine("data", "eu4txt-zip.eu4")
+  let path = Path.Combine(TestContext.CurrentContext.TestDirectory, "data", "eu4txt-zip.eu4")
   ParaValue.Load(path, "EU4bin", "EU4txt", lazy(dict([])))
   |> shouldEqual (ParaValue.Record([| ("date", ParaValue.Date (DateTime(1821, 1, 1)))|]))
 
