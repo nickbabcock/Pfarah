@@ -79,6 +79,9 @@ module Operators =
   /// is interpreted as a comment
   let (/./) (obj:ParaValue) propertyName = collectAll propertyName obj
 
+  /// Delegates to ParaResult.bind. Adopted from Chessie and Haskell
+  let inline (>>=) result f = ParaResult.bind f result
+
   /// Apply operator adopted from the chiron project
   let inline (<*>) f m : ParaValue<'a> = ApplicativeParaValue.apply f m
 

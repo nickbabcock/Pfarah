@@ -264,36 +264,36 @@ let ``parse object with dynamic`` () =
 [<Test>]
 let ``parse number as int`` () =
   let obj = ParaValue.Parse "foo=-2"
-  obj?foo |> ParaResult.bind ParaValue.asInteger |> shouldEqual (Ok -2)
+  obj?foo >>= ParaValue.asInteger |> shouldEqual (Ok -2)
 
 [<Test>]
 let ``parse obj as string`` () =
   let obj = ParaValue.Parse "foo=\"bar baz\" qux=dis"
-  obj?foo|> ParaResult.bind ParaValue.asString |> shouldEqual (Ok "bar baz")
-  obj?qux|> ParaResult.bind ParaValue.asString |> shouldEqual (Ok "dis")
+  obj?foo>>= ParaValue.asString |> shouldEqual (Ok "bar baz")
+  obj?qux>>= ParaValue.asString |> shouldEqual (Ok "dis")
 
 [<Test>]
 let ``parse obj as bool`` () =
   let obj = ParaValue.Parse "foo=yes qux=no baz=1 bar=0"
-  obj?foo|> ParaResult.bind ParaValue.asBool |> shouldEqual (Ok true)
-  obj?qux|> ParaResult.bind ParaValue.asBool |> shouldEqual (Ok false)
-  obj?baz|> ParaResult.bind ParaValue.asBool |> shouldEqual (Ok true)
-  obj?bar|> ParaResult.bind ParaValue.asBool |> shouldEqual (Ok false)
+  obj?foo>>= ParaValue.asBool |> shouldEqual (Ok true)
+  obj?qux>>= ParaValue.asBool |> shouldEqual (Ok false)
+  obj?baz>>= ParaValue.asBool |> shouldEqual (Ok true)
+  obj?bar>>= ParaValue.asBool |> shouldEqual (Ok false)
 
 [<Test>]
 let ``parse obj as float`` () =
   let obj = ParaValue.Parse "foo=-2.234"
-  obj?foo |> ParaResult.bind ParaValue.asNumber |> shouldEqual (Ok -2.234)
+  obj?foo >>= ParaValue.asNumber |> shouldEqual (Ok -2.234)
 
 [<Test>]
 let ``parse invalid quoted dates`` () =
   let obj = ParaValue.Parse "foo=\"1.b.c\""
-  obj?foo |> ParaResult.bind ParaValue.asString |> shouldEqual (Ok "1.b.c")
+  obj?foo >>= ParaValue.asString |> shouldEqual (Ok "1.b.c")
 
 [<Test>]
 let ``parse obj as date`` () =
   let obj = ParaValue.Parse "foo=1492.1.2"
-  obj?foo|> ParaResult.bind ParaValue.asDate |> shouldEqual (Ok (DateTime(1492, 1, 2)))
+  obj?foo>>= ParaValue.asDate |> shouldEqual (Ok (DateTime(1492, 1, 2)))
 
 [<Test>]
 let ``parse obj as tough array`` () =
