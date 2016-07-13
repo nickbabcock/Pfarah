@@ -584,7 +584,8 @@ let ``parse army and collect`` () =
   let armyData =
     ParaValue.Parse army / "army"
     |> ParaValue.flatMap (fun x -> para {
-      let! unitnames = x / "unit" |> ParaValue.flatMap (fun u -> u?name |> ParaResult.bind ParaValue.asString)
+      let! unitnames = 
+        x / "unit" |> ParaValue.flatMap (fun u -> u?name >>= ParaValue.asString)
       let! armyname = x?name |> ParaResult.bind ParaValue.asString
       return armyname, unitnames
     })
@@ -604,14 +605,24 @@ let ``tryFind patrol`` () =
     name="2nd ship"
   }"""
 
-  // Let's print the name of ships on patrol
-  let shipData =
-    ParaValue.Parse ships / "ship"
-    |> ParaValue.asArray |> ParaResult.get
-    |> Array.filter (tryFind "patrol" >> Option.isSome)
-    |> Array.map (fun x -> x?name |> ParaResult.bind ParaValue.asString)
+  let parseShip o = para {
+    let! name = o?name >>= ParaValue.asString
+    let! patrol = ParaValue.tryGet "patrol" o
+    let dd = Option.map ParaValue.asBool patrol
+    let! c =
+      match patrol with
+      | Some(x) -> x |> ParaValue.asBool
+      | None -> Ok(false)
+    return name, c 
+  }
 
-  shipData |> shouldEqual [| Ok "1st ship" |]
+  let shipData = para {
+    let! shipss = ParaValue.Parse ships / "ship" |> ParaValue.flatMap parseShip
+    return shipss |> Array.filter snd |> Array.map fst
+  }
+  // Let's print the name of ships on patrol
+
+  shipData |> shouldEqual (Ok [| "1st ship" |])
 
 [<Test>]
 let ``tryFind returns Some ParaValue`` () =

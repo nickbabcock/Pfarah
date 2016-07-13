@@ -16,9 +16,15 @@ There are two ways to parse data. The first way is to parse a specific file,
 and the second is to parse a given string. The norm should be parsing a file,
 but for the sake of the tutorial it is shown the second way.
 
-If you're familiar with [FSharp.Data JSON][fdj] library, you'll be familiar with this.
+This library takes inspiration from [FSharp.Data JSON][fdj], [Chessie][],
+[Chiron][], [Fleece][], [Haskell][], and [json4s][].
 
 [fdj]: http://fsharp.github.io/FSharp.Data/library/JsonValue.html
+[Chessie]: https://github.com/fsprojects/Chessie
+[Chiron]: https://github.com/xyncro/chiron
+[Fleece]: https://github.com/mausch/Fleece
+[Haskell]: https://www.haskell.org/
+[json4s]: https://github.com/json4s/json4s
 
 ## Quickstart
 
