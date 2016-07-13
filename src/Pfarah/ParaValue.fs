@@ -690,6 +690,12 @@ module ParaValue =
         | [| key, value |] -> Ok value
         | x -> Error(sprintf "Found not 1 but %d of %s" (Array.length x) key))
 
+  /// Assumes the passed in value is a record and collects all properties
+  /// with a given key.
+  let getAll (key:string) (o:ParaValue) : ParaResult<ParaValue[]> =
+    asRecord o
+    |> ParaResult.map (Array.filter (fst >> (=) key) >> Array.map snd)
+
   /// Assumes the passed in value is a record and attempts to search
   /// the record's properties for the given key. If a single value exists
   /// return some value, if no properties were found, return None

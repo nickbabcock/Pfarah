@@ -485,6 +485,13 @@ let ``ParaValue asRgb sad path`` () =
   ParaValue.asRgb data |> shouldEqual (Error "Expected rgb but received true")
 
 [<Test>]
+let ``ParaValue getAll should collect all properties with a given key`` () =
+  let data = "core=AAA core=BBB core=CCC"
+  ParaValue.Parse data
+  |> ParaValue.getAll "core"
+  |> shouldEqual ([| "AAA"; "BBB"; "CCC" |] |> Array.map ParaValue.String |> Ok)
+
+[<Test>]
 let ``mapping an objects results in mapping the values`` () =
   let data = ParaValue.Record [| "people", ParaValue.Number 2.0 |]
   let fn = function | ParaValue.Number x -> ParaValue.Number (x + 1.)
