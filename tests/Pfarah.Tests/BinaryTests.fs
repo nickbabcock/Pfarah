@@ -214,18 +214,25 @@ let ``binary parse float`` data (expected:float) =
   let header = [| 0x0f; 0x00; 0x03; 0x00; 0x45; 0x4e; 0x47; 0x01; 0x00; 0x0d; 0x00; |]
   let data = Array.concat([header; data])
   let stream = strm(data)
-  let actual = ParaValue.LoadBinary(stream, dict([]), None)
-  Assert.AreEqual(actual?ENG |> asFloat,  expected, 0.01)
+  let actual = 
+    ParaValue.LoadBinary(stream, dict([]), None)
+    |> ParaValue.get "ENG"
+    |> ParaResult.bind ParaValue.asNumber
+    |> ParaResult.get
+  Assert.AreEqual(actual, expected, 0.01)
 
 [<Test>]
 let ``binary parse float array`` () =
   let data =
       [| 0x0f; 0x00; 0x03; 0x00; 0x45; 0x4e; 0x47; 0x01; 0x00; 0x03; 0x00;
          0x0d; 0x00; 0x17; 0x00; 0x00; 0x00; 0x04; 0x00 |]
-  let actual = ParaValue.LoadBinary(strm(data), dict([]), None)
-  let arr = actual?ENG |> asArray
-  let value = arr.[0] |> asFloat
-  Assert.AreEqual(value, 0.023, 0.01)
+  let parsed = ParaValue.LoadBinary(strm(data), dict([]), None)
+  let actual = para {
+    let! eng = parsed?ENG
+    let! arr = eng |> ParaValue.asArray
+    return! (arr.[0] |> ParaValue.asNumber)
+  }
+  Assert.AreEqual(ParaResult.get actual, 0.023, 0.01)
 
 [<Test>]
 let ``binary parse deceptive object`` () =
@@ -386,10 +393,16 @@ let ``binary parse heterogeneous array`` () =
   let data =
     [| 0xdd; 0xdd; 0x01; 0x00; 0x03; 0x00; 0x0c; 0x00; 0x00; 0x00; 0x00; 0x00;
        0x0d; 0x00; 0x17; 0x00; 0x00; 0x00; 0x04; 0x00 |]
-  let res = ParaValue.LoadBinary((strm data), lookup, None)
-  let foo = res?foo |> asArray
-  Assert.AreEqual(ParaValue.Number 0.0, foo.[0])
-  Assert.AreEqual(0.023, foo.[1] |> asFloat, 0.001)
+  let parsed = ParaValue.LoadBinary((strm data), lookup, None)
+  let actual = para {
+    let! foo = parsed?foo
+    let! fst = foo.[0] |> ParaValue.asNumber
+    let! snd = foo.[1] |> ParaValue.asNumber
+    return fst, snd
+  }
+  let at1, at2 = ParaResult.get actual
+  Assert.AreEqual(0.0, at1)
+  Assert.AreEqual(0.023, at2, 0.001)
 
 
 let (``try parse double cases``:obj[][]) = [|
@@ -433,5 +446,5 @@ let ``load zip binary file big`` () =
   let path = Path.Combine("data", "eu4bin-zip-big.eu4")
   ParaValue.Load(path, "EU4bin", "EU4txt", lazy(dict([(0x284ds, "date")])))
   |> tryFind "date"
-  |> Option.map asDate
-  |> shouldEqual (Some (DateTime(1757, 8, 12)))
+  |> Option.map ParaValue.asDate
+  |> shouldEqual (Some (Ok (DateTime(1757, 8, 12))))

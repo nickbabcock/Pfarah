@@ -258,63 +258,81 @@ let ``parse continuous nested arrays`` () =
 [<Test>]
 let ``parse object with dynamic`` () =
   let obj = ParaValue.Parse "foo={bar=baz qux=zux}"
-  obj?foo?bar |> shouldEqual (ParaValue.String "baz")
+  let actual = obj?foo |> ParaResult.bind (fun x -> x?bar)
+  actual |> shouldEqual (Ok (ParaValue.String "baz"))
 
 [<Test>]
 let ``parse number as int`` () =
   let obj = ParaValue.Parse "foo=-2"
-  obj?foo|> asInteger |> shouldEqual -2
+  obj?foo |> ParaResult.bind ParaValue.asInteger |> shouldEqual (Ok -2)
 
 [<Test>]
 let ``parse obj as string`` () =
   let obj = ParaValue.Parse "foo=\"bar baz\" qux=dis"
-  obj?foo|> asString |> shouldEqual "bar baz"
-  obj?qux|> asString |> shouldEqual "dis"
+  obj?foo|> ParaResult.bind ParaValue.asString |> shouldEqual (Ok "bar baz")
+  obj?qux|> ParaResult.bind ParaValue.asString |> shouldEqual (Ok "dis")
 
 [<Test>]
 let ``parse obj as bool`` () =
   let obj = ParaValue.Parse "foo=yes qux=no baz=1 bar=0"
-  obj?foo|> asBool |> shouldEqual true
-  obj?qux|> asBool |> shouldEqual false
-  obj?baz|> asBool |> shouldEqual true
-  obj?bar|> asBool |> shouldEqual false
+  obj?foo|> ParaResult.bind ParaValue.asBool |> shouldEqual (Ok true)
+  obj?qux|> ParaResult.bind ParaValue.asBool |> shouldEqual (Ok false)
+  obj?baz|> ParaResult.bind ParaValue.asBool |> shouldEqual (Ok true)
+  obj?bar|> ParaResult.bind ParaValue.asBool |> shouldEqual (Ok false)
 
 [<Test>]
 let ``parse obj as float`` () =
   let obj = ParaValue.Parse "foo=-2.234"
-  obj?foo |> asFloat |> shouldEqual -2.234
+  obj?foo |> ParaResult.bind ParaValue.asNumber |> shouldEqual (Ok -2.234)
 
 [<Test>]
 let ``parse invalid quoted dates`` () =
   let obj = ParaValue.Parse "foo=\"1.b.c\""
-  obj?foo |> asString |> shouldEqual "1.b.c"
+  obj?foo |> ParaResult.bind ParaValue.asString |> shouldEqual (Ok "1.b.c")
 
 [<Test>]
 let ``parse obj as date`` () =
   let obj = ParaValue.Parse "foo=1492.1.2"
-  obj?foo|> asDate |> shouldEqual (new DateTime(1492, 1, 2))
+  obj?foo|> ParaResult.bind ParaValue.asDate |> shouldEqual (Ok (DateTime(1492, 1, 2)))
 
 [<Test>]
 let ``parse obj as tough array`` () =
   let obj = ParaValue.Parse "foo={1 bar 2.000 {qux=baz}}"
-  obj?foo.[0]|> asInteger |> shouldEqual 1
-  obj?foo.[1]|> asString |> shouldEqual "bar"
-  obj?foo.[2]|> asFloat |> shouldEqual 2.0
-  obj?foo.[3]?qux|> asString |> shouldEqual "baz"
+  let actual = para {
+    let! arr = obj?foo |> ParaResult.bind ParaValue.asArray
+    let! (fst, snd, thrd, frth) =
+      match arr with
+      | [| a; b; c; d |] -> Ok (a, b, c, d)
+      | x -> Error("unexpected number of elements")
+    let! fst = ParaValue.asInteger fst
+    let! snd = ParaValue.asString snd
+    let! thrd = ParaValue.asNumber thrd
+    let! frth = frth?qux |> ParaResult.bind ParaValue.asString
+    return (fst, snd, thrd, frth)
+  }
+  actual |> shouldEqual (Ok (1, "bar", 2., "baz"))
 
 [<Test>]
 let ``parse obj as nested objects`` () =
   let obj = ParaValue.Parse "bar={{foo=qux}{foo=qix zoo=zob}}"
-  obj?bar.[0]?foo |> asString |> shouldEqual "qux"
-  obj?bar.[1]?foo |> asString |> shouldEqual "qix"
-  obj?bar.[1]?zoo |> asString |> shouldEqual "zob"
+  para {
+    let! arr = obj?bar
+    let! fst = arr.[0]?foo |> ParaResult.bind ParaValue.asString
+    let! snd = arr.[1]?foo |> ParaResult.bind ParaValue.asString
+    let! thrd = arr.[1]?zoo |> ParaResult.bind ParaValue.asString
+    return fst, snd, thrd
+  } |> shouldEqual (Ok ("qux", "qix", "zob"))
 
 [<Test>]
 let ``parse obj as nested objects whitespace`` () =
   let obj = ParaValue.Parse "bar = { { foo = qux } { foo = qix zoo = zob } }"
-  obj?bar.[0]?foo |> asString |> shouldEqual "qux"
-  obj?bar.[1]?foo |> asString |> shouldEqual "qix"
-  obj?bar.[1]?zoo |> asString |> shouldEqual "zob"
+  para {
+    let! arr = obj?bar
+    let! fst = arr.[0]?foo |> ParaResult.bind ParaValue.asString
+    let! snd = arr.[1]?foo |> ParaResult.bind ParaValue.asString
+    let! thrd = arr.[1]?zoo |> ParaResult.bind ParaValue.asString
+    return fst, snd, thrd
+  } |> shouldEqual (Ok ("qux", "qix", "zob"))
 
 [<Test>]
 let ``parse gameplay settings`` () =
@@ -325,9 +343,12 @@ let ``parse gameplay settings`` () =
 1 1 2 1 1 0 0 1 0 1 0 	}
 }"""
   let obj = ParaValue.Parse data
-  let actual =
-    obj?gameplaysettings?setgameplayoptions |> asArray |> Array.map asInteger
-  actual |> shouldEqual [|1;1;2;1;1;0;0;1;0;1;0|]
+  let actual = para {
+    let! settings = obj?gameplaysettings
+    let! options = settings?setgameplayoptions
+    return! ParaValue.flatMap ParaValue.asInteger options
+  }
+  actual |> shouldEqual (Ok [|1;1;2;1;1;0;0;1;0;1;0|])
 
 [<Test>]
 let ``ignore header`` () =
@@ -515,8 +536,8 @@ let ``mapping a non-iterable results in mapping itself`` () =
 [<Test>]
 let ``parse obj be used in a seq`` () =
   let obj = ParaValue.Parse "ids = {1 2 3 4 5}"
-  let nums = obj?ids |> asArray |> Array.map asInteger
-  nums |> shouldEqual [| 1 .. 5 |]
+  obj?ids |> (ParaResult.bind (ParaValue.flatMap ParaValue.asInteger)) 
+          |> shouldEqual (Ok [| 1 .. 5 |])
 
 let army = """
 army=
@@ -561,19 +582,16 @@ let ``parse army example`` () =
 [<Test>]
 let ``parse army and collect`` () =
   let armyData =
-    ParaValue.Parse army
-    |> collect "army"
-    |> asArray
-    |> Array.map (fun x ->
-      let units =
-        x |> collect "unit" |> asArray |> Array.map (fun u -> u?name |> asString)
-      x?name |> asString, units)
+    ParaValue.Parse army / "army"
+    |> ParaValue.flatMap (fun x -> para {
+      let! unitnames = x / "unit" |> ParaValue.flatMap (fun u -> u?name |> ParaResult.bind ParaValue.asString)
+      let! armyname = x?name |> ParaResult.bind ParaValue.asString
+      return armyname, unitnames
+    })
 
-  Array.length armyData |> shouldEqual 2
-  armyData.[0] |> fst |> shouldEqual "1st army"
-  armyData.[0] |> snd |> shouldEqual [|"1st unit"|]
-  armyData.[1] |> fst |> shouldEqual "2nd army"
-  armyData.[1] |> snd |> shouldEqual [|"1st unit"; "2nd unit"|]
+  ParaResult.map Array.length armyData |> shouldEqual (Ok 2)
+  ParaResult.map Seq.head armyData |> shouldEqual (Ok ("1st army", [|"1st unit"|]))
+  ParaResult.map Array.last armyData |> shouldEqual (Ok ("2nd army", [|"1st unit"; "2nd unit"|]))
 
 [<Test>]
 let ``tryFind patrol`` () =
@@ -588,13 +606,12 @@ let ``tryFind patrol`` () =
 
   // Let's print the name of ships on patrol
   let shipData =
-    ParaValue.Parse ships
-    |> collect "ship"
-    |> asArray
+    ParaValue.Parse ships / "ship"
+    |> ParaValue.asArray |> ParaResult.get
     |> Array.filter (tryFind "patrol" >> Option.isSome)
-    |> Array.map (fun x -> x?name |> asString)
+    |> Array.map (fun x -> x?name |> ParaResult.bind ParaValue.asString)
 
-  shipData |> shouldEqual [| "1st ship" |]
+  shipData |> shouldEqual [| Ok "1st ship" |]
 
 [<Test>]
 let ``tryFind returns Some ParaValue`` () =
@@ -604,13 +621,8 @@ let ``tryFind returns Some ParaValue`` () =
 
 [<Test>]
 let ``findOptional works`` () =
-  let data =
-    ParaValue.Record([| ("hello", ParaValue.String "foo");
-                        ("world", ParaValue.String "") |])
-
-  let data2 =
-      ParaValue.Record([| ("hello", ParaValue.String "foo"); |])
-
+  let data = [| ("hello", ParaValue.String "foo"); ("world", ParaValue.String "") |]
+  let data2 = [| ("hello", ParaValue.String "foo"); |]
   let required, optional = findOptional [data; data2]
   CollectionAssert.AreEquivalent(["hello"], required)
   CollectionAssert.AreEquivalent(["world"], optional)
@@ -745,26 +757,6 @@ let ``arrays can be iterated`` () =
     match x with
     | ParaValue.Number(x) when x = 1.0 || x = 2.0 -> ()
     | _ -> Assert.Fail("Unexpected number")
-
-[<Test>]
-let ``integer default tests`` () =
-  Some(ParaValue.Number 1.0) |> integerDefault |> shouldEqual 1
-  None |> integerDefault |> shouldEqual 0
-
-[<Test>]
-let ``string default tests`` () =
-  Some(ParaValue.String "ENG") |> stringDefault |> shouldEqual "ENG"
-  None |> stringDefault |> shouldEqual ""
-
-[<Test>]
-let ``float default tests`` () =
-  Some(ParaValue.Number 1.2) |> floatDefault |> shouldEqual 1.2
-  None |> floatDefault |> shouldEqual 0.0
-
-[<Test>]
-let ``bool default tests`` () =
-  Some(ParaValue.Bool true) |> boolDefault |> shouldEqual true
-  None |> boolDefault |> shouldEqual false
 
 [<Test>]
 let ``load with header textual`` () =

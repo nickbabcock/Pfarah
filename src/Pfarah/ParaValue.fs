@@ -652,6 +652,9 @@ module ParaValue =
   | ParaValue.Number x -> Ok x 
   | x -> Error(sprintf "Expected number but received %O" x)
 
+  /// Extracts the inner number and truncates any possible decimals
+  let asInteger = asNumber >> ParaResult.map int
+
   /// Extracts inner string or reports an error
   let asString = function
   | ParaValue.String s -> Ok s
