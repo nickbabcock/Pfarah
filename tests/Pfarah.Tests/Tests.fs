@@ -985,11 +985,11 @@ let ``flatMap works with objects`` () =
 
   actual |> shouldEqual (ParaResult.Ok([| 2.0; 3.0; 4.0; 5.0; |]))
 
-//[<Test>]
-//let ``pget should work with optionals`` () =
-//  let value = ParaValue.Record [| "name", ParaValue.String "bob" |]
-//  let b = para {
-//    return! pget value "age"
-//  }
-//
-//  b |> shouldEqual (ParaResult<Option<int>>.Value None)
+[<Test>]
+let ``tryPget should work with optionals`` () =
+ let value = ParaValue.Record [| "name", ParaValue.String "bob" |]
+ let b : ParaResult<int option> = para {
+   return! tryPget "age" value
+ }
+
+ b |> shouldEqual (Ok None)

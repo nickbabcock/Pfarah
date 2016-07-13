@@ -793,16 +793,20 @@ module Functional =
     static member inline FromPara (_: 'a list) : ParaValue<'a list> =
       lister List.ofSeq
 
-  let inline deserialize paraValue =
-    fromPara paraValue
-    |> function | Ok a -> a
-                | Error e -> failwith e
+  /// Deserialize data into a type implementing `FromPara`. Throws an
+  /// exception on failure
+  let inline deserialize paraValue = ParaResult.get (fromPara paraValue)
 
-  /// Given an object and a property name, find the value with the
-  /// given property name and deserialize it. If not given an object,
-  /// and error will be returned.
+  /// Extract and deserialize the value with a given key
   let inline pget (key:string) (o:ParaValue) : ParaResult<'a> =
     ParaValue.get key o |> ParaResult.bind fromPara
+
+  /// Extract and deserialize the value with a given key if the key is present
+  let inline tryPget (key:string) (o:ParaValue) : ParaResult<'a option> =
+    ParaValue.tryGet key o
+    |> ParaResult.bind (function
+      | Some(y) -> fromPara y
+      | None -> Ok None)
 
 [<AutoOpen>]
 module ParaBuilder =
