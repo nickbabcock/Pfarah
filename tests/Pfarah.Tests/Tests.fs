@@ -1004,8 +1004,8 @@ let ``tryPget should work with optionals`` () =
 
  b |> shouldEqual (Ok None)
 
-//[<Test>]
-//let ``pgetAll should work with same keys`` () =
-//  let value = ParaValue.Parse "core=AAA core=BBB core=CCC"
-//  let actual : ParaResult<string[]> = pgetAll "core" value
-//  actual |> shouldEqual (Ok [| "AAA"; "BBB"; "CCC" |])
+[<Test>]
+let ``pgetAll should work with same keys`` () =
+ let value = ParaValue.Parse "core=AAA core=BBB core=CCC"
+ let actual : ParaResult<string[]> = pgetAll "core" value
+ actual |> shouldEqual (Ok [| "AAA"; "BBB"; "CCC" |])

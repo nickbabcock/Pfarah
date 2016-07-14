@@ -812,13 +812,14 @@ module Functional =
 
   /// Extract and deserialize all the values matching a given key
   /// into a result
-//  let inline pgetAll (key:string) (o:ParaValue) : ParaResult<'a[]> =
-//    let mfold (state:ParaResult<'a list>) (x:ParaResult<'a>) =
-//      state |> ParaResult.bind (fun lst -> ParaResult.map (fun y -> y :: lst) x)
-//    
-//    ParaValue.getAll key o
-//    |> ParaResult.bind (Array.map fromPara >> 
-//      (Array.fold mfold (Ok [])) >> (ParaResult.map List.toArray))
+  let inline pgetAll (key:string) (o:ParaValue) =
+   let mfold (state:ParaResult<'a list>) (x:ParaResult<'a>) =
+     state |> ParaResult.bind (fun lst -> ParaResult.map (fun y -> y :: lst) x)
+
+   ParaValue.getAll key o
+   |> ParaResult.bind (Array.map fromPara >>
+     Array.fold mfold (Ok []) >>
+     ParaResult.map (List.rev >> List.toArray))
 
   /// Extract and deserialize the value with a given key if the key is present
   let inline tryPget (key:string) (o:ParaValue) : ParaResult<'a option> =
