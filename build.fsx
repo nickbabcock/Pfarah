@@ -324,8 +324,8 @@ Target "Coverage" (fun _ ->
     let result =
         ExecProcess (fun info ->
             info.FileName <- ("packages/OpenCover/tools/OpenCover.Console.exe")
-            info.Arguments <- "-target:\"packages/NUnit.Runners/tools/nunit-console.exe\" " +
-                              "-targetargs:\"/nologo /noshadow tests/Pfarah.Tests/bin/Debug/Pfarah.Tests.dll\" " +
+            info.Arguments <- "-target:\"packages/NUnit.ConsoleRunner/tools/nunit3-console.exe\" " +
+                              "-targetargs:\"tests/Pfarah.Tests/bin/Debug/Pfarah.Tests.dll\" " +
                               "-filter:\"+[Pfarah]* -[Pfarah.Tests]*\" -register:user -output:coverage.xml"
         ) (System.TimeSpan.FromMinutes 5.)
     if result <> 0 then failwith "Coverage failed"
