@@ -334,7 +334,7 @@ Target "Coverage" (fun _ ->
 Target "CoverageReport" (fun _ ->
     let result =
         ExecProcess (fun info ->
-            info.FileName <- ("packages/ReportGenerator/ReportGenerator.exe")
+            info.FileName <- ("packages/ReportGenerator/tools/ReportGenerator.exe")
             info.Arguments <- "-reports:coverage.xml -reporttype:Html -targetdir:report"
         ) (System.TimeSpan.FromMinutes 5.)
     if result <> 0 then failwith "Coverage Report failed"
