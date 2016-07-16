@@ -616,6 +616,13 @@ module ParaResult =
   | Ok(x) -> x
   | Error(x) -> failwith x
 
+  /// If the option is present, return inner value applied to the function.
+  /// else return a default value wrapped in a result.
+  let defaultOpt (fn:ParaValue -> ParaResult<'a>) (def:'a) (opt:ParaValue option) =
+    match Option.map fn opt with
+    | Some(res) -> res
+    | None -> Ok def
+
   /// Apply a function that returns a result to each element of an array.
   /// Aggregate the results into a vector and return the resulting vector
   /// or the error that occurred on one of the elements in the array

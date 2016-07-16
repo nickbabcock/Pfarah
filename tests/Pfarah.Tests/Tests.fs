@@ -534,6 +534,13 @@ let ``mapping a non-iterable results in mapping itself`` () =
   ParaValue.map fn data |> shouldEqual (ParaValue.String "bobby")
 
 [<Test>]
+let ``ParaResult defaultOpt provides default values`` () =
+  let data = ParaValue.Parse "foo=bar"
+  let opt = ParaValue.tryGet "foo" data
+  ParaResult.bind (ParaResult.defaultOpt (ParaValue.asString) "do") opt
+  |> shouldEqual (Ok "bar")
+
+[<Test>]
 let ``parse obj be used in a seq`` () =
   let obj = ParaValue.Parse "ids = {1 2 3 4 5}"
   obj?ids |> (ParaResult.bind (ParaValue.flatMap ParaValue.asInteger)) 
