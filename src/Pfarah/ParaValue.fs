@@ -731,6 +731,37 @@ module ParaValue =
       | x -> fn x |> ParaResult.map (fun y -> ResizeArray([| y |]))
     ParaResult.map (fun (x: List<'a>) -> x.ToArray()) lst
 
+  /// Finds all the properties of the object with a given key and aggregates
+  /// all the values under a single array. If a given object is an array
+  /// all sub-objects are aggregated. If not an array or object, an empty
+  /// array is returned.
+  let collect prop obj : ParaValue =
+    let rec findByName prop obj =
+      match obj with
+      | ParaValue.Record properties ->
+        properties
+        |> Array.filter (fst >> (=) prop)
+        |> Array.map snd
+      | ParaValue.Array arr -> arr |> Array.collect (findByName prop)
+      | _ -> [| |]
+    findByName prop obj |> ParaValue.Array
+
+  /// Finds all the properties of the object and sub-objects with a given key
+  /// and aggregates all the values under a single array. If a given object is
+  /// an array all sub-objects are aggregated. If not an array or object, an
+  /// empty array is returned.
+  let collectAll prop obj : ParaValue =
+    let rec findAllByName prop obj : seq<ParaValue> =
+      match obj with
+      | ParaValue.Record properties ->
+        let found = properties |> Seq.filter (fst >> (=) prop) |> Seq.map snd
+        let sub = properties |> Seq.map snd |> Seq.collect (findAllByName prop)
+        Seq.append found sub
+      | ParaValue.Array arr -> arr |> Seq.collect (findAllByName prop)
+      | _ -> Seq.empty
+
+    ParaValue.Array (findAllByName prop obj |> Seq.toArray)
+
 module ApplicativeParaValue =
 
   /// Wraps a result into a ParaValue<'a>

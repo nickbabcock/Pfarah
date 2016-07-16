@@ -361,7 +361,7 @@ player="RFR" """
 
 [<Test>]
 let ``collect on a non-iterable returns an empty array`` () =
-  collect "name" (ParaValue.String "hey") |> shouldEqual (ParaValue.Array [| |])
+  ParaValue.collect "name" (ParaValue.String "hey") |> shouldEqual (ParaValue.Array [| |])
 
 [<Test>]
 let ``collect on a array returns sub-objects`` () =
@@ -373,7 +373,7 @@ let ``collect on a array returns sub-objects`` () =
 
   let expected =
     [| "bob"; "steve"; "wilson" |] |> Array.map ParaValue.String |> ParaValue.Array
-  collect "name" data |> shouldEqual expected
+  ParaValue.collect "name" data |> shouldEqual expected
 
 [<Test>]
 let ``collect operator`` () =
@@ -389,7 +389,7 @@ let ``nested collect operator`` () =
 
 [<Test>]
 let ``collectAll on a non-iterable returns an empty array`` () =
-  collectAll "name" (ParaValue.String "hey") |> shouldEqual (ParaValue.Array [| |])
+  ParaValue.collectAll "name" (ParaValue.String "hey") |> shouldEqual (ParaValue.Array [| |])
 
 [<Test>]
 let ``collectAll on a array returns sub-objects`` () =
@@ -401,7 +401,7 @@ let ``collectAll on a array returns sub-objects`` () =
 
   let expected =
     [| "bob"; "steve"; "wilson" |] |> Array.map ParaValue.String |> ParaValue.Array
-  collectAll "name" data |> shouldEqual expected
+  ParaValue.collectAll "name" data |> shouldEqual expected
 
 [<Test>]
 let ``collectAll operator`` () =

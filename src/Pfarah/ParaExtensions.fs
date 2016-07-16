@@ -2,37 +2,6 @@
 
 [<AutoOpen>]
 module ParaExtensions =
-  /// Finds all the properties of the object with a given key and aggregates
-  /// all the values under a single array. If a given object is an array
-  /// all sub-objects are aggregated. If not an array or object, an empty
-  /// array is returned.
-  let collect prop obj : ParaValue =
-    let rec findByName prop obj =
-      match obj with
-      | ParaValue.Record properties ->
-        properties
-        |> Array.filter (fst >> (=) prop)
-        |> Array.map snd
-      | ParaValue.Array arr -> arr |> Array.collect (findByName prop)
-      | _ -> [| |]
-    findByName prop obj |> ParaValue.Array
-
-  /// Finds all the properties of the object and sub-objects with a given key
-  /// and aggregates all the values under a single array. If a given object is
-  /// an array all sub-objects are aggregated. If not an array or object, an
-  /// empty array is returned.
-  let collectAll prop obj : ParaValue =
-    let rec findAllByName prop obj : seq<ParaValue> =
-      match obj with
-      | ParaValue.Record properties ->
-        let found = properties |> Seq.filter (fst >> (=) prop) |> Seq.map snd
-        let sub = properties |> Seq.map snd |> Seq.collect (findAllByName prop)
-        Seq.append found sub
-      | ParaValue.Array arr -> arr |> Seq.collect (findAllByName prop)
-      | _ -> Seq.empty
-
-    ParaValue.Array (findAllByName prop obj |> Seq.toArray)
-
   /// Tries to find the first property of the object that has the given key.
   /// If a property is found then `Some ParaValue` will be returned else
   /// `None`
@@ -72,12 +41,12 @@ module Operators =
 
   /// Slash operator to emulate xpath operations, see collect.
   /// Inspired by json4s
-  let (/) (obj:ParaValue) propertyName = collect propertyName obj
+  let (/) (obj:ParaValue) propertyName = ParaValue.collect propertyName obj
 
   /// Slash operator to emulate xpath operations, see collectAll.
   /// Inspired by json4s. The ideal operator would be `//` but `//`
   /// is interpreted as a comment
-  let (/./) (obj:ParaValue) propertyName = collectAll propertyName obj
+  let (/./) (obj:ParaValue) propertyName = ParaValue.collectAll propertyName obj
 
   /// Delegates to ParaResult.bind. Adopted from Chessie and Haskell
   let inline (>>=) result f = ParaResult.bind f result
