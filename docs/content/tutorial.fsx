@@ -135,11 +135,8 @@ libraries or utilities that work with choices like
 There is one possible question remaining for the unaccustomed and that is
 `ParaResult.bind`:
 
-*)
-
-let (name : ParaResult<string>) = ParaResult.bind ParaValue.asString nameVal
-
-(**
+    [lang=fsharp]
+    let (name : ParaResult<string>) = ParaResult.bind ParaValue.asString nameVal
 
 Bind checks to see if the result passed in (nameVal) is an error or a result.
 If nameVal is an error (`get` failed earlier) then the error is propogated.
@@ -171,12 +168,12 @@ to deal with ParaResult explicitly
 
 *)
 
-let name : ParaResult<string> = para {
+let name2 : ParaResult<string> = para {
   let! nameVal = ParaValue.get "name" obj
   return! ParaValue.asString nameVal
 }
 
-match name with
+match name2 with
 | Ok(nm) -> printfn "Ship's name: %s" nm
 | Error(err) -> printfn "%s" err
 
@@ -212,7 +209,7 @@ which can be solved by defining custom operators:
 
 open Pfarah.Operators
 
-let data : ParaResult<string * int> = para {
+para {
   let! name = obj?name >>= ParaValue.asString
   let! strength = obj?strength >>= ParaValue.asInteger
   return name, strength
@@ -220,7 +217,7 @@ let data : ParaResult<string * int> = para {
 
 // Or even terser
 open Pfarah.ParaValue
-let data = para {
+para {
   let! name = obj?name >>= asString
   let! strength = obj?strength >>= asInteger
   return name, strength
@@ -235,7 +232,7 @@ but don't worry, Pfarah will be there every step of the way.
 
 *)
 
-let data = """
+let shipsObj = ParaValue.Parse """
   ship={
     name=bessie
     strength=22
@@ -257,10 +254,8 @@ let parseShip (ship : ParaValue) = para {
   return name, strength
 }
 
-let obj = ParaValue.Parse data
-
 // Collect all the values with a key "ship" into a ParaValue.Array
-let (pips : ParaValue) = ParaValue.collect "ship" obj
+let (pips : ParaValue) = ParaValue.collect "ship" shipsObj
 
 // Execute `parseShip` on each ship and aggregate the result
 // into an array
@@ -277,7 +272,7 @@ match sorted with
 | Error(error) -> printfn "%s" error
 
 // In reality the code may be written like:
-ParaValue.Parse data
+shipsObj
 |> ParaValue.collect "ship"
 |> ParaValue.flatMap parseShip
 |> ParaResult.map (Array.sortByDescending snd)
@@ -293,8 +288,7 @@ Those who like the computation builder don't have to miss out!
 *)
 
 para {
-  let obj = ParaValue.Parse data
-  let! (pips : ParaValue[]) = ParaValue.getAll "ship" obj
+  let! (pips : ParaValue[]) = ParaValue.getAll "ship" shipsObj
   let! (ships : (string * int)[]) = ParaValue.reduce parseShip pips
   for (name, strength) in (Array.sortByDescending snd ships) do
     printfn "Ship: %s. Strength: %d" name strength
@@ -349,7 +343,7 @@ if a ship is on patrol. If absent, the ship is assumed to not be on patrol.
 
 *)
 
-let data = """
+let patrolData = """
   ship={
     name=bessie
     strength=22
@@ -367,7 +361,7 @@ let data = """
 """
 
 // Let's define a common function to parse each ship with patrol
-let parseShip (ship : ParaValue) = para {
+let parseShip2 (ship : ParaValue) = para {
   let! name = ship?name >>= asString
   let! strength = ship?strength >>= asInteger
   let! (patrolVal : ParaValue option) = ParaValue.tryGet "patrol" ship
@@ -379,9 +373,9 @@ let parseShip (ship : ParaValue) = para {
 }
 
 para {
-  let obj = ParaValue.Parse data
+  let obj = ParaValue.Parse patrolData
   let! (pips : ParaValue[]) = ParaValue.getAll "ship" obj
-  let! (ships : (string * int * bool)[]) = ParaValue.reduce parseShip pips
+  let! (ships : (string * int * bool)[]) = ParaValue.reduce parseShip2 pips
 
   // Take the ship name and strength of the ships that are on patrol
   let shipsOnPatrol =
@@ -409,7 +403,7 @@ are always present and the ones that are optional.
 // Find all the optional properties on ships. Append a question mark after the
 // property name to signify that the property is optional.
 para {
-  let obj = ParaValue.Parse data
+  let obj = ParaValue.Parse patrolData
   let! ships = obj / "ship" |> ParaValue.flatMap asRecord
   let required, optional = findOptional ships
   required |> Seq.iter (printfn "%s")
@@ -423,23 +417,117 @@ para {
 
 (**
 
-If the data is in a difficult or hard to read format (eg. thousands of items
-on a single line), call the ToString method, which will print a prettified
-version of the data
+## Deserialization
+
+Working with primitives like string and ints are fine, but programs become
+much more powerful when compositive data types come into play. While the
+previous methods allow for manual deserialization Pfarah offers another step
+of convenience.
 
 *)
 
-let mini = "names={Fred Jones Barb Barbara George Harry Hermoine Golem Sam}"
-(ParaValue.Parse mini).ToString()
+// Let's simplify the data by removing the optional patrol field.
+// We'll add it back in later
+let multipleShips = """
+  ship={
+    name=bessie
+    strength=22
+  }
+  ship={
+    name=doris
+    strength=40
+  }
+  ship={
+    name=betsy
+    strength=10
+  }
+"""
 
-// {
-//   names: [
-//     Fred,
-//     Jones,
-//     Barb,
-//     ...
-//   ]
-// }
+// Define a simple record to store the name and strength of a ship
+// with a convenience `Create` constructor along with a specially
+// named `FromPara` function
+type Ship = { Name: string; Strength: int }
+with
+  static member inline Create name strength =
+    { Ship.Name = name; Strength = strength }
+  static member inline FromPara (_:Ship) =
+    Ship.Create <!> (!. "name") <*> (!. "ship")
+
+let (ships : Ship[]) = deserialize (ParaValue.Parse multipleShips)
+
+(**
+
+Full stop. There's a lot of magic in the previous example including a
+couple unseen operators.
+
+First, the type annotation on `ships` is critical, without it the compiler
+won't know what to deserialize the type to and raise a compiler error. Pfarah
+know how to deserialize an array, so it then proceeds to look at the element
+type. Primitives like string and ints are no problem, but `Ship` is new. As
+long as `Ship` implements a function `FromPara`, Pfarah can deserialize it.
+This is known as [statically resolved type parameters][], and it is a very
+dark corner of F#.
+
+But let's take a step back because we can use this magic in baby steps
+
+[statically resolved type parameters]: https://msdn.microsoft.com/en-us/visualfsharpdocs/conceptual/statically-resolved-type-parameters-%5Bfsharp%5D
+
+*)
+
+// Remember this function? This time we're using `fromPara` which will infer
+// what `as*` function to execute based on the type of the variable.
+let parseShip3 (ship : ParaValue) : ParaResult<string * int> = para {
+  let! name = ship?name >>= fromPara
+  let! strength = ship?strength >>= fromPara
+  return name, strength
+}
+
+// The function pget simplifies things a bit
+let parseShip4 (ship : ParaValue) : ParaResult<string * int> = para {
+  let! name = pget "name" ship
+  let! strength = pget "strength" ship
+  return name, strength
+}
+
+// There is also an `.@` that is aliased to pget
+let parseShip5 (ship : ParaValue) : ParaResult<string * int> = para {
+  let! name = ship .@ "name"
+  let! strength = ship .@ "strength"
+  return name, strength
+}
+
+(**
+
+That probably looks and feels a lot better for the uninitiated. We can rewrite
+the magic parts with our new function.
+
+*)
+
+type Ship2 = { Name: string; Strength: int }
+with
+  static member inline FromPara (_:Ship2) =
+    fun ship -> para {
+      let! name = ship .@ "name"
+      let! strength = ship .@ "strength"
+      return { Ship2.Name = name; Strength = strength }
+    } |> ApplicativeParaValue.wrap
+
+(**
+
+Pretty neat right? We can throw in our optional patrol pretty easily if you
+know the right function!
+
+*)
+
+type Ship3 = { Name: string; Strength: int; Patrol: bool option }
+with
+  static member inline FromPara (_:Ship3) =
+    fun ship -> para {
+      let! name = ship .@ "name"
+      let! strength = ship .@ "strength"
+      let! patrol = tryPget "patrol" ship
+      return { Ship3.Name = name; Strength = strength; Patrol = patrol }
+    } |> ApplicativeParaValue.wrap
 
 (**
 
