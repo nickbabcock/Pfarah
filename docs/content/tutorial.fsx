@@ -2,13 +2,16 @@
 // This block of code is omitted in the generated HTML documentation. Use
 // it to define helpers that you do not want to show in the documentation.
 #I "../../bin"
+#r "Pfarah.dll"
+open System
 
 (**
 # Introducing Pfarah
 
 This document is a quick overview of the most important features of Pfarah.
 You can also get this page as an [F# script file from GitHub][fscript] and run
-the samples interactively.
+the samples interactively. Type annotations are used in examples to ease
+understanding
 
 [fscript]: https://github.com/nickbabcock/Pfarah/blob/master/docs/content/tutorial.fsx
 
@@ -28,159 +31,371 @@ This library takes inspiration from [FSharp.Data JSON][fdj], [Chessie][],
 
 ## Quickstart
 
-*)
-#r "Pfarah.dll"
-open Pfarah
-open Pfarah.Operators
+We're going to start with querying parsed data and as an example the data will
+represent a ship named bessie with 22 men onboard.
 
-let obj = ParaValue.Parse "foo=bar"
+*)
+
+open Pfarah
+
+let (obj : ParaValue) = ParaValue.Parse "name=bessie strength=22"
+
 (**
 
-`obj` is a [discriminated union][du], and if you're not familiar with
-discriminated unions, it may be best to read up on them because that is how
-one interfaces with the data
+The next step is extracting the information. There are many ways to accomplish
+this and each one will be demonstrated. Which one you choose will be personal
+preference. As the demonstrations become concise they introduce more advanced
+concepts, so initial examples will use as simple constructs.
+
+`ParaValue` is a [discriminated union][du] and the first example queries it
+directly for more information.
 
 [du]: https://msdn.microsoft.com/en-us/library/dd233226.aspx
 
-## Working with the Data
+*)
+
+// Print the property's keys -- will print "seq ["name"; "strength"]"
+// Also demonstrates all the current cases for `ParaValue`
+match obj with
+| ParaValue.Record (properties : (string * ParaValue)[]) ->
+  printfn "%A" (properties |> Seq.map fst)
+| ParaValue.Array (arr : ParaValue[]) ->
+  failwith "Did not expect `obj` to be an array"
+| ParaValue.Bool (x : bool) ->
+  failwith "Did not expect `obj` to be a bool"
+| ParaValue.Date (x : DateTime) ->
+  failwith "Did not expect `obj` to be a DateTime"
+| ParaValue.Hsv ((h : float), (s : float), (v : float)) ->
+  failwith "Did not expect `obj` to be hsv"
+| ParaValue.Number (n : float) ->
+  failwith "Did not expect `obj` to be a number"
+| ParaValue.Rgb ((r : byte), (g : byte), (b : byte)) ->
+  failwith "Did not expect `obj` to be rgb"
+| ParaValue.String (s : string) ->
+  failwith "Did not expect `obj` to be a string"
+
+(**
+
+Whoa! Those are a lot of data types. To see each of the data types in use, see
+the [Data Format](data-format.html) page.
+
+Instead of exhaustively enumerating all the cases every time we query the data,
+the next example will use F# default case and print the name of the ship
 
 *)
 
-// Print the property's keys, so this will print "foo"
+// Try to find the first key with "name". If name is found then see if the
+// value is a string. If so, print the ship's name. If none of the happy path
+// is followed print errors
 match obj with
 | ParaValue.Record properties ->
-  printfn "%A" (properties |> Seq.map fst)
-| _ ->
-  failwith "Expected `obj` to be a `Record` type"
-
-// Print the property's value of "foo"
-match obj with
-| ParaValue.Record properties ->
-  match (Array.tryFind (fst >> (=) "foo") properties) with
+  match (Array.tryFind (fst >> (=) "name") properties) with
   | Some(key, value) ->
     match value with
-    | ParaValue.String str -> printfn "%s" str
-    | _ -> failwith "Expected foo to be a string"
-  | None -> failwith "Expected foo to exist"
+    | ParaValue.String name -> printfn "Ship's name: %s" name
+    | _ -> failwith "Expected name to be a string"
+  | None -> failwith "Expected name to exist"
 | _ -> failwith "Expected `obj` to be a `Record` type"
 
 (**
 
-## Convenience Methods
-
-The methods shown are very boilerplate heavy and writing this kind of code can
-make a project become bloated very quickly. Hence why Pfarah provides a bit of
-syntactic sugar and helper methods to make dealing with the data easier.
+By now, being flustered with how cumbersome and verbose the examples is ok.
+This will be fixed by introducing some additional concepts and types. First,
+the previous example rewritten and an explanation after.
 
 *)
 
-// The previous example of printing foo's value can be shortened to
-let obj2 = ParaValue.Parse "foo=bar"
-printfn "%s" (obj2?foo |> asString)
-
-let data = ParaValue.Parse "y={1 2 4 8 16 32}"
-printfn "%A" (data?y |> asArray |> Array.map asInteger)
+let (nameVal : ParaResult<ParaValue>) = ParaValue.get "name" obj
+let (name : ParaResult<string>) = ParaResult.bind ParaValue.asString nameVal
+match name with
+| Ok(nm : string) -> printfn "Ship's name: %s" nm
+| Error(err : string) -> printfn "%s" err
 
 (**
 
-## Dealing with Multiple Keys
+Already we've gone from nine lines down to five, and it's all possible because
+the values returned by the functions are now wrapped in `ParaResult<T>`, which
+is a very simple type encapsulating either a value or an error. The
+`ParaValue.get` either returns the value of the field with a key of "name" or
+an error. This error, which is not an exception, could be anything from `obj`
+not being a record to there not being a single field with a key of "name"
 
-It is often common that the data format will have multiple keys of the same
-name on the same level, but the number of occurrences of the key in an object is
-subject to differ. In cases such as these it is best to use `collect`, which
-will aggregate values in an object with that particular key.
+For similar data types (to name a few) see:
+
+- Rust's [Result](https://doc.rust-lang.org/book/error-handling.html#the-result-type)
+- Scala's [Either](http://www.scala-lang.org/api/2.11.8/#scala.util.Either)
+- Haskell's [Either](https://hackage.haskell.org/package/base-4.9.0.0/docs/Data-Either.html)
+- Go's multiple return values with the error type
+- F#'s [Choice](https://msdn.microsoft.com/en-us/visualfsharpdocs/conceptual/core.choice%5B't1,'t2%5D-union-%5Bfsharp%5D)
+ 
+In fact, ParaResult is defined as an alias for `Choice<'a,string>`, so any
+libraries or utilities that work with choices like
+[ExtCore](https://github.com/jack-pappas/ExtCore) can interface seamlessly.
+
+There is one possible question remaining for the unaccustomed and that is
+`ParaResult.bind`:
 
 *)
 
-let army = """
-army=
-{
-    name="1st army"
-    unit={
-        name="1st unit"
-    }
+let (name : ParaResult<string>) = ParaResult.bind ParaValue.asString nameVal
+
+(**
+
+Bind checks to see if the result passed in (nameVal) is an error or a result.
+If nameVal is an error (`get` failed earlier) then the error is propogated.
+Else if there is a value contained a function is applied to the value
+(in this case ParaValue.String "bessie"). The function being applied is
+`ParaValue.asString`, which unwraps the value so that just "bessie" is
+exposed.
+
+The implementation of bind is quite concise and may prove illustrative
+
+*)
+
+// Can be read as: a function named bind that takes two parameters:
+// - fn: a function that when given a value returns a ParaResult
+// - m: the value to check if is currently an error
+// - returns a new ParaResult
+let bind (fn: 'a -> ParaResult<'b>) (m: ParaResult<'a>) : ParaResult<'b> =
+  match m with
+  | Ok(x) -> fn x
+  | Error(x) -> Error(x)
+
+(**
+
+Bind allows Pfarah to define a custom [computation expression][], which
+induces syntax sugar using `let~` and `return!` so that one doesn't have
+to deal with ParaResult explicitly
+
+[computation expression]: https://msdn.microsoft.com/en-us/visualfsharpdocs/conceptual/computation-expressions-%5Bfsharp%5D
+
+*)
+
+let name : ParaResult<string> = para {
+  let! nameVal = ParaValue.get "name" obj
+  return! ParaValue.asString nameVal
 }
-army=
-{
-    name="2nd army"
-    unit={
-        name="1st unit"
-    }
-    unit={
-        name="2nd unit"
-    }
-}"""
 
-// Let's create a list of tuples such that the result is army name * list of
-// unit names
-let armyData =
-  ParaValue.Parse army
-  |> collect "army"
-  |> asArray
-  |> Array.map (fun x ->
-    let units = x |> collect "unit" 
-                  |> asArray 
-                  |> Array.map (fun u -> u?name |> asString)
-    x?name |> asString, units)
-printfn "%A" armyData
+match name with
+| Ok(nm) -> printfn "Ship's name: %s" nm
+| Error(err) -> printfn "%s" err
 
 (**
 
-## Inconsistent Data
+While the number of lines of code in the example grew, computation expressions
+start to shine when the queries become complex. Instead of extracting just the
+name, extract the number of men on the ship (strength)
+
+*)
+
+let data : ParaResult<string * int> = para {
+  let! nameVal = ParaValue.get "name" obj
+  let! strengthVal = ParaValue.get "strength" obj
+  let! name = ParaValue.asString nameVal
+  let! strength = ParaValue.asInteger strengthVal
+  return name, strength
+}
+
+match data with
+| Ok(name, strength) -> printf "Ship: %s. Men: %d" name strength
+| Error(err) -> printfn "%s" err
+
+(**
+
+The potential is starting to show. Still some cruft is getting in the way,
+which can be solved by defining custom operators:
+
+- `?` is aliased to `ParaValue.get`
+- `>>=` is aliased to `ParaResult.bind`
+
+*)
+
+open Pfarah.Operators
+
+let data : ParaResult<string * int> = para {
+  let! name = obj?name >>= ParaValue.asString
+  let! strength = obj?strength >>= ParaValue.asInteger
+  return name, strength
+}
+
+// Or even terser
+open Pfarah.ParaValue
+let data = para {
+  let! name = obj?name >>= asString
+  let! strength = obj?strength >>= asInteger
+  return name, strength
+}
+
+(**
+
+## Dealing with Multiple Ships
+
+Bessie isn't the only ship in the world. Our data is about to get more complex,
+but don't worry, Pfarah will be there every step of the way.
+
+*)
+
+let data = """
+  ship={
+    name=bessie
+    strength=22
+  }
+  ship={
+    name=doris
+    strength=40
+  }
+  ship={
+    name=betsy
+    strength=10
+  }
+"""
+
+// Let's define a common function to parse each ship
+let parseShip (ship : ParaValue) = para {
+  let! name = ship?name >>= asString
+  let! strength = ship?strength >>= asInteger
+  return name, strength
+}
+
+let obj = ParaValue.Parse data
+
+// Collect all the values with a key "ship" into a ParaValue.Array
+let (pips : ParaValue) = ParaValue.collect "ship" obj
+
+// Execute `parseShip` on each ship and aggregate the result
+// into an array
+let (extract : ParaResult<(string * int)[]>) =
+  ParaValue.flatMap parseShip pips
+
+// Sort the ships by the most men first
+let (sorted : ParaResult<(string * int)[]>) =
+  ParaResult.map (Array.sortByDescending snd) extract
+
+match sorted with
+| Ok(ships) -> Array.iter (fun (name, strength) -> 
+    printfn "Ship: %s. Strength: %d" name strength) ships
+| Error(error) -> printfn "%s" error
+
+// In reality the code may be written like:
+ParaValue.Parse data
+|> ParaValue.collect "ship"
+|> ParaValue.flatMap parseShip
+|> ParaResult.map (Array.sortByDescending snd)
+|> function
+| Ok(ships) -> Array.iter (fun (name, strength) -> 
+    printfn "Ship: %s. Strength: %d" name strength) ships
+| Error(error) -> printfn "%s" error
+
+(**
+
+Those who like the computation builder don't have to miss out!
+
+*)
+
+para {
+  let obj = ParaValue.Parse data
+  let! (pips : ParaValue[]) = ParaValue.getAll "ship" obj
+  let! (ships : (string * int)[]) = ParaValue.reduce parseShip pips
+  for (name, strength) in (Array.sortByDescending snd ships) do
+    printfn "Ship: %s. Strength: %d" name strength
+} |> function Error(err) -> printfn "%s" err | _ -> ()
+
+(**
+
+But why the different functions?
+
+collect vs getAll: Both accept a ParaValue and look for a properties of a
+certain key, but collect will also work on ParaValue.Array by iterating over
+each element looking for the key. collect returns a ParaValue.Array, which
+allows subsequent calls to be chained together:
+
+*)
+
+// Will return Ok [| "bessie"; "doris" "betsy" |]
+ParaValue.collect "ship" obj
+|> ParaValue.collect "name"
+|> ParaValue.flatMap ParaValue.asString
+
+(**
+
+Defined in the operator module there is the `/` operator that will delegates
+to `ParaValue.collect`. For those that are familiar with [xpath], this should
+appear similar
+
+[xpath]: https://en.wikipedia.org/wiki/XPath
+
+*)
+
+obj / "ship" / "name" |> ParaValue.flatMap ParaValue.asString
+obj / "ship" / "name" |> flatMap asString
+
+(**
+
+Going back to the commputation builder vs the pipeline method, another
+difference is the function that `parseShip` is passed to. The computation
+expression only works array of ParaValue whereas like `collect`,
+the pipeline method operates on the values of Records, and can map
+singular values like ParaValue.String, etc.
+
+Knowing which one to use is sometimes only a matter of taste.
+
+## Optional Data
 
 Not all objects of a given instance will have the exact same property keys.
-Some may only have a limited subset of the properties wanted. The `tryFind`
-function will return `Some ParaValue` if the property exists and `None` if it
-doesn't.
+Some may only have a limited subset of the properties wanted.
+
+In our ship example, we'll have an optional property, patrol, that denotes
+if a ship is on patrol. If absent, the ship is assumed to not be on patrol.
 
 *)
 
-let ships = """
-ship={
-    name="1st ship"
+let data = """
+  ship={
+    name=bessie
+    strength=22
     patrol=yes
+  }
+  ship={
+    name=doris
+    strength=40
+  }
+  ship={
+    name=betsy
+    strength=10
+    patrol=yes
+  }
+"""
+
+// Let's define a common function to parse each ship with patrol
+let parseShip (ship : ParaValue) = para {
+  let! name = ship?name >>= asString
+  let! strength = ship?strength >>= asInteger
+  let! (patrolVal : ParaValue option) = ParaValue.tryGet "patrol" ship
+
+  // Try converting the potential value to a boolean, if not there
+  // then assume the ship is not on patrol.
+  let! patrol = patrolVal |> ParaResult.defaultOpt asBool false
+  return name, strength, patrol
 }
-ship={
-  name="2nd ship"
-}"""
 
-// Let's print the name of ships on patrol
-let shipData =
-  ParaValue.Parse ships
-  |> collect "ship"
-  |> asArray
-  |> Array.filter (tryFind "patrol" >> Option.isSome)
-  |> Array.map (fun x -> x?name |> asString)
-printfn "%A" armyData
+para {
+  let obj = ParaValue.Parse data
+  let! (pips : ParaValue[]) = ParaValue.getAll "ship" obj
+  let! (ships : (string * int * bool)[]) = ParaValue.reduce parseShip pips
 
-(**
+  // Take the ship name and strength of the ships that are on patrol
+  let shipsOnPatrol =
+    ships
+    |> Array.filter (fun (_, _, patrol) -> patrol)
+    |> Array.map (fun (key, strength, patrol) -> (key, strength))
 
-`tryFind` is also useful when dealing with nested data. If you have `A.B.C` and
-you aren't sure if `A`, `B`, or `C` exists, you can use `tryFind` in conjuntion
-with `Option.bind` to select `C`'s value or `None`
-
-*)
-
-let nested = "A={B={C=1.000}}"
-let cvalue =
-  ParaValue.Parse nested
-  |> tryFind "A"
-  |> Option.bind (tryFind "B")
-  |> Option.bind (tryFind "C")
-
-match cvalue with
-| Some(x) -> printfn "C's value: %f" (x |> asFloat)
-| None -> printfn "C didn't exist!"
-
-// Or a bit more concise if you're just dealing with values.
-printfn "C's value: %f" (cvalue |> floatDefault)
-
-// floatDefault will assume that if the value exists that it is
-// a float. If the value doesn't exist then it will return 0.0
+  for (name, strength) in (Array.sortByDescending snd shipsOnPatrol) do
+    printfn "Ship: %s. Strength: %d" name strength
+} |> function Error(err) -> printfn "%s" err | _ -> ()
 
 (**
 
-## Exploring Data
+## Finding Optional Data
 
 Knowing the data is the first step to any type of analysis. This is made
 difficult when there can be thousands of objects, each one having a subset of
@@ -190,30 +405,21 @@ are always present and the ones that are optional.
 
 *)
 
-let nodes = """
-node={
-  definition=foo
-  incoming={1 2 3}
-}
-node={
-  definition=bar
-}"""
 
-// Print all the properties of the "node" objects in alphabetical order.
-// Append a question mark after the property name to signify that the property
-// is optional.
-let required, optional =
-  ParaValue.Parse nodes
-  |> collect "node"
-  |> asArray
-  |> findOptional
-
-required |> Seq.iter (printfn "%s")
-optional |> Seq.iter (printfn "%s?")
+// Find all the optional properties on ships. Append a question mark after the
+// property name to signify that the property is optional.
+para {
+  let obj = ParaValue.Parse data
+  let! ships = obj / "ship" |> ParaValue.flatMap asRecord
+  let required, optional = findOptional ships
+  required |> Seq.iter (printfn "%s")
+  optional |> Seq.iter (printfn "%s?")
+} |> function Error(err) -> printfn "%s" err | _ -> ()
 
 // Will print:
-// definition
-// incoming?
+// name
+// strength
+// patrol?
 
 (**
 
@@ -266,4 +472,4 @@ let ``text header`` = "EU4txt"
 // this dictionary be created
 let tokens = lazy dict([(0x284ds, "date")])
 let game = ParaValue.Load(path, ``binary header``, ``text header``, tokens)
-game?date |> asDate
+game?date >>= ParaValue.asDate
