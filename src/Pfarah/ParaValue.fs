@@ -869,6 +869,31 @@ module ParaBuilder =
     member __.Return (x) : ParaResult<_> = Ok x
     member __.ReturnFrom (f) : ParaResult<_> = f
     member __.Zero () : ParaResult<_> = Ok ()
+    member __.TryWith (body, handler) =
+      try
+        body()
+      with
+      | e -> handler e
+    member __.TryFinally (body, compensation) =
+      try
+        body()
+      finally
+        compensation()
+    member x.Using(d:#IDisposable, body) =
+      let result = fun () -> body d
+      x.TryFinally (result, fun () ->
+        match d with
+        | null -> ()
+        | d -> d.Dispose())
+    member x.While (guard, body) =
+      if not <| guard () then
+        x.Zero()
+      else
+        bind (fun () -> x.While(guard, body)) (body())
+    member x.For(s:seq<_>, body) =
+      x.Using(s.GetEnumerator(), fun enum ->
+        x.While(enum.MoveNext, fun () -> body enum.Current))
+
   let para = ParaBuilder ()
 
 type ParaValue with
