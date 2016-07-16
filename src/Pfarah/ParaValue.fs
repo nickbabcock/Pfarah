@@ -720,16 +720,21 @@ module ParaValue =
     | ParaValue.Array arr -> arr |> Array.map fn |> ParaValue.Array
     | x -> fn x
 
+  /// Run each element of the given array through the function and if all elements
+  /// result in ok, then reduce the array of results into a single result of an
+  /// array. If an element is an error, the first error is returned.
+  let inline reduce (fn:ParaValue -> ParaResult<'a>) (arr:ParaValue[]) : ParaResult<'a[]> =
+    let res = ParaResult.paraFold fn arr
+    ParaResult.map (fun (x: List<'a>) -> x.ToArray()) res
+
   /// Given a function to map a value to a result, apply this function on every
   /// value of a record, or array, or any other element (and the result would be
   /// an a single element array)
   let inline flatMap (fn:ParaValue -> ParaResult<'a>) (o:ParaValue) : ParaResult<'a[]> =
-    let lst =
-      match o with
-      | ParaValue.Array arr -> ParaResult.paraFold fn arr
-      | ParaValue.Record props -> ParaResult.paraFold fn (props |> Array.map snd)
-      | x -> fn x |> ParaResult.map (fun y -> ResizeArray([| y |]))
-    ParaResult.map (fun (x: List<'a>) -> x.ToArray()) lst
+    match o with
+    | ParaValue.Array arr -> reduce fn arr
+    | ParaValue.Record props -> props |> Array.map snd |> reduce fn
+    | x -> fn x |> ParaResult.map (fun y -> [| y |])
 
   /// Finds all the properties of the object with a given key and aggregates
   /// all the values under a single array. If a given object is an array
