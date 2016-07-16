@@ -2,15 +2,6 @@
 
 [<AutoOpen>]
 module ParaExtensions =
-  /// Tries to find the first property of the object that has the given key.
-  /// If a property is found then `Some ParaValue` will be returned else
-  /// `None`
-  let tryFind prop obj =
-    match obj with
-    | ParaValue.Record properties ->
-      properties |> Array.tryFind (fst >> (=) prop) |> Option.map snd
-    | _ -> None
-
   /// Given a sequence of similar objects, return a tuple of required
   /// properties and optional properties
   let findOptional (objs:seq<(string * ParaValue)[]>) =

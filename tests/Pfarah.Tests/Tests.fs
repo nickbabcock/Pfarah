@@ -625,12 +625,6 @@ let ``tryFind patrol`` () =
   shipData |> shouldEqual (Ok [| "1st ship" |])
 
 [<Test>]
-let ``tryFind returns Some ParaValue`` () =
-  let data = ParaValue.Parse "foo=1.000"
-  data |> tryFind "foo" |> shouldEqual (Some (ParaValue.Number 1.0))
-  data |> tryFind "bar" |> shouldEqual None
-
-[<Test>]
 let ``findOptional works`` () =
   let data = [| ("hello", ParaValue.String "foo"); ("world", ParaValue.String "") |]
   let data2 = [| ("hello", ParaValue.String "foo"); |]

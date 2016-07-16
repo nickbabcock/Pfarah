@@ -444,7 +444,6 @@ let ``load zip binary file`` () =
 [<Test>]
 let ``load zip binary file big`` () =
   let path = Path.Combine(TestContext.CurrentContext.TestDirectory, "data", "eu4bin-zip-big.eu4")
-  ParaValue.Load(path, "EU4bin", "EU4txt", lazy(dict([(0x284ds, "date")])))
-  |> tryFind "date"
-  |> Option.map ParaValue.asDate
-  |> shouldEqual (Some (Ok (DateTime(1757, 8, 12))))
+  let obj = ParaValue.Load(path, "EU4bin", "EU4txt", lazy(dict([(0x284ds, "date")])))
+  para { return! ParaValue.get "date" obj >>= ParaValue.asDate }
+  |> shouldEqual (Ok (DateTime(1757, 8, 12)))
