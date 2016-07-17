@@ -31,7 +31,7 @@ This library takes inspiration from [FSharp.Data JSON][fdj], [Chessie][],
 
 ## Quickstart
 
-We're going to start with querying parsed data and as an example the data will
+We're going to start with querying parsed data and as an example, the data will
 represent a ship named bessie with 22 men onboard.
 
 *)
@@ -45,7 +45,7 @@ let (obj : ParaValue) = ParaValue.Parse "name=bessie strength=22"
 The next step is extracting the information. There are many ways to accomplish
 this and each one will be demonstrated. Which one you choose will be personal
 preference. As the demonstrations become concise they introduce more advanced
-concepts, so initial examples will use as simple constructs.
+concepts, so initial examples will use simple constructs.
 
 `ParaValue` is a [discriminated union][du] and the first example queries it
 directly for more information.
@@ -140,7 +140,7 @@ There is one possible question remaining for the unaccustomed and that is
 
 Bind checks to see if the result passed in (nameVal) is an error or a result.
 If nameVal is an error (`get` failed earlier) then the error is propogated.
-Else if there is a value contained a function is applied to the value
+Else if there is a value contained, a function is applied to the value
 (in this case ParaValue.String "bessie"). The function being applied is
 `ParaValue.asString`, which unwraps the value so that just "bessie" is
 exposed.
@@ -161,7 +161,7 @@ let bind (fn: 'a -> ParaResult<'b>) (m: ParaResult<'a>) : ParaResult<'b> =
 (**
 
 Bind allows Pfarah to define a custom [computation expression][], which
-induces syntax sugar using `let~` and `return!` so that one doesn't have
+induces syntax sugar using `let!` and `return!` so that one doesn't have
 to deal with ParaResult explicitly
 
 [computation expression]: https://msdn.microsoft.com/en-us/visualfsharpdocs/conceptual/computation-expressions-%5Bfsharp%5D
@@ -327,7 +327,7 @@ obj / "ship" / "name" |> flatMap asString
 
 Going back to the commputation builder vs the pipeline method, another
 difference is the function that `parseShip` is passed to. The computation
-expression only works array of ParaValue whereas like `collect`,
+expression only works with arrays of ParaValue whereas like `collect`,
 the pipeline method operates on the values of Records, and can map
 singular values like ParaValue.String, etc.
 
