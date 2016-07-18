@@ -831,6 +831,7 @@ module Functional =
     static member inline FromPara (_: single) = map single (wrap (unfold asNumber))
     static member inline FromPara (_: float) = map float (wrap (unfold asNumber))
     static member inline FromPara (_: string) = wrap (unfold asString)
+    static member inline FromPara (_: DateTime) = wrap (unfold asDate)
 
   let inline internal fromParaDefaults (a: ^a, _: ^b) =
     ((^a or ^b) : (static member FromPara: ^a -> ^a ParaValue) a)

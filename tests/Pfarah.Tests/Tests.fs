@@ -866,6 +866,10 @@ let ``deserialize a string`` () =
   deserialize (ParaValue.String "hello") |> shouldEqual "hello"
 
 [<Test>]
+let ``deserialize a date`` () =
+  deserialize (ParaValue.Date  (DateTime(1942, 1, 1))) |> shouldEqual (DateTime(1942, 1, 1))
+
+[<Test>]
 let ``deserialize a string into an option`` () =
   deserialize (ParaValue.String "hello") |> shouldEqual (Some "hello")
 
