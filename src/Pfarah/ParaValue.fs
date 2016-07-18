@@ -623,16 +623,20 @@ module ParaResult =
     | Some(res) -> res
     | None -> Ok def
 
-  /// Apply a function that returns a result to each element of an array.
-  /// Aggregate the results into a vector and return the resulting vector
-  /// or the error that occurred on one of the elements in the array
-  let inline paraFold fn arr : ParaResult<ResizeArray<'a>> =
-    let addElem (vec:List<'a>) elem = vec.Add(elem); Ok(vec)
+  /// Takes an array of results and if all elements are ok then a result of
+  /// array is returned else the first error
+  let choose (arr: ParaResult<'a>[]) : ParaResult<'a[]> =
+    let isError = function
+    | Ok(x) -> false
+    | Error(x) -> true
 
-    Array.map fn arr
-    |> Array.fold(fun state x ->
-      state |> bind (fun vec -> bind (addElem vec) x))
-      (Ok (ResizeArray<'a>()))
+    let getError = function
+    | Ok(x) -> failwith "Not expecting a value"
+    | Error(x) -> x
+
+    match Array.tryFind isError arr with
+    | Some(err) -> Error(getError err)
+    | None -> Array.map get arr |> Ok
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module ParaValue =
@@ -731,8 +735,7 @@ module ParaValue =
   /// result in ok, then reduce the array of results into a single result of an
   /// array. If an element is an error, the first error is returned.
   let inline reduce (fn:ParaValue -> ParaResult<'a>) (arr:ParaValue[]) : ParaResult<'a[]> =
-    let res = ParaResult.paraFold fn arr
-    ParaResult.map (fun (x: List<'a>) -> x.ToArray()) res
+    Array.map fn arr |> ParaResult.choose
 
   /// Given a function to map a value to a result, apply this function on every
   /// value of a record, or array, or any other element (and the result would be
@@ -836,12 +839,12 @@ module Functional =
     fst (fromParaDefaults (Unchecked.defaultof<'a>, FromParaDefaults) x)
 
   let inline lister fn =
-    map fn (wrap (ParaValue.asArray >> ParaResult.bind (ParaResult.paraFold fromPara)))
+    map fn (wrap (ParaValue.asArray >> ParaResult.bind (ParaValue.reduce fromPara)))
 
   type FromParaDefaults with
     static member inline FromPara (_: 'a option) = map Some (fun b -> fromPara b, b)
     static member inline FromPara (_: 'a[]) : ParaValue<'a[]> =
-      lister (fun x -> x.ToArray())
+      lister id
     static member inline FromPara (_: 'a list) : ParaValue<'a list> =
       lister List.ofSeq
 
