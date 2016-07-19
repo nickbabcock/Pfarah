@@ -70,36 +70,41 @@ let gitRaw = environVarOrDefault "gitRaw" "https://raw.github.com/nickbabcock"
 // Read additional information from the release notes document
 let release = LoadReleaseNotes "RELEASE_NOTES.md"
 
-let genFSAssemblyInfo (projectPath) =
-    let projectName = System.IO.Path.GetFileNameWithoutExtension(projectPath)
-    let folderName = System.IO.Path.GetDirectoryName(projectPath)
-    let basePath = "src" @@ folderName
-    let fileName = basePath @@ "AssemblyInfo.fs"
-    CreateFSharpAssemblyInfo fileName
-      [ Attribute.Title (projectName)
-        Attribute.Product project
-        Attribute.Description summary
-        Attribute.Version release.AssemblyVersion
-        Attribute.FileVersion release.AssemblyVersion ]
-
-let genCSAssemblyInfo (projectPath) =
-    let projectName = System.IO.Path.GetFileNameWithoutExtension(projectPath)
-    let folderName = System.IO.Path.GetDirectoryName(projectPath)
-    let basePath = folderName @@ "Properties"
-    let fileName = basePath @@ "AssemblyInfo.cs"
-    CreateCSharpAssemblyInfo fileName
-      [ Attribute.Title (projectName)
-        Attribute.Product project
-        Attribute.Description summary
-        Attribute.Version release.AssemblyVersion
-        Attribute.FileVersion release.AssemblyVersion ]
+// Helper active pattern for project types
+let (|Fsproj|Csproj|Vbproj|Shproj|) (projFileName:string) =
+    match projFileName with
+    | f when f.EndsWith("fsproj") -> Fsproj
+    | f when f.EndsWith("csproj") -> Csproj
+    | f when f.EndsWith("vbproj") -> Vbproj
+    | f when f.EndsWith("shproj") -> Shproj
+    | _                           -> failwith (sprintf "Project file %s not supported. Unknown project type." projFileName)
 
 // Generate assembly info files with the right version & up-to-date information
 Target "AssemblyInfo" (fun _ ->
-  let fsProjs =  !! "src/**/*.fsproj"
-  let csProjs = !! "src/**/*.csproj"
-  fsProjs |> Seq.iter genFSAssemblyInfo
-  csProjs |> Seq.iter genCSAssemblyInfo
+    let getAssemblyInfoAttributes projectName =
+        [ Attribute.Title (projectName)
+          Attribute.Product project
+          Attribute.Description summary
+          Attribute.Version release.AssemblyVersion
+          Attribute.FileVersion release.AssemblyVersion ]
+
+    let getProjectDetails projectPath =
+        let projectName = System.IO.Path.GetFileNameWithoutExtension(projectPath)
+        ( projectPath,
+          projectName,
+          System.IO.Path.GetDirectoryName(projectPath),
+          (getAssemblyInfoAttributes projectName)
+        )
+
+    !! "src/**/*.??proj"
+    |> Seq.map getProjectDetails
+    |> Seq.iter (fun (projFileName, projectName, folderName, attributes) ->
+        match projFileName with
+        | Fsproj -> CreateFSharpAssemblyInfo (folderName </> "AssemblyInfo.fs") attributes
+        | Csproj -> CreateCSharpAssemblyInfo ((folderName </> "Properties") </> "AssemblyInfo.cs") attributes
+        | Vbproj -> CreateVisualBasicAssemblyInfo ((folderName </> "My Project") </> "AssemblyInfo.vb") attributes
+        | Shproj -> ()
+        )
 )
 
 // --------------------------------------------------------------------------------------
