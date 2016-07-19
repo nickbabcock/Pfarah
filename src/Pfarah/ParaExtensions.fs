@@ -30,10 +30,6 @@ module Operators =
   /// the Record, the function will return an error
   let (?) (obj:ParaValue) (key:string) : ParaResult<ParaValue> = ParaValue.get key obj
 
-  /// Slash operator to emulate xpath operations, see collect.
-  /// Inspired by json4s
-  let (/) (obj:ParaValue) propertyName = ParaValue.collect propertyName obj
-
   /// Slash operator to emulate xpath operations, see collectAll.
   /// Inspired by json4s. The ideal operator would be `//` but `//`
   /// is interpreted as a comment

@@ -54,6 +54,22 @@ with
 
   override this.ToString() = ParaValue.Prettify this 0
 
+  static member internal collect prop obj : ParaValue =
+    let rec findByName prop obj =
+      match obj with
+      | ParaValue.Record properties ->
+        properties
+        |> Array.filter (fst >> (=) prop)
+        |> Array.map snd
+      | ParaValue.Array arr -> arr |> Array.collect (findByName prop)
+      | _ -> [| |]
+    findByName prop obj |> ParaValue.Array
+
+  /// Slash operator to emulate xpath operations, see collect.
+  /// Inspired by json4s. Defined here so to not override the
+  /// global division operator
+  static member (/) (obj:ParaValue, propertyName) = ParaValue.collect propertyName obj
+
 module Frequencies =
   // There is only two possible values for booleans, so cache these bad boys
   let ptrue = ParaValue.Bool true
@@ -750,16 +766,7 @@ module ParaValue =
   /// all the values under a single array. If a given object is an array
   /// all sub-objects are aggregated. If not an array or object, an empty
   /// array is returned.
-  let collect prop obj : ParaValue =
-    let rec findByName prop obj =
-      match obj with
-      | ParaValue.Record properties ->
-        properties
-        |> Array.filter (fst >> (=) prop)
-        |> Array.map snd
-      | ParaValue.Array arr -> arr |> Array.collect (findByName prop)
-      | _ -> [| |]
-    findByName prop obj |> ParaValue.Array
+  let collect prop obj : ParaValue = ParaValue.collect prop obj
 
   /// Finds all the properties of the object and sub-objects with a given key
   /// and aggregates all the values under a single array. If a given object is
