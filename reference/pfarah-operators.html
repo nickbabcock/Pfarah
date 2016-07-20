@@ -54,24 +54,152 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '19', 19)" onmouseover="showTip(event, '19', 19)">
-            ( ? ) obj propertyName
+          <code onmouseout="hideTip(event, '16', 16)" onmouseover="showTip(event, '16', 16)">
+            ( !. ) key
           </code>
-          <div class="tip" id="19">
+          <div class="tip" id="16">
+            <strong>Signature:</strong> key:string -&gt; ParaValue&lt;^a&gt;<br />
+                          <strong>Type parameters:</strong> ^a          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L48-48" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Prefix operator that delegates pget and sweetens the deal</p>
+
+
+              <p>CompiledName: <code>op_BangDot</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '17', 17)" onmouseover="showTip(event, '17', 17)">
+            ( .@ ) obj key
+          </code>
+          <div class="tip" id="17">
+            <strong>Signature:</strong> obj:ParaValue -&gt; key:string -&gt; ParaResult&lt;^?7381&gt;<br />
+                          <strong>Type parameters:</strong> ^?7381          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L51-51" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Operator inspired from the fleece project -- delegates to pget</p>
+
+
+              <p>CompiledName: <code>op_DotAt</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '18', 18)" onmouseover="showTip(event, '18', 18)">
+            ( /./ ) obj propertyName
+          </code>
+          <div class="tip" id="18">
             <strong>Signature:</strong> obj:ParaValue -&gt; propertyName:string -&gt; ParaValue<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L7-7" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L36-36" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Slash operator to emulate xpath operations, see collectAll.
+Inspired by json4s. The ideal operator would be <code>//</code> but <code>//</code>
+is interpreted as a comment</p>
+
+
+              <p>CompiledName: <code>op_DivideDotDivide</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '19', 19)" onmouseover="showTip(event, '19', 19)">
+            ( ? ) obj key
+          </code>
+          <div class="tip" id="19">
+            <strong>Signature:</strong> obj:ParaValue -&gt; key:string -&gt; ParaResult&lt;ParaValue&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L31-31" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Retrieves the property on the ParaValue Record with the given property
 name. If the object is not a Record or the property does not exist on
-the Record, the function will fail</p>
+the Record, the function will return an error</p>
 
 
               <p>CompiledName: <code>op_Dynamic</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '20', 20)" onmouseover="showTip(event, '20', 20)">
+            ( &lt;!&gt; ) f m
+          </code>
+          <div class="tip" id="20">
+            <strong>Signature:</strong> f:(&#39;?7376 -&gt; &#39;a) -&gt; m:ParaValue&lt;&#39;?7376&gt; -&gt; ParaValue&lt;&#39;a&gt;<br />
+                          <strong>Type parameters:</strong> '?7376, 'a          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L45-45" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Lift operator adopted from the chiron project</p>
+
+
+              <p>CompiledName: <code>op_LessBangGreater</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '21', 21)" onmouseover="showTip(event, '21', 21)">
+            ( &lt;*&gt; ) f m
+          </code>
+          <div class="tip" id="21">
+            <strong>Signature:</strong> f:ParaValue&lt;(&#39;?7373 -&gt; &#39;a)&gt; -&gt; m:ParaValue&lt;&#39;?7373&gt; -&gt; ParaValue&lt;&#39;a&gt;<br />
+                          <strong>Type parameters:</strong> '?7373, 'a          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L42-42" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Apply operator adopted from the chiron project</p>
+
+
+              <p>CompiledName: <code>op_LessMultiplyGreater</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '22', 22)" onmouseover="showTip(event, '22', 22)">
+            ( &gt;&gt;= ) result f
+          </code>
+          <div class="tip" id="22">
+            <strong>Signature:</strong> result:ParaResult&lt;&#39;?7370&gt; -&gt; f:(&#39;?7370 -&gt; ParaResult&lt;&#39;?7371&gt;) -&gt; ParaResult&lt;&#39;?7371&gt;<br />
+                          <strong>Type parameters:</strong> '?7370, '?7371          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaExtensions.fs#L39-39" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Delegates to ParaResult.bind. Adopted from Chessie and Haskell</p>
+
+
+              <p>CompiledName: <code>op_GreaterGreaterEquals</code></p>
         </td>
       </tr>
     </tbody>

@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8"/>
-    <title>Utils - Pfarah</title>
+    <title>ParaResultImpl - Pfarah</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description" content=""/>
     <meta name="author" content="Nick Babcock <nbabcock19@hotmail.com>"/>
@@ -36,7 +36,7 @@
 
 
 
-<h1>Utils</h1>
+<h1>ParaResultImpl</h1>
 <p>
   <span>Namespace: Pfarah</span><br />
 </p>
@@ -54,59 +54,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '59', 59)" onmouseover="showTip(event, '59', 59)">
-            cut n
+          <code onmouseout="hideTip(event, '32', 32)" onmouseover="showTip(event, '32', 32)">
+            Error x
           </code>
-          <div class="tip" id="59">
-            <strong>Signature:</strong> n:int -&gt; float<br />
-                      </div>
+          <div class="tip" id="32">
+            <strong>Signature:</strong> x:string -&gt; ParaResult&lt;&#39;a&gt;<br />
+                          <strong>Type parameters:</strong> 'a          </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L26-26" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Converts an integer that represents a Q16.16 fixed-point number into its
-floating point representation. See:
-<a href="https://en.wikipedia.org/wiki/Q_(number_format)">https://en.wikipedia.org/wiki/Q_(number_format)</a></p>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '60', 60)" onmouseover="showTip(event, '60', 60)">
-            cut32 n
-          </code>
-          <div class="tip" id="60">
-            <strong>Signature:</strong> n:int -&gt; float<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L32-32" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Converts the smaller precision binary float from the integer it is stored
-as to a float. It makes sense to be encoded this way as the numbers are
-textually represented with three decimal points (#.000)</p>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '61', 61)" onmouseover="showTip(event, '61', 61)">
-            encoding 
-          </code>
-          <div class="tip" id="61">
-            <strong>Signature:</strong> Encoding<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L18-18" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L610-610" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -116,88 +72,96 @@ textually represented with three decimal points (#.000)</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '62', 62)" onmouseover="showTip(event, '62', 62)">
-            parseDate str strLength
+          <code onmouseout="hideTip(event, '33', 33)" onmouseover="showTip(event, '33', 33)">
+            Ok x
           </code>
-          <div class="tip" id="62">
-            <strong>Signature:</strong> str:byte [] -&gt; strLength:int -&gt; Nullable&lt;DateTime&gt;<br />
-                      </div>
+          <div class="tip" id="33">
+            <strong>Signature:</strong> x:&#39;a -&gt; ParaResult&lt;&#39;a&gt;<br />
+                          <strong>Type parameters:</strong> 'a          </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L118-118" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L609-609" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Attempts to convert the string to a date time. Returns some datetime if
-successful</p>
+          <p>Represents the deserialized value or an error. Adapted from Don Syme's
+Github comment on a result type in F#:
+<a href="https://github.com/fsharp/FSharpLangDesign/issues/49#issuecomment-193795013">https://github.com/fsharp/FSharpLangDesign/issues/49#issuecomment-193795013</a></p>
 
 
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Type extensions</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Type extension</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '34', 34)" onmouseover="showTip(event, '34', 34)">
+            Error(x)
+          </code>
+          <div class="tip" id="34">
+            <strong>Signature:</strong> x:string -&gt; ParaResult&lt;&#39;T1&gt;<br />
+                          <strong>Type parameters:</strong> 'a          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L612-612" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+              <p>CompiledName: <code>Choice`2.Error.Static</code></p>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '63', 63)" onmouseover="showTip(event, '63', 63)">
-            parseDouble str strLength
+          <code onmouseout="hideTip(event, '35', 35)" onmouseover="showTip(event, '35', 35)">
+            Ok(x)
           </code>
-          <div class="tip" id="63">
-            <strong>Signature:</strong> str:byte [] -&gt; strLength:int -&gt; Nullable&lt;double&gt;<br />
-                      </div>
+          <div class="tip" id="35">
+            <strong>Signature:</strong> x:&#39;T1 -&gt; ParaResult&lt;&#39;T1&gt;<br />
+                          <strong>Type parameters:</strong> 'a          </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L39-39" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L613-613" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>A highly optimized version of Double.TryParse that takes advantage of
-the fact that we know that the number format is (in regex form):
-<(\d+)\.(\d{1,3,5})?>. In profiling it was shown that Double.TryParse was a
-bottleneck at around 20-50% of the CPU time and after this function was
-written, the bottleneck completely disappeared.</p>
-
-
+          
+              <p>CompiledName: <code>Choice`2.Ok.Static</code></p>
         </td>
       </tr>
+    </tbody>
+  </table>
+  <h3>Active patterns</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Active pattern</td><td>Description</td></tr>
+    </thead>
+    <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '64', 64)" onmouseover="showTip(event, '64', 64)">
-            tryDateParse str
+          <code onmouseout="hideTip(event, '36', 36)" onmouseover="showTip(event, '36', 36)">
+            ( |Ok|Error| ) result
           </code>
-          <div class="tip" id="64">
-            <strong>Signature:</strong> str:string -&gt; DateTime option<br />
-                      </div>
+          <div class="tip" id="36">
+            <strong>Signature:</strong> result:ParaResult&lt;&#39;Ok&gt; -&gt; ParaResult&lt;&#39;Ok&gt;<br />
+                          <strong>Type parameters:</strong> 'Ok          </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L157-157" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L614-614" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Attempts to convert a given string of the form yyyy.mm.dd with and
-optional hour part into a proper DateTime.</p>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '65', 65)" onmouseover="showTip(event, '65', 65)">
-            tryDoubleParse str
-          </code>
-          <div class="tip" id="65">
-            <strong>Signature:</strong> str:string -&gt; double option<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/Utils.fs#L164-164" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Attempts to convert a given string into a number that either has
-no fractional part, 3 decimal, or 5 decimal points.</p>
-
-
+          
+              <p>CompiledName: <code>|Ok|Error|</code></p>
         </td>
       </tr>
     </tbody>

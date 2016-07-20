@@ -57,18 +57,6 @@
           </td>
           <td class="xmldoc"></td>
         </tr>
-        <tr>
-          <td class="type-name">
-            <a href="pfarah-functional-pararesult-1.html">ParaResult<'a></a>
-          </td>
-          <td class="xmldoc"></td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="pfarah-functional-paravalue-1.html">ParaValue<'a></a>
-          </td>
-          <td class="xmldoc"></td>
-        </tr>
     </tbody>
   </table>
 
@@ -83,148 +71,22 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '3', 3)" onmouseover="showTip(event, '3', 3)">
-            ( !. ) key
-          </code>
-          <div class="tip" id="3">
-            <strong>Signature:</strong> key:string -&gt; ParaValue&lt;^?7372&gt;<br />
-                          <strong>Type parameters:</strong> ^?7372          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L664-664" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-              <p>CompiledName: <code>op_BangDot</code></p>
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '4', 4)" onmouseover="showTip(event, '4', 4)">
-            ( &lt;!&gt; ) f m
-          </code>
-          <div class="tip" id="4">
-            <strong>Signature:</strong> f:(&#39;?7369 -&gt; &#39;?7370) -&gt; m:ParaValue&lt;&#39;?7369&gt; -&gt; ParaValue&lt;&#39;?7370&gt;<br />
-                          <strong>Type parameters:</strong> '?7369, '?7370          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L663-663" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-              <p>CompiledName: <code>op_LessBangGreater</code></p>
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '5', 5)" onmouseover="showTip(event, '5', 5)">
-            ( &lt;*&gt; ) f m
-          </code>
-          <div class="tip" id="5">
-            <strong>Signature:</strong> f:ParaValue&lt;(&#39;?7366 -&gt; &#39;?7367)&gt; -&gt; m:ParaValue&lt;&#39;?7366&gt; -&gt; ParaValue&lt;&#39;?7367&gt;<br />
-                          <strong>Type parameters:</strong> '?7366, '?7367          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L662-662" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-              <p>CompiledName: <code>op_LessMultiplyGreater</code></p>
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '6', 6)" onmouseover="showTip(event, '6', 6)">
-            apply f m
-          </code>
-          <div class="tip" id="6">
-            <strong>Signature:</strong> f:ParaValue&lt;(&#39;a -&gt; &#39;b)&gt; -&gt; m:ParaValue&lt;&#39;a&gt; -&gt; ParaValue&lt;&#39;b&gt;<br />
-                          <strong>Type parameters:</strong> 'a, 'b          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L590-590" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '7', 7)" onmouseover="showTip(event, '7', 7)">
-            bind m f paravalue
-          </code>
-          <div class="tip" id="7">
-            <strong>Signature:</strong> m:ParaValue&lt;&#39;a&gt; -&gt; f:(&#39;a -&gt; ParaValue&lt;&#39;b&gt;) -&gt; paravalue:ParaValue -&gt; ParaResult&lt;&#39;b&gt; * ParaValue<br />
-                          <strong>Type parameters:</strong> 'a, 'b          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L584-584" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '8', 8)" onmouseover="showTip(event, '8', 8)">
-            bind2 m f
-          </code>
-          <div class="tip" id="8">
-            <strong>Signature:</strong> m:ParaResult&lt;&#39;a&gt; -&gt; f:(&#39;a -&gt; ParaResult&lt;&#39;b&gt;) -&gt; ParaResult&lt;&#39;b&gt;<br />
-                          <strong>Type parameters:</strong> 'a, 'b          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L579-579" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '9', 9)" onmouseover="showTip(event, '9', 9)">
+          <code onmouseout="hideTip(event, '10', 10)" onmouseover="showTip(event, '10', 10)">
             deserialize paraValue
           </code>
-          <div class="tip" id="9">
-            <strong>Signature:</strong> paraValue:ParaValue -&gt; ^?7362<br />
-                          <strong>Type parameters:</strong> ^?7362          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L648-648" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '10', 10)" onmouseover="showTip(event, '10', 10)">
-            error e va
-          </code>
           <div class="tip" id="10">
-            <strong>Signature:</strong> e:string -&gt; va:ParaValue -&gt; ParaResult&lt;&#39;a&gt; * ParaValue<br />
-                          <strong>Type parameters:</strong> 'a          </div>
+            <strong>Signature:</strong> paraValue:ParaValue -&gt; ^?7422<br />
+                          <strong>Type parameters:</strong> ^?7422          </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L566-566" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L861-861" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Deserialize data into a type implementing <code>FromPara</code>. Throws an
+exception on failure</p>
+
+
         </td>
       </tr>
       <tr>
@@ -238,7 +100,7 @@
                           <strong>Type parameters:</strong> ^a          </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L620-620" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L846-846" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -249,14 +111,14 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '12', 12)" onmouseover="showTip(event, '12', 12)">
-            init a paravalue
+            lister fn
           </code>
           <div class="tip" id="12">
-            <strong>Signature:</strong> a:&#39;a -&gt; paravalue:ParaValue -&gt; ParaResult&lt;&#39;a&gt; * ParaValue<br />
-                          <strong>Type parameters:</strong> 'a          </div>
+            <strong>Signature:</strong> fn:(^?7412 [] -&gt; &#39;?7413) -&gt; ParaValue&lt;&#39;?7413&gt;<br />
+                          <strong>Type parameters:</strong> ^?7412, '?7413          </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L576-576" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L849-849" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -267,108 +129,61 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '13', 13)" onmouseover="showTip(event, '13', 13)">
-            lister fn
+            pget key o
           </code>
           <div class="tip" id="13">
-            <strong>Signature:</strong> fn:(List&lt;^?7352&gt; -&gt; &#39;?7353) -&gt; ParaValue&lt;&#39;?7353&gt;<br />
-                          <strong>Type parameters:</strong> ^?7352, '?7353          </div>
+            <strong>Signature:</strong> key:string -&gt; o:ParaValue -&gt; ParaResult&lt;^a&gt;<br />
+                          <strong>Type parameters:</strong> ^a          </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L635-635" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L864-864" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Extract and deserialize the value with a given key</p>
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '14', 14)" onmouseover="showTip(event, '14', 14)">
-            map f m
+            pgetAll key o
           </code>
           <div class="tip" id="14">
-            <strong>Signature:</strong> f:(&#39;a -&gt; &#39;b) -&gt; m:ParaValue&lt;&#39;a&gt; -&gt; ParaValue&lt;&#39;b&gt;<br />
-                          <strong>Type parameters:</strong> 'a, 'b          </div>
+            <strong>Signature:</strong> key:string -&gt; o:ParaValue -&gt; ParaResult&lt;^?7426 []&gt;<br />
+                          <strong>Type parameters:</strong> ^?7426          </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L594-594" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L869-869" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Extract and deserialize all the values matching a given key
+into a result</p>
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '15', 15)" onmouseover="showTip(event, '15', 15)">
-            number _arg1
+            tryPget key o
           </code>
           <div class="tip" id="15">
-            <strong>Signature:</strong> _arg1:ParaValue -&gt; ParaResult&lt;float&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L568-568" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '16', 16)" onmouseover="showTip(event, '16', 16)">
-            paraFold arr
-          </code>
-          <div class="tip" id="16">
-            <strong>Signature:</strong> arr:seq&lt;ParaValue&gt; -&gt; ParaResult&lt;List&lt;^a&gt;&gt;<br />
+            <strong>Signature:</strong> key:string -&gt; o:ParaValue -&gt; ParaResult&lt;^a option&gt;<br />
                           <strong>Type parameters:</strong> ^a          </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L623-623" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L879-879" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
+          <p>Extract and deserialize the value with a given key if the key is present</p>
 
-          <code onmouseout="hideTip(event, '17', 17)" onmouseover="showTip(event, '17', 17)">
-            pget key o
-          </code>
-          <div class="tip" id="17">
-            <strong>Signature:</strong> key:string -&gt; o:ParaValue -&gt; ParaResult&lt;^a&gt; * ParaValue<br />
-                          <strong>Type parameters:</strong> ^a          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L653-653" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
 
-          <code onmouseout="hideTip(event, '18', 18)" onmouseover="showTip(event, '18', 18)">
-            stringify _arg1
-          </code>
-          <div class="tip" id="18">
-            <strong>Signature:</strong> _arg1:ParaValue -&gt; ParaResult&lt;string&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L572-572" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
         </td>
       </tr>
     </tbody>

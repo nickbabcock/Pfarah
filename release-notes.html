@@ -33,6 +33,26 @@
       <div class="row">
         <div class="span9" id="main">
           
+<h3><a name="0-7-0-July-19th-2016" class="anchor" href="#0-7-0-July-19th-2016">0.7.0 July 19th 2016</a></h3>
+<p>This is big release. Probably the biggest in the foreseeable future. Any and
+all code related to extracting and deserialization of values will need to
+change. No deprecation notices, sorry just code that fails to compile. But
+through this pain brings great improvements as the new API greatly simplifies
+extraction and deserialization. As a case study I re-wrote an EU4 savegame
+parser in nearly a day and it was a breeze to write. Hopefully the promise-
+land offsets any issues. Check out the updated tutorial to become accustomed.</p>
+<ul>
+<li>Parser can now parse comments</li>
+<li>Many previous functions now moved under the <code>ParaValue</code> module</li>
+<li>
+Make all deserialization in terms of a new type <code>ParaResult</code>
+that is aliased to choice
+</li>
+<li>Remove <code>tryFind</code></li>
+<li>Deserialization works can unwrap single instance arrays</li>
+<li>Define slash operators to work like xpath</li>
+<li>Allow <code>collect</code> to work on more than just objects</li>
+</ul>
 <h3><a name="0-6-5-June-28th-2016" class="anchor" href="#0-6-5-June-28th-2016">0.6.5 June 28th 2016</a></h3>
 <ul>
 <li>Performance increase when reading text files (40% speedup)</li>

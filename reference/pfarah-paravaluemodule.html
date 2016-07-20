@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>ParaValue - Pfarah</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content=""/>
+    <meta name="author" content="Nick Babcock <nbabcock19@hotmail.com>"/>
+    <link rel="icon" href="/Pfarah/favicon.ico">
+
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet"/>
+
+    <link type="text/css" rel="stylesheet" href="/Pfarah/content/style.css" />
+    <script type="text/javascript" src="/Pfarah/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://github.com/nickbabcock/Pfarah">github page</a></li>
+        </ul>
+        <h3 class="muted"><a href="/Pfarah/index.html">Pfarah</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+
+
+
+<h1>ParaValue</h1>
+<p>
+  <span>Namespace: Pfarah</span><br />
+</p>
+<div class="xmldoc">
+</div>
+
+<!-- Render nested types and modules, if there are any -->
+
+  <h3>Functions and values</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Function or value</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '37', 37)" onmouseover="showTip(event, '37', 37)">
+            asArray _arg1
+          </code>
+          <div class="tip" id="37">
+            <strong>Signature:</strong> _arg1:ParaValue -&gt; ParaResult&lt;ParaValue []&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L660-660" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Extracts inner array or reports an error</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '38', 38)" onmouseover="showTip(event, '38', 38)">
+            asBool _arg1
+          </code>
+          <div class="tip" id="38">
+            <strong>Signature:</strong> _arg1:ParaValue -&gt; ParaResult&lt;bool&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L672-672" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Extracts inner boolean or reports an error. A boolean value is sometimes
+written as a number, so if a number is non-zero, it is considered true
+(think C)</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '39', 39)" onmouseover="showTip(event, '39', 39)">
+            asDate _arg1
+          </code>
+          <div class="tip" id="39">
+            <strong>Signature:</strong> _arg1:ParaValue -&gt; ParaResult&lt;DateTime&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L691-691" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Extracts inner date or reports an error</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '40', 40)" onmouseover="showTip(event, '40', 40)">
+            asHsv _arg1
+          </code>
+          <div class="tip" id="40">
+            <strong>Signature:</strong> _arg1:ParaValue -&gt; ParaResult&lt;float * float * float&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L696-696" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Extracts inner hsv or reports an error</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '41', 41)" onmouseover="showTip(event, '41', 41)">
+            asInteger 
+          </code>
+          <div class="tip" id="41">
+            <strong>Signature:</strong> ParaValue -&gt; ParaResult&lt;int&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L683-683" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Extracts the inner number and truncates any possible decimals</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '42', 42)" onmouseover="showTip(event, '42', 42)">
+            asNumber _arg1
+          </code>
+          <div class="tip" id="42">
+            <strong>Signature:</strong> _arg1:ParaValue -&gt; ParaResult&lt;float&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L678-678" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Extracts inner number or reports an error</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '43', 43)" onmouseover="showTip(event, '43', 43)">
+            asRecord _arg1
+          </code>
+          <div class="tip" id="43">
+            <strong>Signature:</strong> _arg1:ParaValue -&gt; ParaResult&lt;(string * ParaValue) []&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L665-665" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Extracts inner key value array or reports an error</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '44', 44)" onmouseover="showTip(event, '44', 44)">
+            asRgb _arg1
+          </code>
+          <div class="tip" id="44">
+            <strong>Signature:</strong> _arg1:ParaValue -&gt; ParaResult&lt;byte * byte * byte&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L701-701" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Extracts inner rgb or reports an error</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '45', 45)" onmouseover="showTip(event, '45', 45)">
+            asString _arg1
+          </code>
+          <div class="tip" id="45">
+            <strong>Signature:</strong> _arg1:ParaValue -&gt; ParaResult&lt;string&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L686-686" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Extracts inner string or reports an error</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '46', 46)" onmouseover="showTip(event, '46', 46)">
+            collect prop obj
+          </code>
+          <div class="tip" id="46">
+            <strong>Signature:</strong> prop:string -&gt; obj:ParaValue -&gt; ParaValue<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L769-769" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Finds all the properties of the object with a given key and aggregates
+all the values under a single array. If a given object is an array
+all sub-objects are aggregated. If not an array or object, an empty
+array is returned.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '47', 47)" onmouseover="showTip(event, '47', 47)">
+            collectAll prop obj
+          </code>
+          <div class="tip" id="47">
+            <strong>Signature:</strong> prop:string -&gt; obj:ParaValue -&gt; ParaValue<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L775-775" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Finds all the properties of the object and sub-objects with a given key
+and aggregates all the values under a single array. If a given object is
+an array all sub-objects are aggregated. If not an array or object, an
+empty array is returned.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '48', 48)" onmouseover="showTip(event, '48', 48)">
+            flatMap fn o
+          </code>
+          <div class="tip" id="48">
+            <strong>Signature:</strong> fn:(ParaValue -&gt; ParaResult&lt;&#39;a&gt;) -&gt; o:ParaValue -&gt; ParaResult&lt;&#39;a []&gt;<br />
+                          <strong>Type parameters:</strong> 'a          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L759-759" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Given a function to map a value to a result, apply this function on every
+value of a record, or array, or any other element (and the result would be
+an a single element array)</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '49', 49)" onmouseover="showTip(event, '49', 49)">
+            get key o
+          </code>
+          <div class="tip" id="49">
+            <strong>Signature:</strong> key:string -&gt; o:ParaValue -&gt; ParaResult&lt;ParaValue&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L715-715" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Assumes the passed in value is a record and attempts to search
+the record's properties for the given key. If a single value exists
+return the value else there is an error</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '50', 50)" onmouseover="showTip(event, '50', 50)">
+            getAll key o
+          </code>
+          <div class="tip" id="50">
+            <strong>Signature:</strong> key:string -&gt; o:ParaValue -&gt; ParaResult&lt;ParaValue []&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L725-725" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Assumes the passed in value is a record and collects all properties
+with a given key.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '51', 51)" onmouseover="showTip(event, '51', 51)">
+            map fn obj
+          </code>
+          <div class="tip" id="51">
+            <strong>Signature:</strong> fn:(ParaValue -&gt; ParaValue) -&gt; obj:ParaValue -&gt; ParaValue<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L743-743" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Return a new ParaValue resulting from applying the given function
+to each value in the data. Adapted from json4s.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '52', 52)" onmouseover="showTip(event, '52', 52)">
+            reduce fn arr
+          </code>
+          <div class="tip" id="52">
+            <strong>Signature:</strong> fn:(ParaValue -&gt; ParaResult&lt;&#39;a&gt;) -&gt; arr:ParaValue [] -&gt; ParaResult&lt;&#39;a []&gt;<br />
+                          <strong>Type parameters:</strong> 'a          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L753-753" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Run each element of the given array through the function and if all elements
+result in ok, then reduce the array of results into a single result of an
+array. If an element is an error, the first error is returned.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '53', 53)" onmouseover="showTip(event, '53', 53)">
+            tryGet key o
+          </code>
+          <div class="tip" id="53">
+            <strong>Signature:</strong> key:string -&gt; o:ParaValue -&gt; ParaResult&lt;ParaValue option&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L732-732" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Assumes the passed in value is a record and attempts to search
+the record's properties for the given key. If a single value exists
+return some value, if no properties were found, return None</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '54', 54)" onmouseover="showTip(event, '54', 54)">
+            unfold fn _arg1
+          </code>
+          <div class="tip" id="54">
+            <strong>Signature:</strong> fn:(ParaValue -&gt; &#39;?7282) -&gt; _arg1:ParaValue -&gt; &#39;?7282<br />
+                          <strong>Type parameters:</strong> '?7282          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L707-707" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>When given an array/record that contains only a single instance. Run the
+deserialization function against that single element.</p>
+
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+        </div>
+        <div class="span3">
+          <img src="/Pfarah/img/logo.png" alt="F# Project" style="width:150px;margin:10px" />  
+          <ul class="nav nav-list" id="menu" style="margin-top: 20px;">
+            <li class="nav-header">Pfarah</li>
+            <li><a href="/Pfarah/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="http://nuget.org/packages/Pfarah">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/nickbabcock/Pfarah">Source Code on GitHub</a></li>
+            <li><a href="/Pfarah/license.html">License</a></li>
+            <li><a href="/Pfarah/release-notes.html">Release Notes</a></li>
+            
+            <li class="nav-header">Getting started</li>
+            <li><a href="/Pfarah/tutorial.html">Sample tutorial</a></li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="/Pfarah/reference/index.html">API Reference</a></li>
+            <li><a href="/Pfarah/data-format.html">Data format</a></li>
+            <li><a href="/Pfarah/benchmarks.html">Benchmarks</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/nickbabcock/Pfarah"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"/></a>
+  </body>
+  </html>

@@ -51,10 +51,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '65', 65)" onmouseover="showTip(event, '65', 65)">
+          <code onmouseout="hideTip(event, '95', 95)" onmouseover="showTip(event, '95', 95)">
             Array(elements)
           </code>
-          <div class="tip" id="65">
+          <div class="tip" id="95">
             <strong>Signature:</strong> ParaValue []<br />
                       </div>
         </td>
@@ -69,10 +69,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '66', 66)" onmouseover="showTip(event, '66', 66)">
+          <code onmouseout="hideTip(event, '96', 96)" onmouseover="showTip(event, '96', 96)">
             Bool(bool)
           </code>
-          <div class="tip" id="66">
+          <div class="tip" id="96">
             <strong>Signature:</strong> bool<br />
                       </div>
         </td>
@@ -87,10 +87,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '67', 67)" onmouseover="showTip(event, '67', 67)">
+          <code onmouseout="hideTip(event, '97', 97)" onmouseover="showTip(event, '97', 97)">
             Date(DateTime)
           </code>
-          <div class="tip" id="67">
+          <div class="tip" id="97">
             <strong>Signature:</strong> DateTime<br />
                       </div>
         </td>
@@ -105,10 +105,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '68', 68)" onmouseover="showTip(event, '68', 68)">
+          <code onmouseout="hideTip(event, '98', 98)" onmouseover="showTip(event, '98', 98)">
             Hsv(float,float,float)
           </code>
-          <div class="tip" id="68">
+          <div class="tip" id="98">
             <strong>Signature:</strong> float * float * float<br />
                       </div>
         </td>
@@ -123,10 +123,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '69', 69)" onmouseover="showTip(event, '69', 69)">
+          <code onmouseout="hideTip(event, '99', 99)" onmouseover="showTip(event, '99', 99)">
             Number(float)
           </code>
-          <div class="tip" id="69">
+          <div class="tip" id="99">
             <strong>Signature:</strong> float<br />
                       </div>
         </td>
@@ -141,10 +141,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '70', 70)" onmouseover="showTip(event, '70', 70)">
+          <code onmouseout="hideTip(event, '100', 100)" onmouseover="showTip(event, '100', 100)">
             Record(properties)
           </code>
-          <div class="tip" id="70">
+          <div class="tip" id="100">
             <strong>Signature:</strong> (string * ParaValue) []<br />
                       </div>
         </td>
@@ -159,10 +159,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '71', 71)" onmouseover="showTip(event, '71', 71)">
+          <code onmouseout="hideTip(event, '101', 101)" onmouseover="showTip(event, '101', 101)">
             Rgb(byte,byte,byte)
           </code>
-          <div class="tip" id="71">
+          <div class="tip" id="101">
             <strong>Signature:</strong> byte * byte * byte<br />
                       </div>
         </td>
@@ -177,10 +177,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '72', 72)" onmouseover="showTip(event, '72', 72)">
+          <code onmouseout="hideTip(event, '102', 102)" onmouseover="showTip(event, '102', 102)">
             String(string)
           </code>
-          <div class="tip" id="72">
+          <div class="tip" id="102">
             <strong>Signature:</strong> string<br />
                       </div>
         </td>
@@ -203,15 +203,38 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '73', 73)" onmouseover="showTip(event, '73', 73)">
+          <code onmouseout="hideTip(event, '103', 103)" onmouseover="showTip(event, '103', 103)">
+            ( / )(obj, propertyName)
+          </code>
+          <div class="tip" id="103">
+            <strong>Signature:</strong> (obj:ParaValue * propertyName:string) -&gt; ParaValue<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L71-71" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Slash operator to emulate xpath operations, see collect.
+Inspired by json4s. Defined here so to not override the
+global division operator</p>
+
+
+              <p>CompiledName: <code>op_Division</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '104', 104)" onmouseover="showTip(event, '104', 104)">
             Load(...)
           </code>
-          <div class="tip" id="73">
+          <div class="tip" id="104">
             <strong>Signature:</strong> (stream:Stream * binHeader:string * txtHeader:string * lookup:Lazy&lt;IDictionary&lt;int16,string&gt;&gt;) -&gt; ParaValue<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L695-695" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L951-951" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -224,15 +247,15 @@ parses it correctly when given the headers to look out for.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '74', 74)" onmouseover="showTip(event, '74', 74)">
+          <code onmouseout="hideTip(event, '105', 105)" onmouseover="showTip(event, '105', 105)">
             Load(file, binHeader, txtHeader, lookup)
           </code>
-          <div class="tip" id="74">
+          <div class="tip" id="105">
             <strong>Signature:</strong> (file:string * binHeader:string * txtHeader:string * lookup:Lazy&lt;IDictionary&lt;int16,string&gt;&gt;) -&gt; ParaValue<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L681-681" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L937-937" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -245,15 +268,15 @@ encoded</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '75', 75)" onmouseover="showTip(event, '75', 75)">
+          <code onmouseout="hideTip(event, '106', 106)" onmouseover="showTip(event, '106', 106)">
             LoadBinary(stream, lookup, header)
           </code>
-          <div class="tip" id="75">
+          <div class="tip" id="106">
             <strong>Signature:</strong> (stream:Stream * lookup:IDictionary&lt;int16,string&gt; * header:string option) -&gt; ParaValue<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L674-674" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L930-930" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -266,15 +289,15 @@ header</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '76', 76)" onmouseover="showTip(event, '76', 76)">
+          <code onmouseout="hideTip(event, '107', 107)" onmouseover="showTip(event, '107', 107)">
             LoadText(file)
           </code>
-          <div class="tip" id="76">
+          <div class="tip" id="107">
             <strong>Signature:</strong> file:string -&gt; ParaValue<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L707-707" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L963-963" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -286,15 +309,15 @@ header</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '77', 77)" onmouseover="showTip(event, '77', 77)">
+          <code onmouseout="hideTip(event, '108', 108)" onmouseover="showTip(event, '108', 108)">
             LoadText(stream)
           </code>
-          <div class="tip" id="77">
+          <div class="tip" id="108">
             <strong>Signature:</strong> stream:Stream -&gt; ParaValue<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L668-668" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L924-924" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -306,15 +329,15 @@ header</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '78', 78)" onmouseover="showTip(event, '78', 78)">
+          <code onmouseout="hideTip(event, '109', 109)" onmouseover="showTip(event, '109', 109)">
             Parse(text)
           </code>
-          <div class="tip" id="78">
+          <div class="tip" id="109">
             <strong>Signature:</strong> text:string -&gt; ParaValue<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L712-712" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L968-968" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -326,15 +349,15 @@ header</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '79', 79)" onmouseover="showTip(event, '79', 79)">
+          <code onmouseout="hideTip(event, '110', 110)" onmouseover="showTip(event, '110', 110)">
             Save(stream, data)
           </code>
-          <div class="tip" id="79">
+          <div class="tip" id="110">
             <strong>Signature:</strong> (stream:Stream * data:ParaValue) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L717-717" class="github-link">
+            <a href="http://github.com/nickbabcock/Pfarah/tree/master/src/Pfarah/ParaValue.fs#L973-973" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
