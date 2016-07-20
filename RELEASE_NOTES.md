@@ -1,3 +1,22 @@
+### 0.7.0 July 19th 2016
+
+This is big release. Probably the biggest in the foreseeable future. Any and
+all code related to extracting and deserialization of values will need to
+change. No deprecation notices, sorry just code that fails to compile. But
+through this pain brings great improvements as the new API greatly simplifies
+extraction and deserialization. As a case study I re-wrote an EU4 savegame
+parser in nearly a day and it was a breeze to write. Hopefully the promise-
+land offsets any issues. Check out the updated tutorial to become accustomed.
+
+* Parser can now parse comments
+* Many previous functions now moved under the `ParaValue` module
+* Make all deserialization in terms of a new type `ParaResult`
+  that is aliased to choice
+* Remove `tryFind`
+* Deserialization works can unwrap single instance arrays
+* Define slash operators to work like xpath
+* Allow `collect` to work on more than just objects
+
 ### 0.6.5 June 28th 2016
 * Performance increase when reading text files (40% speedup)
 
