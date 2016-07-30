@@ -34,18 +34,7 @@ Type=ParseDateTime  Mode=Throughput
 
 ## Parsing Doubles
 
-            Method | Payload |     Median |    StdDev |
------------------- |-------- |----------- |---------- |
- **pfarahParseDouble** | **0.98765** | **13.9992 ns** | **0.5843 ns** |
-    bclParseDouble | 0.98765 | 77.4219 ns | 1.7125 ns |
- **pfarahParseDouble** |   **1.000** | **10.3546 ns** | **0.4040 ns** |
-    bclParseDouble |   1.000 | 68.8776 ns | 2.1476 ns |
- **pfarahParseDouble** |    **15.3** | **11.2105 ns** | **0.4590 ns** |
-    bclParseDouble |    15.3 | 68.0926 ns | 2.0549 ns |
- **pfarahParseDouble** |      **50** |  **6.0571 ns** | **0.3556 ns** |
-    bclParseDouble |      50 | 63.4717 ns | 0.5042 ns |
- **pfarahParseDouble** |     **abc** |  **4.0015 ns** | **1.5356 ns** |
-    bclParseDouble |     abc | 63.4639 ns | 9.4690 ns |
+![pfara-benchmark](/Pfarah/img/doubles-parsing.png)
 
 - Happy path: More than 10x improvement for simple numbers (50). As numbers
   grow complex (more numbers, decimals) performance improvement drops to 5x.
@@ -53,16 +42,40 @@ Type=ParseDateTime  Mode=Throughput
 
 ## Parsing DateTimes
 
-              Method |     Payload |      Median |     StdDev |
--------------------- |------------ |------------ |----------- |
- **pfarahParseDateTime** | **1942.5.2.14** | **111.5436 ns** |  **2.4011 ns** |
-         bclDateTime | 1942.5.2.14 | 328.4756 ns | 23.3696 ns |
- **pfarahParseDateTime** |    **2015.8.1** |  **89.0527 ns** |  **3.5095 ns** |
-         bclDateTime |    2015.8.1 | 331.6652 ns | 20.3652 ns |
- **pfarahParseDateTime** |   **99999.8.1** |  **58.8484 ns** | **10.9077 ns** |
-         bclDateTime |   99999.8.1 | 273.6202 ns |  2.6354 ns |
- **pfarahParseDateTime** |         **abc** |   **4.7968 ns** |  **0.3181 ns** |
-         bclDateTime |         abc | 209.5747 ns | 19.2509 ns |
+![pfara-benchmark](/Pfarah/img/parse-dates.png)
 
 - Happy path: 3-4x improvement depending on if the hour part of a date is omitted.
 - Sad path: > 40x improvement for data that obviously isn't a date (abc), but if the date is closer to an actual date, then performance improvement drops to 5x.
+
+Squirrelling away the code used to generate the plots from the csv output from BenchmarkDotnet
+
+```R
+library(ggplot2)
+library(dplyr)
+library(stringr)
+library(readr)
+
+bench_plot <- function(fp, title) {
+    # Converts "2.313 ns" to 2.313
+    toNs <- function(x) {
+        split <- str_split(x, " ")
+        num <- as.numeric(split[[1]][[1]])
+        factor <- switch(split[[1]][[2]], ns=1, us=1000, ms=1000*1000)
+        num * factor
+    }
+    vtoNs <- Vectorize(toNs)
+
+    read_csv2(fp) %>%
+        select(Method, Payload, Median, StdDev) %>%
+        mutate(Median = vtoNs(Median), StdDev = vtoNs(StdDev),
+               Method = ifelse(str_detect(Method, "bcl"), "BCL", "Pfarah")) %>%
+        ggplot(mapping = aes(Payload, Median, fill = Method)) +
+        geom_bar(stat = 'identity', position='dodge') +
+        coord_flip() + ylab("Median (ns)") + ggtitle(title)
+}
+
+bench_plot("ParseDateTime-report.csv",
+    "Time Attempting to Parse Dates (Smaller Bar = Faster)")
+bench_plot("ParseDouble-report.csv",
+    "Time Attempting to Parse Doubles (Smaller Bar = Faster)")
+```
