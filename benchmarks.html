@@ -72,77 +72,7 @@ Type=ParseDateTime  Mode=Throughput
 
 </code></pre></td></tr></table>
 <h2><a name="Parsing-Doubles" class="anchor" href="#Parsing-Doubles">Parsing Doubles</a></h2>
-<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp">        <span class="i">Method</span> | <span class="i">Payload</span> |     <span class="i">Median</span> |    <span class="i">StdDev</span> |
-</code></pre></td>
-</tr>
-</table>
-<table>
-<tbody>
-<tr class="odd">
-<td><p><strong>pfarahParseDouble</strong></p></td>
-<td><p><strong>0.98765</strong></p></td>
-<td><p><strong>13.9992 ns</strong></p></td>
-<td><p><strong>0.5843 ns</strong></p></td>
-</tr>
-<tr class="even">
-<td><p>bclParseDouble</p></td>
-<td><p>0.98765</p></td>
-<td><p>77.4219 ns</p></td>
-<td><p>1.7125 ns</p></td>
-</tr>
-<tr class="odd">
-<td><p><strong>pfarahParseDouble</strong></p></td>
-<td><p><strong>1.000</strong></p></td>
-<td><p><strong>10.3546 ns</strong></p></td>
-<td><p><strong>0.4040 ns</strong></p></td>
-</tr>
-<tr class="even">
-<td><p>bclParseDouble</p></td>
-<td><p>1.000</p></td>
-<td><p>68.8776 ns</p></td>
-<td><p>2.1476 ns</p></td>
-</tr>
-<tr class="odd">
-<td><p><strong>pfarahParseDouble</strong></p></td>
-<td><p><strong>15.3</strong></p></td>
-<td><p><strong>11.2105 ns</strong></p></td>
-<td><p><strong>0.4590 ns</strong></p></td>
-</tr>
-<tr class="even">
-<td><p>bclParseDouble</p></td>
-<td><p>15.3</p></td>
-<td><p>68.0926 ns</p></td>
-<td><p>2.0549 ns</p></td>
-</tr>
-<tr class="odd">
-<td><p><strong>pfarahParseDouble</strong></p></td>
-<td><p><strong>50</strong></p></td>
-<td><p><strong>6.0571 ns</strong></p></td>
-<td><p><strong>0.3556 ns</strong></p></td>
-</tr>
-<tr class="even">
-<td><p>bclParseDouble</p></td>
-<td><p>50</p></td>
-<td><p>63.4717 ns</p></td>
-<td><p>0.5042 ns</p></td>
-</tr>
-<tr class="odd">
-<td><p><strong>pfarahParseDouble</strong></p></td>
-<td><p><strong>abc</strong></p></td>
-<td><p><strong>4.0015 ns</strong></p></td>
-<td><p><strong>1.5356 ns</strong></p></td>
-</tr>
-<tr class="even">
-<td><p>bclParseDouble</p></td>
-<td><p>abc</p></td>
-<td><p>63.4639 ns</p></td>
-<td><p>9.4690 ns</p></td>
-</tr>
-</tbody>
-</table>
-
+<p><img src="/Pfarah/img/doubles-parsing.png" alt="pfara-benchmark" /></p>
 <ul>
 <li>
 Happy path: More than 10x improvement for simple numbers (50). As numbers
@@ -151,69 +81,70 @@ grow complex (more numbers, decimals) performance improvement drops to 5x.
 <li>Sad path: 15x improvement for data that obviously isn't a number (abc)</li>
 </ul>
 <h2><a name="Parsing-DateTimes" class="anchor" href="#Parsing-DateTimes">Parsing DateTimes</a></h2>
-<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp">          <span class="i">Method</span> |     <span class="i">Payload</span> |      <span class="i">Median</span> |     <span class="i">StdDev</span> |
-</code></pre></td>
-</tr>
-</table>
-<table>
-<tbody>
-<tr class="odd">
-<td><p><strong>pfarahParseDateTime</strong></p></td>
-<td><p><strong>1942.5.2.14</strong></p></td>
-<td><p><strong>111.5436 ns</strong></p></td>
-<td><p><strong>2.4011 ns</strong></p></td>
-</tr>
-<tr class="even">
-<td><p>bclDateTime</p></td>
-<td><p>1942.5.2.14</p></td>
-<td><p>328.4756 ns</p></td>
-<td><p>23.3696 ns</p></td>
-</tr>
-<tr class="odd">
-<td><p><strong>pfarahParseDateTime</strong></p></td>
-<td><p><strong>2015.8.1</strong></p></td>
-<td><p><strong>89.0527 ns</strong></p></td>
-<td><p><strong>3.5095 ns</strong></p></td>
-</tr>
-<tr class="even">
-<td><p>bclDateTime</p></td>
-<td><p>2015.8.1</p></td>
-<td><p>331.6652 ns</p></td>
-<td><p>20.3652 ns</p></td>
-</tr>
-<tr class="odd">
-<td><p><strong>pfarahParseDateTime</strong></p></td>
-<td><p><strong>99999.8.1</strong></p></td>
-<td><p><strong>58.8484 ns</strong></p></td>
-<td><p><strong>10.9077 ns</strong></p></td>
-</tr>
-<tr class="even">
-<td><p>bclDateTime</p></td>
-<td><p>99999.8.1</p></td>
-<td><p>273.6202 ns</p></td>
-<td><p>2.6354 ns</p></td>
-</tr>
-<tr class="odd">
-<td><p><strong>pfarahParseDateTime</strong></p></td>
-<td><p><strong>abc</strong></p></td>
-<td><p><strong>4.7968 ns</strong></p></td>
-<td><p><strong>0.3181 ns</strong></p></td>
-</tr>
-<tr class="even">
-<td><p>bclDateTime</p></td>
-<td><p>abc</p></td>
-<td><p>209.5747 ns</p></td>
-<td><p>19.2509 ns</p></td>
-</tr>
-</tbody>
-</table>
-
+<p><img src="/Pfarah/img/parse-dates.png" alt="pfara-benchmark" /></p>
 <ul>
 <li>Happy path: 3-4x improvement depending on if the hour part of a date is omitted.</li>
 <li>Sad path: &gt; 40x improvement for data that obviously isn't a date (abc), but if the date is closer to an actual date, then performance improvement drops to 5x.</li>
 </ul>
+<p>Squirrelling away the code used to generate the plots from the csv output from BenchmarkDotnet</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+<span class="l">19: </span>
+<span class="l">20: </span>
+<span class="l">21: </span>
+<span class="l">22: </span>
+<span class="l">23: </span>
+<span class="l">24: </span>
+<span class="l">25: </span>
+<span class="l">26: </span>
+<span class="l">27: </span>
+<span class="l">28: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip"><code lang="R">library(ggplot2)
+library(dplyr)
+library(stringr)
+library(readr)
+
+bench_plot &lt;- function(fp, title) {
+    # Converts "2.313 ns" to 2.313
+    toNs &lt;- function(x) {
+        split &lt;- str_split(x, " ")
+        num &lt;- as.numeric(split[[1]][[1]])
+        factor &lt;- switch(split[[1]][[2]], ns=1, us=1000, ms=1000*1000)
+        num * factor
+    }
+    vtoNs &lt;- Vectorize(toNs)
+
+    read_csv2(fp) %&gt;%
+        select(Method, Payload, Median, StdDev) %&gt;%
+        mutate(Median = vtoNs(Median), StdDev = vtoNs(StdDev),
+               Method = ifelse(str_detect(Method, "bcl"), "BCL", "Pfarah")) %&gt;%
+        ggplot(mapping = aes(Payload, Median, fill = Method)) +
+        geom_bar(stat = 'identity', position='dodge') +
+        coord_flip() + ylab("Median (ns)") + ggtitle(title)
+}
+
+bench_plot("ParseDateTime-report.csv",
+    "Time Attempting to Parse Dates (Smaller Bar = Faster)")
+bench_plot("ParseDouble-report.csv",
+    "Time Attempting to Parse Doubles (Smaller Bar = Faster)")
+</code></pre></td></tr></table>
 
 
         </div>
