@@ -1,3 +1,7 @@
+### 0.7.1
+
+* Add tryPget operator `.@?`
+
 ### 0.7.0 July 19th 2016
 
 This is big release. Probably the biggest in the foreseeable future. Any and
