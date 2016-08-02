@@ -49,3 +49,6 @@ module Operators =
 
   /// Operator inspired from the fleece project -- delegates to pget
   let inline (.@) obj key = pget key obj
+
+  /// Operator inspired from the fleece project -- delegates to tryPget
+  let inline (.@?) obj key = tryPget key obj

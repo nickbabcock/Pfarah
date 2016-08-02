@@ -1010,6 +1010,15 @@ let ``tryPget should work with optionals`` () =
  b |> shouldEqual (Ok None)
 
 [<Test>]
+let ``tryPget operator`` () =
+ let value = ParaValue.Record [| "name", ParaValue.String "bob" |]
+ let b : ParaResult<int option> = para {
+   return! value .@? "age"
+ }
+
+ b |> shouldEqual (Ok None)
+
+[<Test>]
 let ``pgetAll should work with same keys`` () =
  let value = ParaValue.Parse "core=AAA core=BBB core=CCC"
  let actual : ParaResult<string[]> = pgetAll "core" value
