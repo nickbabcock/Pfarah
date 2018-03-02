@@ -58,18 +58,20 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="TraceEvent.ReadMe.txt">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="TraceEvent.ReleaseNotes.txt">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="_TraceEventProgrammersGuide.docx">
+      <Paket>True</Paket>
+    </Content>
     <Content Include="achievements.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2')">
-      <PropertyGroup>
-        <__paket__Microsoft_Diagnostics_Tracing_TraceEvent_targets>Microsoft.Diagnostics.Tracing.TraceEvent</__paket__Microsoft_Diagnostics_Tracing_TraceEvent_targets>
-      </PropertyGroup>
-    </When>
-  </Choose>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -78,21 +80,21 @@
   </Target>
   -->
   <Choose>
-    <When Condition="($(TargetFrameworkIdentifier) == '.NETStandard' And ($(TargetFrameworkVersion) == 'v1.0' Or $(TargetFrameworkVersion) == 'v1.1' Or $(TargetFrameworkVersion) == 'v1.2' Or $(TargetFrameworkVersion) == 'v1.3' Or $(TargetFrameworkVersion) == 'v1.4' Or $(TargetFrameworkVersion) == 'v1.5')) Or ($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2'))">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.0.3' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3' Or $(TargetFrameworkVersion) == 'v4.7' Or $(TargetFrameworkVersion) == 'v4.7.1')">
       <ItemGroup>
+        <Reference Include="System.Management">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="BenchmarkDotNet">
           <HintPath>..\..\packages\BenchmarkDotNet\lib\net40\BenchmarkDotNet.dll</HintPath>
           <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Management">
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>
     </When>
   </Choose>
   <Choose>
-    <When Condition="($(TargetFrameworkIdentifier) == '.NETStandard' And ($(TargetFrameworkVersion) == 'v1.0' Or $(TargetFrameworkVersion) == 'v1.1' Or $(TargetFrameworkVersion) == 'v1.2' Or $(TargetFrameworkVersion) == 'v1.3' Or $(TargetFrameworkVersion) == 'v1.4' Or $(TargetFrameworkVersion) == 'v1.5')) Or ($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2'))">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.0.3' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3' Or $(TargetFrameworkVersion) == 'v4.7' Or $(TargetFrameworkVersion) == 'v4.7.1')">
       <ItemGroup>
         <Reference Include="BenchmarkDotNet.Diagnostics.Windows">
           <HintPath>..\..\packages\BenchmarkDotNet.Diagnostics.Windows\lib\net40\BenchmarkDotNet.Diagnostics.Windows.dll</HintPath>
@@ -103,7 +105,40 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2')">
+    <When Condition="true">
+      <ItemGroup>
+        <NativeReference Include="KernelTraceControl">
+          <HintPath>..\..\packages\Microsoft.Diagnostics.Tracing.TraceEvent\lib\native\amd64\KernelTraceControl.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </NativeReference>
+        <NativeReference Include="KernelTraceControl">
+          <HintPath>..\..\packages\Microsoft.Diagnostics.Tracing.TraceEvent\lib\native\x86\KernelTraceControl.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </NativeReference>
+        <NativeReference Include="msdia140">
+          <HintPath>..\..\packages\Microsoft.Diagnostics.Tracing.TraceEvent\lib\native\amd64\msdia140.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </NativeReference>
+        <NativeReference Include="msdia140">
+          <HintPath>..\..\packages\Microsoft.Diagnostics.Tracing.TraceEvent\lib\native\x86\msdia140.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </NativeReference>
+      </ItemGroup>
+    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v3.5'">
+      <ItemGroup>
+        <Reference Include="Microsoft.Diagnostics.Tracing.TraceEvent">
+          <HintPath>..\..\packages\Microsoft.Diagnostics.Tracing.TraceEvent\lib\net35\Microsoft.Diagnostics.Tracing.TraceEvent.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.0.3' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3' Or $(TargetFrameworkVersion) == 'v4.7' Or $(TargetFrameworkVersion) == 'v4.7.1')">
       <ItemGroup>
         <Reference Include="Microsoft.Diagnostics.Tracing.TraceEvent">
           <HintPath>..\..\packages\Microsoft.Diagnostics.Tracing.TraceEvent\lib\net40\Microsoft.Diagnostics.Tracing.TraceEvent.dll</HintPath>
@@ -113,5 +148,5 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="..\..\packages\Microsoft.Diagnostics.Tracing.TraceEvent\build\$(__paket__Microsoft_Diagnostics_Tracing_TraceEvent_targets).targets" Condition="Exists('..\..\packages\Microsoft.Diagnostics.Tracing.TraceEvent\build\$(__paket__Microsoft_Diagnostics_Tracing_TraceEvent_targets).targets')" Label="Paket" />
+  <Import Project="..\..\packages\Microsoft.Diagnostics.Tracing.TraceEvent\build\Microsoft.Diagnostics.Tracing.TraceEvent.targets" Condition="Exists('..\..\packages\Microsoft.Diagnostics.Tracing.TraceEvent\build\Microsoft.Diagnostics.Tracing.TraceEvent.targets')" Label="Paket" />
 </Project>

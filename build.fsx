@@ -180,10 +180,11 @@ Target "PublishNuget" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Generate the documentation
 
-Target "GenerateReferenceDocs" (fun _ ->
-    if not <| executeFSIWithArgs "docs/tools" "generate.fsx" ["--define:RELEASE"; "--define:REFERENCE"] [] then
-      failwith "generating reference documentation failed"
-)
+Target "GenerateReferenceDocs" DoNothing
+//Target "GenerateReferenceDocs" (fun _ ->
+//    if not <| executeFSIWithArgs "docs/tools" "generate.fsx" ["--define:RELEASE"; "--define:REFERENCE"] [] then
+//      failwith "generating reference documentation failed"
+//)
 
 let generateHelp' fail debug =
     let args =
@@ -200,17 +201,20 @@ let generateHelp' fail debug =
 let generateHelp fail =
     generateHelp' fail false
 
-Target "GenerateHelp" (fun _ ->
-    DeleteFile "docs/content/release-notes.md"
-    CopyFile "docs/content/" "RELEASE_NOTES.md"
-    Rename "docs/content/release-notes.md" "docs/content/RELEASE_NOTES.md"
 
-    DeleteFile "docs/content/license.md"
-    CopyFile "docs/content/" "LICENSE.txt"
-    Rename "docs/content/license.md" "docs/content/LICENSE.txt"
+Target "GenerateHelp" DoNothing
 
-    generateHelp true
-)
+//Target "GenerateHelp" (fun _ ->
+//    DeleteFile "docs/content/release-notes.md"
+//    CopyFile "docs/content/" "RELEASE_NOTES.md"
+//    Rename "docs/content/release-notes.md" "docs/content/RELEASE_NOTES.md"
+//
+//    DeleteFile "docs/content/license.md"
+//    CopyFile "docs/content/" "LICENSE.txt"
+//    Rename "docs/content/license.md" "docs/content/LICENSE.txt"
+//
+//    generateHelp true
+//)
 
 Target "GenerateHelpDebug" (fun _ ->
     DeleteFile "docs/content/release-notes.md"
