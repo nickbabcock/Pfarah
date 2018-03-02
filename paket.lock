@@ -2,11 +2,11 @@ NUGET
   remote: https://www.nuget.org/api/v2
     BenchmarkDotNet (0.9.7)
     BenchmarkDotNet.Diagnostics.Windows (0.9.7)
-      BenchmarkDotNet (>= 0.9.7) - framework: >= net40, dnx451
-      Microsoft.Diagnostics.Tracing.TraceEvent (>= 1.0.41) - framework: >= net40, dnx451
+      BenchmarkDotNet (>= 0.9.7)
+      Microsoft.Diagnostics.Tracing.TraceEvent (>= 1.0.41)
     coveralls.net (0.6)
     DotNetZip (1.9.7)
-    FAKE (4.29.2)
+    FAKE (4.64.6)
     Farmhash.Sharp (0.2)
     FSharp.Compiler.Service (2.0.0.6)
     FSharp.Formatting (2.14.4)
@@ -14,11 +14,11 @@ NUGET
       FSharpVSPowerTools.Core (>= 2.3 < 2.4)
     FSharpVSPowerTools.Core (2.3)
       FSharp.Compiler.Service (>= 2.0.0.3)
-    Microsoft.Bcl (1.1.10) - framework: net10, net11, net20, net30, net35, net40, net40-full
+    Microsoft.Bcl (1.1.10) - restriction: && (< net45) (< portable-win81+wpa81) (< win8)
       Microsoft.Bcl.Build (>= 1.0.14)
-    Microsoft.Bcl.Build (1.0.21) - import_targets: false, framework: net10, net11, net20, net30, net35, net40, net40-full
-    Microsoft.Diagnostics.Tracing.TraceEvent (1.0.41) - framework: >= net40, dnx451
-    Microsoft.Net.Http (2.2.29) - framework: net10, net11, net20, net30, net35, net40, net40-full
+    Microsoft.Bcl.Build (1.0.21) - import_targets: false, restriction: && (< net45) (< portable-win81+wpa81) (< win8)
+    Microsoft.Diagnostics.Tracing.TraceEvent (1.0.41)
+    Microsoft.Net.Http (2.2.29) - restriction: && (< net45) (< portable-win81+wpa81) (< win8)
       Microsoft.Bcl (>= 1.1.10)
       Microsoft.Bcl.Build (>= 1.0.14)
     NUnit (3.4.1)
@@ -36,11 +36,11 @@ NUGET
       NUnit.Extension.TeamCityEventListener (>= 1.0.1)
       NUnit.Extension.VSProjectLoader (>= 3.4.1)
     Octokit (0.20)
-      Microsoft.Net.Http  - framework: net10, net11, net20, net30, net35, net40, net40-full
+      Microsoft.Net.Http  - restriction: && (< net45) (< portable-win81+wpa81) (< win8)
     OpenCover (4.6.519)
     ReportGenerator (2.4.5)
     SourceLink.Fake (1.1)
 GITHUB
   remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (f35a5d927148ca1a5fe5bc6ae2c1a37e3b2b5923)
+    modules/Octokit/Octokit.fsx (8f21aabb0974b0f4c7b7dab674b2ea2691a9db8c)
       Octokit (>= 0.20)
